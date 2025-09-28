@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/DAL/">
+    <Project Path="DAL/DatabaseGeneric/GroceryEcommerce.csproj" />
+    <Project Path="DAL/DatabaseSpecific/GroceryEcommerceDBSpecific.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+  </Folder>
+  <Project Path="GroceryEcommerce.API/GroceryEcommerce.API.csproj" />
+  <Project Path="GroceryEcommerce.Application/GroceryEcommerce.Application.csproj" />
+  <Project Path="GroceryEcommerce.Domain/GroceryEcommerce.Domain.csproj" />
+  <Project Path="GroceryEcommerce.Infrastructure/GroceryEcommerce.Infrastructure.csproj" />
+</Solution>
