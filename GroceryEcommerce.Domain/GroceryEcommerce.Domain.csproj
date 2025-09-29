@@ -7,12 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\Catalog\" />
-    <Folder Include="Entities\Inventory\" />
-    <Folder Include="Entities\Marketing\" />
-    <Folder Include="Entities\System\" />
-    <Folder Include="Entities\Sales\" />
-    <Folder Include="Entities\Reviews\" />
+    <Folder Include="Events\" />
   </ItemGroup>
 
 </Project>
