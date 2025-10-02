@@ -1,17 +1,10 @@
 namespace GroceryEcommerce.Application.Common;
 
-public class SearchableField
+// Making SearchableField abstract is a breaking change that may affect existing implementations and doesn't appear to be necessary based on its usage.
+public abstract class SearchableField(string fieldName, Type fieldType, bool isSearchable, bool isSortable = true)
 {
-    public SearchableField(string fieldName, Type fieldType, bool isSearchable, bool isSortable = true)
-    {
-        FieldName = fieldName;
-        FieldType = fieldType;
-        IsSearchable = isSearchable;
-        IsSortable = isSortable;
-    }
-
-    public string FieldName { get; init; } = string.Empty;
-    public Type FieldType { get; init; } = typeof(string);
-    public bool IsSearchable { get; init; } = true;
-    public bool IsSortable { get; init; } = true;
+    public string FieldName { get; init; } = fieldName;
+    public Type FieldType { get; init; } = fieldType;
+    public bool IsSearchable { get; init; } = isSearchable;
+    public bool IsSortable { get; init; } = isSortable;
 }

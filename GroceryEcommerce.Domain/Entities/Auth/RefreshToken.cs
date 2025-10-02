@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GroceryEcommerce.Domain.Entities.Auth
 {
-    public class RefreshTokensi
+    public class RefreshTokens
     {
         [Key]
         public Guid TokenId { get; set; }
