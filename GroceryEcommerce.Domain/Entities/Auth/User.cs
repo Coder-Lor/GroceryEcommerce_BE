@@ -15,13 +15,11 @@ public class User
     [StringLength(500)]
     public required string PasswordHash { get; set; }
     
-    [Required]
     [StringLength(100)]
-    public required string FirstName { get; set; }
+    public string? FirstName { get; set; }
     
-    [Required]
     [StringLength(100)]
-    public required string LastName { get; set; }
+    public string? LastName { get; set; }
    
     [StringLength(20)]
     public string? PhoneNumber { get; set; }
