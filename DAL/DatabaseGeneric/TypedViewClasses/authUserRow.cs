@@ -49,6 +49,8 @@ namespace GroceryEcommerce.TypedViewClasses
 		public Nullable<System.DateTime> UpdatedAt { get; set; }
 		/// <summary>Gets or sets the UserId field.</summary>
 		public System.Guid UserId { get; set; }
+		/// <summary>Gets or sets the Username field.</summary>
+		public System.String Username { get; set; }
 	}
 }
 

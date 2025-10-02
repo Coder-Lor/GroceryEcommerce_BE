@@ -20,19 +20,17 @@ namespace GroceryEcommerce.EntityClasses
 {
 	// __LLBLGENPRO_USER_CODE_REGION_START AdditionalNamespaces
 	// __LLBLGENPRO_USER_CODE_REGION_END
-
 	/// <summary>Entity class which represents the entity 'OrderStatusHistory'.<br/><br/></summary>
 	[Serializable]
 	public partial class OrderStatusHistoryEntity : CommonEntityBase
 		// __LLBLGENPRO_USER_CODE_REGION_START AdditionalInterfaces
-		// __LLBLGENPRO_USER_CODE_REGION_END
-	
+		// __LLBLGENPRO_USER_CODE_REGION_END	
 	{
 		private UserEntity _user;
 		private OrderEntity _order;
+
 		// __LLBLGENPRO_USER_CODE_REGION_START PrivateMembers
 		// __LLBLGENPRO_USER_CODE_REGION_END
-
 		private static OrderStatusHistoryEntityStaticMetaData _staticMetaData = new OrderStatusHistoryEntityStaticMetaData();
 		private static OrderStatusHistoryRelations _relationsFactory = new OrderStatusHistoryRelations();
 
@@ -122,7 +120,6 @@ namespace GroceryEcommerce.EntityClasses
 			PerformDependencyInjection();
 			// __LLBLGENPRO_USER_CODE_REGION_START InitClassMembers
 			// __LLBLGENPRO_USER_CODE_REGION_END
-
 			OnInitClassMembersComplete();
 		}
 
@@ -137,7 +134,6 @@ namespace GroceryEcommerce.EntityClasses
 			InitClassMembers();
 			// __LLBLGENPRO_USER_CODE_REGION_START InitClassEmpty
 			// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 			OnInitialized();
 		}
@@ -224,9 +220,9 @@ namespace GroceryEcommerce.EntityClasses
 			get { return _order; }
 			set { SetSingleRelatedEntityNavigator(value, "Order"); }
 		}
+
 		// __LLBLGENPRO_USER_CODE_REGION_START CustomEntityCode
 		// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 	}
 }

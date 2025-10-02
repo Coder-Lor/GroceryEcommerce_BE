@@ -20,17 +20,15 @@ namespace GroceryEcommerce.EntityClasses
 {
 	// __LLBLGENPRO_USER_CODE_REGION_START AdditionalNamespaces
 	// __LLBLGENPRO_USER_CODE_REGION_END
-
 	/// <summary>Entity class which represents the entity 'EmailTemplate'.<br/><br/></summary>
 	[Serializable]
 	public partial class EmailTemplateEntity : CommonEntityBase
 		// __LLBLGENPRO_USER_CODE_REGION_START AdditionalInterfaces
-		// __LLBLGENPRO_USER_CODE_REGION_END
-	
+		// __LLBLGENPRO_USER_CODE_REGION_END	
 	{
+
 		// __LLBLGENPRO_USER_CODE_REGION_START PrivateMembers
 		// __LLBLGENPRO_USER_CODE_REGION_END
-
 		private static EmailTemplateEntityStaticMetaData _staticMetaData = new EmailTemplateEntityStaticMetaData();
 		private static EmailTemplateRelations _relationsFactory = new EmailTemplateRelations();
 
@@ -106,7 +104,6 @@ namespace GroceryEcommerce.EntityClasses
 			PerformDependencyInjection();
 			// __LLBLGENPRO_USER_CODE_REGION_START InitClassMembers
 			// __LLBLGENPRO_USER_CODE_REGION_END
-
 			OnInitClassMembersComplete();
 		}
 
@@ -121,7 +118,6 @@ namespace GroceryEcommerce.EntityClasses
 			InitClassMembers();
 			// __LLBLGENPRO_USER_CODE_REGION_START InitClassEmpty
 			// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 			OnInitialized();
 		}
@@ -184,9 +180,9 @@ namespace GroceryEcommerce.EntityClasses
 			get { return (Nullable<System.DateTime>)GetValue((int)EmailTemplateFieldIndex.UpdatedAt, false); }
 			set { SetValue((int)EmailTemplateFieldIndex.UpdatedAt, value); }
 		}
+
 		// __LLBLGENPRO_USER_CODE_REGION_START CustomEntityCode
 		// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 	}
 }

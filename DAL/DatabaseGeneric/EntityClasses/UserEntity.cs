@@ -20,13 +20,11 @@ namespace GroceryEcommerce.EntityClasses
 {
 	// __LLBLGENPRO_USER_CODE_REGION_START AdditionalNamespaces
 	// __LLBLGENPRO_USER_CODE_REGION_END
-
 	/// <summary>Entity class which represents the entity 'User'.<br/><br/></summary>
 	[Serializable]
 	public partial class UserEntity : CommonEntityBase
 		// __LLBLGENPRO_USER_CODE_REGION_START AdditionalInterfaces
-		// __LLBLGENPRO_USER_CODE_REGION_END
-	
+		// __LLBLGENPRO_USER_CODE_REGION_END	
 	{
 		private EntityCollection<AuditLogEntity> _auditLogs;
 		private EntityCollection<RefreshTokenEntity> _refreshTokens;
@@ -61,9 +59,9 @@ namespace GroceryEcommerce.EntityClasses
 		private EntityCollection<OrderRefundEntity> _orderRefunds;
 		private EntityCollection<OrderStatusHistoryEntity> _orderStatusHistories;
 		private EntityCollection<SystemSettingEntity> _systemSettings;
+
 		// __LLBLGENPRO_USER_CODE_REGION_START PrivateMembers
 		// __LLBLGENPRO_USER_CODE_REGION_END
-
 		private static UserEntityStaticMetaData _staticMetaData = new UserEntityStaticMetaData();
 		private static UserRelations _relationsFactory = new UserRelations();
 
@@ -379,7 +377,6 @@ namespace GroceryEcommerce.EntityClasses
 			PerformDependencyInjection();
 			// __LLBLGENPRO_USER_CODE_REGION_START InitClassMembers
 			// __LLBLGENPRO_USER_CODE_REGION_END
-
 			OnInitClassMembersComplete();
 		}
 
@@ -394,7 +391,6 @@ namespace GroceryEcommerce.EntityClasses
 			InitClassMembers();
 			// __LLBLGENPRO_USER_CODE_REGION_START InitClassEmpty
 			// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 			OnInitialized();
 		}
@@ -567,7 +563,7 @@ namespace GroceryEcommerce.EntityClasses
 		}
 
 		/// <summary>The FirstName property of the Entity User<br/><br/></summary>
-		/// <remarks>Mapped on  table field: "users"."first_name".<br/>Table field type characteristics (type, precision, scale, length): Varchar, 0, 0, 100.<br/>Table field behavior characteristics (is nullable, is PK, is identity): false, false, false</remarks>
+		/// <remarks>Mapped on  table field: "users"."first_name".<br/>Table field type characteristics (type, precision, scale, length): Varchar, 0, 0, 100.<br/>Table field behavior characteristics (is nullable, is PK, is identity): true, false, false</remarks>
 		public virtual System.String FirstName
 		{
 			get { return (System.String)GetValue((int)UserFieldIndex.FirstName, true); }
@@ -583,7 +579,7 @@ namespace GroceryEcommerce.EntityClasses
 		}
 
 		/// <summary>The LastName property of the Entity User<br/><br/></summary>
-		/// <remarks>Mapped on  table field: "users"."last_name".<br/>Table field type characteristics (type, precision, scale, length): Varchar, 0, 0, 100.<br/>Table field behavior characteristics (is nullable, is PK, is identity): false, false, false</remarks>
+		/// <remarks>Mapped on  table field: "users"."last_name".<br/>Table field type characteristics (type, precision, scale, length): Varchar, 0, 0, 100.<br/>Table field behavior characteristics (is nullable, is PK, is identity): true, false, false</remarks>
 		public virtual System.String LastName
 		{
 			get { return (System.String)GetValue((int)UserFieldIndex.LastName, true); }
@@ -636,6 +632,14 @@ namespace GroceryEcommerce.EntityClasses
 		{
 			get { return (System.Guid)GetValue((int)UserFieldIndex.UserId, true); }
 			set { SetValue((int)UserFieldIndex.UserId, value); }
+		}
+
+		/// <summary>The Username property of the Entity User<br/><br/></summary>
+		/// <remarks>Mapped on  table field: "users"."username".<br/>Table field type characteristics (type, precision, scale, length): Varchar, 0, 0, 200.<br/>Table field behavior characteristics (is nullable, is PK, is identity): false, false, false</remarks>
+		public virtual System.String Username
+		{
+			get { return (System.String)GetValue((int)UserFieldIndex.Username, true); }
+			set { SetValue((int)UserFieldIndex.Username, value); }
 		}
 
 		/// <summary>Gets the EntityCollection with the related entities of type 'AuditLogEntity' which are related to this entity via a relation of type '1:n'. If the EntityCollection hasn't been fetched yet, the collection returned will be empty.<br/><br/></summary>
@@ -769,9 +773,9 @@ namespace GroceryEcommerce.EntityClasses
 		/// <summary>Gets the EntityCollection with the related entities of type 'SystemSettingEntity' which are related to this entity via a relation of type '1:n'. If the EntityCollection hasn't been fetched yet, the collection returned will be empty.<br/><br/></summary>
 		[TypeContainedAttribute(typeof(SystemSettingEntity))]
 		public virtual EntityCollection<SystemSettingEntity> SystemSettings { get { return GetOrCreateEntityCollection<SystemSettingEntity, SystemSettingEntityFactory>("User", true, false, ref _systemSettings); } }
+
 		// __LLBLGENPRO_USER_CODE_REGION_START CustomEntityCode
 		// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 	}
 }
@@ -806,6 +810,8 @@ namespace GroceryEcommerce
 		UpdatedAt,
 		///<summary>UserId. </summary>
 		UserId,
+		///<summary>Username. </summary>
+		Username,
 		/// <summary></summary>
 		AmountOfFields
 	}

@@ -20,21 +20,19 @@ namespace GroceryEcommerce.EntityClasses
 {
 	// __LLBLGENPRO_USER_CODE_REGION_START AdditionalNamespaces
 	// __LLBLGENPRO_USER_CODE_REGION_END
-
 	/// <summary>Entity class which represents the entity 'StockMovement'.<br/><br/></summary>
 	[Serializable]
 	public partial class StockMovementEntity : CommonEntityBase
 		// __LLBLGENPRO_USER_CODE_REGION_START AdditionalInterfaces
-		// __LLBLGENPRO_USER_CODE_REGION_END
-	
+		// __LLBLGENPRO_USER_CODE_REGION_END	
 	{
 		private UserEntity _user;
 		private ProductEntity _product;
 		private ProductVariantEntity _productVariant;
 		private WarehouseEntity _warehouse;
+
 		// __LLBLGENPRO_USER_CODE_REGION_START PrivateMembers
 		// __LLBLGENPRO_USER_CODE_REGION_END
-
 		private static StockMovementEntityStaticMetaData _staticMetaData = new StockMovementEntityStaticMetaData();
 		private static StockMovementRelations _relationsFactory = new StockMovementRelations();
 
@@ -138,7 +136,6 @@ namespace GroceryEcommerce.EntityClasses
 			PerformDependencyInjection();
 			// __LLBLGENPRO_USER_CODE_REGION_START InitClassMembers
 			// __LLBLGENPRO_USER_CODE_REGION_END
-
 			OnInitClassMembersComplete();
 		}
 
@@ -153,7 +150,6 @@ namespace GroceryEcommerce.EntityClasses
 			InitClassMembers();
 			// __LLBLGENPRO_USER_CODE_REGION_START InitClassEmpty
 			// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 			OnInitialized();
 		}
@@ -312,9 +308,9 @@ namespace GroceryEcommerce.EntityClasses
 			get { return _warehouse; }
 			set { SetSingleRelatedEntityNavigator(value, "Warehouse"); }
 		}
+
 		// __LLBLGENPRO_USER_CODE_REGION_START CustomEntityCode
 		// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 	}
 }

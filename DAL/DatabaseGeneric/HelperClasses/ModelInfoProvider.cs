@@ -171,15 +171,16 @@ namespace GroceryEcommerce.HelperClasses
 			this.AddElementFieldInfo("UserEntity", "DateOfBirth", typeof(Nullable<System.DateTime>), false, false, false, true,  (int)UserFieldIndex.DateOfBirth, 0, 0, 0);
 			this.AddElementFieldInfo("UserEntity", "Email", typeof(System.String), false, false, false, false,  (int)UserFieldIndex.Email, 255, 0, 0);
 			this.AddElementFieldInfo("UserEntity", "EmailVerified", typeof(System.Boolean), false, false, false, false,  (int)UserFieldIndex.EmailVerified, 0, 0, 0);
-			this.AddElementFieldInfo("UserEntity", "FirstName", typeof(System.String), false, false, false, false,  (int)UserFieldIndex.FirstName, 100, 0, 0);
+			this.AddElementFieldInfo("UserEntity", "FirstName", typeof(System.String), false, false, false, true,  (int)UserFieldIndex.FirstName, 100, 0, 0);
 			this.AddElementFieldInfo("UserEntity", "LastLoginAt", typeof(Nullable<System.DateTime>), false, false, false, true,  (int)UserFieldIndex.LastLoginAt, 0, 0, 0);
-			this.AddElementFieldInfo("UserEntity", "LastName", typeof(System.String), false, false, false, false,  (int)UserFieldIndex.LastName, 100, 0, 0);
+			this.AddElementFieldInfo("UserEntity", "LastName", typeof(System.String), false, false, false, true,  (int)UserFieldIndex.LastName, 100, 0, 0);
 			this.AddElementFieldInfo("UserEntity", "PasswordHash", typeof(System.String), false, false, false, false,  (int)UserFieldIndex.PasswordHash, 500, 0, 0);
 			this.AddElementFieldInfo("UserEntity", "PhoneNumber", typeof(System.String), false, false, false, true,  (int)UserFieldIndex.PhoneNumber, 20, 0, 0);
 			this.AddElementFieldInfo("UserEntity", "PhoneVerified", typeof(System.Boolean), false, false, false, false,  (int)UserFieldIndex.PhoneVerified, 0, 0, 0);
 			this.AddElementFieldInfo("UserEntity", "Status", typeof(System.Int16), false, false, false, false,  (int)UserFieldIndex.Status, 0, 0, 5);
 			this.AddElementFieldInfo("UserEntity", "UpdatedAt", typeof(Nullable<System.DateTime>), false, false, false, true,  (int)UserFieldIndex.UpdatedAt, 0, 0, 0);
 			this.AddElementFieldInfo("UserEntity", "UserId", typeof(System.Guid), true, false, false, false,  (int)UserFieldIndex.UserId, 0, 0, 0);
+			this.AddElementFieldInfo("UserEntity", "Username", typeof(System.String), false, false, false, false,  (int)UserFieldIndex.Username, 200, 0, 0);
 		}
 
 		/// <summary>Inits UserAddressEntity's info objects</summary>
@@ -865,6 +866,7 @@ namespace GroceryEcommerce.HelperClasses
 			this.AddElementFieldInfo("authUserTypedView", "CreatedAt", typeof(System.DateTime), false, false, true, false, (int)authUserFieldIndex.CreatedAt, 0, 0, 0);
 			this.AddElementFieldInfo("authUserTypedView", "UpdatedAt", typeof(Nullable<System.DateTime>), false, false, true, false, (int)authUserFieldIndex.UpdatedAt, 0, 0, 0);
 			this.AddElementFieldInfo("authUserTypedView", "LastLoginAt", typeof(Nullable<System.DateTime>), false, false, true, false, (int)authUserFieldIndex.LastLoginAt, 0, 0, 0);
+			this.AddElementFieldInfo("authUserTypedView", "Username", typeof(System.String), false, false, true, false, (int)authUserFieldIndex.Username, 200, 0, 0);
 		}
 
 		/// <summary>Inits authUserAddressView's info objects</summary>

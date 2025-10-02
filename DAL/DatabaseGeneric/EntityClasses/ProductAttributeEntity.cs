@@ -20,18 +20,16 @@ namespace GroceryEcommerce.EntityClasses
 {
 	// __LLBLGENPRO_USER_CODE_REGION_START AdditionalNamespaces
 	// __LLBLGENPRO_USER_CODE_REGION_END
-
 	/// <summary>Entity class which represents the entity 'ProductAttribute'.<br/><br/></summary>
 	[Serializable]
 	public partial class ProductAttributeEntity : CommonEntityBase
 		// __LLBLGENPRO_USER_CODE_REGION_START AdditionalInterfaces
-		// __LLBLGENPRO_USER_CODE_REGION_END
-	
+		// __LLBLGENPRO_USER_CODE_REGION_END	
 	{
 		private EntityCollection<ProductAttributeValueEntity> _productAttributeValues;
+
 		// __LLBLGENPRO_USER_CODE_REGION_START PrivateMembers
 		// __LLBLGENPRO_USER_CODE_REGION_END
-
 		private static ProductAttributeEntityStaticMetaData _staticMetaData = new ProductAttributeEntityStaticMetaData();
 		private static ProductAttributeRelations _relationsFactory = new ProductAttributeRelations();
 
@@ -114,7 +112,6 @@ namespace GroceryEcommerce.EntityClasses
 			PerformDependencyInjection();
 			// __LLBLGENPRO_USER_CODE_REGION_START InitClassMembers
 			// __LLBLGENPRO_USER_CODE_REGION_END
-
 			OnInitClassMembersComplete();
 		}
 
@@ -129,7 +126,6 @@ namespace GroceryEcommerce.EntityClasses
 			InitClassMembers();
 			// __LLBLGENPRO_USER_CODE_REGION_START InitClassEmpty
 			// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 			OnInitialized();
 		}
@@ -200,9 +196,9 @@ namespace GroceryEcommerce.EntityClasses
 		/// <summary>Gets the EntityCollection with the related entities of type 'ProductAttributeValueEntity' which are related to this entity via a relation of type '1:n'. If the EntityCollection hasn't been fetched yet, the collection returned will be empty.<br/><br/></summary>
 		[TypeContainedAttribute(typeof(ProductAttributeValueEntity))]
 		public virtual EntityCollection<ProductAttributeValueEntity> ProductAttributeValues { get { return GetOrCreateEntityCollection<ProductAttributeValueEntity, ProductAttributeValueEntityFactory>("ProductAttribute", true, false, ref _productAttributeValues); } }
+
 		// __LLBLGENPRO_USER_CODE_REGION_START CustomEntityCode
 		// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 	}
 }

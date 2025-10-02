@@ -80,6 +80,8 @@ namespace GroceryEcommerce
 		UpdatedAt,
 		///<summary>LastLoginAt</summary>
 		LastLoginAt,
+		///<summary>Username</summary>
+		Username,
 		/// <summary></summary>
 		AmountOfFields
 	}
@@ -1302,7 +1304,6 @@ namespace GroceryEcommerce
 
 	// __LLBLGENPRO_USER_CODE_REGION_START CustomUserConstants
 	// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 }
 

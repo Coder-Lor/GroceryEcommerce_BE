@@ -160,20 +160,21 @@ namespace GroceryEcommerce.DatabaseSpecific
 		/// <summary>Inits UserEntity's mappings</summary>
 		private void InitUserEntityMappings()
 		{
-			this.AddElementMapping("UserEntity", @"postgres", @"auth", "users", 13, 0);
+			this.AddElementMapping("UserEntity", @"postgres", @"auth", "users", 14, 0);
 			this.AddElementFieldMapping("UserEntity", "CreatedAt", "created_at", false, "TimestampTz", 0, 0, 0, false, "", null, typeof(System.DateTime), 0);
 			this.AddElementFieldMapping("UserEntity", "DateOfBirth", "date_of_birth", true, "TimestampTz", 0, 0, 0, false, "", null, typeof(System.DateTime), 1);
 			this.AddElementFieldMapping("UserEntity", "Email", "email", false, "Varchar", 255, 0, 0, false, "", null, typeof(System.String), 2);
 			this.AddElementFieldMapping("UserEntity", "EmailVerified", "email_verified", false, "Boolean", 0, 0, 0, false, "", null, typeof(System.Boolean), 3);
-			this.AddElementFieldMapping("UserEntity", "FirstName", "first_name", false, "Varchar", 100, 0, 0, false, "", null, typeof(System.String), 4);
+			this.AddElementFieldMapping("UserEntity", "FirstName", "first_name", true, "Varchar", 100, 0, 0, false, "", null, typeof(System.String), 4);
 			this.AddElementFieldMapping("UserEntity", "LastLoginAt", "last_login_at", true, "TimestampTz", 0, 0, 0, false, "", null, typeof(System.DateTime), 5);
-			this.AddElementFieldMapping("UserEntity", "LastName", "last_name", false, "Varchar", 100, 0, 0, false, "", null, typeof(System.String), 6);
+			this.AddElementFieldMapping("UserEntity", "LastName", "last_name", true, "Varchar", 100, 0, 0, false, "", null, typeof(System.String), 6);
 			this.AddElementFieldMapping("UserEntity", "PasswordHash", "password_hash", false, "Varchar", 500, 0, 0, false, "", null, typeof(System.String), 7);
 			this.AddElementFieldMapping("UserEntity", "PhoneNumber", "phone_number", true, "Varchar", 20, 0, 0, false, "", null, typeof(System.String), 8);
 			this.AddElementFieldMapping("UserEntity", "PhoneVerified", "phone_verified", false, "Boolean", 0, 0, 0, false, "", null, typeof(System.Boolean), 9);
 			this.AddElementFieldMapping("UserEntity", "Status", "status", false, "Smallint", 0, 5, 0, false, "", null, typeof(System.Int16), 10);
 			this.AddElementFieldMapping("UserEntity", "UpdatedAt", "updated_at", true, "TimestampTz", 0, 0, 0, false, "", null, typeof(System.DateTime), 11);
 			this.AddElementFieldMapping("UserEntity", "UserId", "user_id", false, "Uuid", 0, 0, 0, false, "", null, typeof(System.Guid), 12);
+			this.AddElementFieldMapping("UserEntity", "Username", "username", false, "Varchar", 200, 0, 0, false, "", null, typeof(System.String), 13);
 		}
 
 		/// <summary>Inits UserAddressEntity's mappings</summary>
@@ -846,7 +847,7 @@ namespace GroceryEcommerce.DatabaseSpecific
 		/// <summary>Inits authUserView's mappings</summary>
 		private void InitauthUserTypedViewMappings()
 		{
-			this.AddElementMapping("authUserTypedView", @"postgres", @"auth", "users", 13);
+			this.AddElementMapping("authUserTypedView", @"postgres", @"auth", "users", 14);
 			this.AddElementFieldMapping("authUserTypedView", "UserId", "user_id", false, "Uuid", 0, 0, 0, false, string.Empty, null, typeof(System.Guid), 0);
 			this.AddElementFieldMapping("authUserTypedView", "Email", "email", false, "Varchar", 255, 0, 0, false, string.Empty, null, typeof(System.String), 1);
 			this.AddElementFieldMapping("authUserTypedView", "PasswordHash", "password_hash", false, "Varchar", 500, 0, 0, false, string.Empty, null, typeof(System.String), 2);
@@ -860,6 +861,7 @@ namespace GroceryEcommerce.DatabaseSpecific
 			this.AddElementFieldMapping("authUserTypedView", "CreatedAt", "created_at", false, "TimestampTz", 0, 0, 0, false, string.Empty, null, typeof(System.DateTime), 10);
 			this.AddElementFieldMapping("authUserTypedView", "UpdatedAt", "updated_at", false, "TimestampTz", 0, 0, 0, false, string.Empty, null, typeof(System.DateTime), 11);
 			this.AddElementFieldMapping("authUserTypedView", "LastLoginAt", "last_login_at", false, "TimestampTz", 0, 0, 0, false, string.Empty, null, typeof(System.DateTime), 12);
+			this.AddElementFieldMapping("authUserTypedView", "Username", "username", false, "Varchar", 200, 0, 0, false, string.Empty, null, typeof(System.String), 13);
 		}
 
 		/// <summary>Inits authUserAddressView's mappings</summary>

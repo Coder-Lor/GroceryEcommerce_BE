@@ -79,6 +79,8 @@ namespace GroceryEcommerce.HelperClasses
 		public static EntityField2 UpdatedAt { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(UserFieldIndex.UpdatedAt); }}
 		/// <summary>Creates a new UserEntity.UserId field instance</summary>
 		public static EntityField2 UserId { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(UserFieldIndex.UserId); }}
+		/// <summary>Creates a new UserEntity.Username field instance</summary>
+		public static EntityField2 Username { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(UserFieldIndex.Username); }}
 	}
 
 	/// <summary>Field Creation Class for entity UserAddressEntity</summary>
@@ -1128,6 +1130,8 @@ namespace GroceryEcommerce.HelperClasses
 		public static EntityField2 UpdatedAt	{ get { return ModelInfoProviderSingleton.GetInstance().CreateField2(authUserFieldIndex.UpdatedAt); } }
 		/// <summary>Creates a new authUserTypedView.LastLoginAt field instance</summary>
 		public static EntityField2 LastLoginAt	{ get { return ModelInfoProviderSingleton.GetInstance().CreateField2(authUserFieldIndex.LastLoginAt); } }
+		/// <summary>Creates a new authUserTypedView.Username field instance</summary>
+		public static EntityField2 Username	{ get { return ModelInfoProviderSingleton.GetInstance().CreateField2(authUserFieldIndex.Username); } }
 	}
 
 	/// <summary>Field Creation Class for typedview authUserAddressTypedView</summary>

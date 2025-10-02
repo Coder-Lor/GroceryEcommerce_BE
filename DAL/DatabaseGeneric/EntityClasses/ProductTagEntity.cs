@@ -20,18 +20,16 @@ namespace GroceryEcommerce.EntityClasses
 {
 	// __LLBLGENPRO_USER_CODE_REGION_START AdditionalNamespaces
 	// __LLBLGENPRO_USER_CODE_REGION_END
-
 	/// <summary>Entity class which represents the entity 'ProductTag'.<br/><br/></summary>
 	[Serializable]
 	public partial class ProductTagEntity : CommonEntityBase
 		// __LLBLGENPRO_USER_CODE_REGION_START AdditionalInterfaces
-		// __LLBLGENPRO_USER_CODE_REGION_END
-	
+		// __LLBLGENPRO_USER_CODE_REGION_END	
 	{
 		private EntityCollection<ProductTagAssignmentEntity> _productTagAssignments;
+
 		// __LLBLGENPRO_USER_CODE_REGION_START PrivateMembers
 		// __LLBLGENPRO_USER_CODE_REGION_END
-
 		private static ProductTagEntityStaticMetaData _staticMetaData = new ProductTagEntityStaticMetaData();
 		private static ProductTagRelations _relationsFactory = new ProductTagRelations();
 
@@ -101,21 +99,21 @@ namespace GroceryEcommerce.EntityClasses
 			// __LLBLGENPRO_USER_CODE_REGION_END
 		}
 
-		/// <summary>Method which will construct a filter (predicate expression) for the unique constraint defined on the fields: Slug .</summary>
-		/// <returns>true if succeeded and the contents is read, false otherwise</returns>
-		public IPredicateExpression ConstructFilterForUCSlug()
-		{
-			var filter = new PredicateExpression();
-			filter.Add(GroceryEcommerce.HelperClasses.ProductTagFields.Slug == this.Fields.GetCurrentValue((int)ProductTagFieldIndex.Slug));
- 			return filter;
-		}
-
 		/// <summary>Method which will construct a filter (predicate expression) for the unique constraint defined on the fields: Name .</summary>
 		/// <returns>true if succeeded and the contents is read, false otherwise</returns>
 		public IPredicateExpression ConstructFilterForUCName()
 		{
 			var filter = new PredicateExpression();
 			filter.Add(GroceryEcommerce.HelperClasses.ProductTagFields.Name == this.Fields.GetCurrentValue((int)ProductTagFieldIndex.Name));
+ 			return filter;
+		}
+
+		/// <summary>Method which will construct a filter (predicate expression) for the unique constraint defined on the fields: Slug .</summary>
+		/// <returns>true if succeeded and the contents is read, false otherwise</returns>
+		public IPredicateExpression ConstructFilterForUCSlug()
+		{
+			var filter = new PredicateExpression();
+			filter.Add(GroceryEcommerce.HelperClasses.ProductTagFields.Slug == this.Fields.GetCurrentValue((int)ProductTagFieldIndex.Slug));
  			return filter;
 		}
 
@@ -132,7 +130,6 @@ namespace GroceryEcommerce.EntityClasses
 			PerformDependencyInjection();
 			// __LLBLGENPRO_USER_CODE_REGION_START InitClassMembers
 			// __LLBLGENPRO_USER_CODE_REGION_END
-
 			OnInitClassMembersComplete();
 		}
 
@@ -147,7 +144,6 @@ namespace GroceryEcommerce.EntityClasses
 			InitClassMembers();
 			// __LLBLGENPRO_USER_CODE_REGION_START InitClassEmpty
 			// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 			OnInitialized();
 		}
@@ -186,9 +182,9 @@ namespace GroceryEcommerce.EntityClasses
 		/// <summary>Gets the EntityCollection with the related entities of type 'ProductTagAssignmentEntity' which are related to this entity via a relation of type '1:n'. If the EntityCollection hasn't been fetched yet, the collection returned will be empty.<br/><br/></summary>
 		[TypeContainedAttribute(typeof(ProductTagAssignmentEntity))]
 		public virtual EntityCollection<ProductTagAssignmentEntity> ProductTagAssignments { get { return GetOrCreateEntityCollection<ProductTagAssignmentEntity, ProductTagAssignmentEntityFactory>("ProductTag", true, false, ref _productTagAssignments); } }
+
 		// __LLBLGENPRO_USER_CODE_REGION_START CustomEntityCode
 		// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 	}
 }

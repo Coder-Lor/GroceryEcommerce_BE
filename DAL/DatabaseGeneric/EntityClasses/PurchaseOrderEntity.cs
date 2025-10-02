@@ -20,21 +20,19 @@ namespace GroceryEcommerce.EntityClasses
 {
 	// __LLBLGENPRO_USER_CODE_REGION_START AdditionalNamespaces
 	// __LLBLGENPRO_USER_CODE_REGION_END
-
 	/// <summary>Entity class which represents the entity 'PurchaseOrder'.<br/><br/></summary>
 	[Serializable]
 	public partial class PurchaseOrderEntity : CommonEntityBase
 		// __LLBLGENPRO_USER_CODE_REGION_START AdditionalInterfaces
-		// __LLBLGENPRO_USER_CODE_REGION_END
-	
+		// __LLBLGENPRO_USER_CODE_REGION_END	
 	{
 		private EntityCollection<PurchaseOrderItemEntity> _purchaseOrderItems;
 		private UserEntity _user;
 		private SupplierEntity _supplier;
 		private WarehouseEntity _warehouse;
+
 		// __LLBLGENPRO_USER_CODE_REGION_START PrivateMembers
 		// __LLBLGENPRO_USER_CODE_REGION_END
-
 		private static PurchaseOrderEntityStaticMetaData _staticMetaData = new PurchaseOrderEntityStaticMetaData();
 		private static PurchaseOrderRelations _relationsFactory = new PurchaseOrderRelations();
 
@@ -147,7 +145,6 @@ namespace GroceryEcommerce.EntityClasses
 			PerformDependencyInjection();
 			// __LLBLGENPRO_USER_CODE_REGION_START InitClassMembers
 			// __LLBLGENPRO_USER_CODE_REGION_END
-
 			OnInitClassMembersComplete();
 		}
 
@@ -162,7 +159,6 @@ namespace GroceryEcommerce.EntityClasses
 			InitClassMembers();
 			// __LLBLGENPRO_USER_CODE_REGION_START InitClassEmpty
 			// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 			OnInitialized();
 		}
@@ -301,9 +297,9 @@ namespace GroceryEcommerce.EntityClasses
 			get { return _warehouse; }
 			set { SetSingleRelatedEntityNavigator(value, "Warehouse"); }
 		}
+
 		// __LLBLGENPRO_USER_CODE_REGION_START CustomEntityCode
 		// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 	}
 }
