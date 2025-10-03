@@ -562,12 +562,28 @@ namespace GroceryEcommerce.EntityClasses
 			set { SetValue((int)UserFieldIndex.EmailVerified, value); }
 		}
 
+		/// <summary>The FailedLoginAttempts property of the Entity User<br/><br/></summary>
+		/// <remarks>Mapped on  table field: "users"."failed_login_attempts".<br/>Table field type characteristics (type, precision, scale, length): Integer, 10, 0, 0.<br/>Table field behavior characteristics (is nullable, is PK, is identity): false, false, false</remarks>
+		public virtual System.Int32 FailedLoginAttempts
+		{
+			get { return (System.Int32)GetValue((int)UserFieldIndex.FailedLoginAttempts, true); }
+			set { SetValue((int)UserFieldIndex.FailedLoginAttempts, value); }
+		}
+
 		/// <summary>The FirstName property of the Entity User<br/><br/></summary>
 		/// <remarks>Mapped on  table field: "users"."first_name".<br/>Table field type characteristics (type, precision, scale, length): Varchar, 0, 0, 100.<br/>Table field behavior characteristics (is nullable, is PK, is identity): true, false, false</remarks>
 		public virtual System.String FirstName
 		{
 			get { return (System.String)GetValue((int)UserFieldIndex.FirstName, true); }
 			set { SetValue((int)UserFieldIndex.FirstName, value); }
+		}
+
+		/// <summary>The LastFailedLogin property of the Entity User<br/><br/></summary>
+		/// <remarks>Mapped on  table field: "users"."last_failed_login".<br/>Table field type characteristics (type, precision, scale, length): TimestampTz, 0, 0, 0.<br/>Table field behavior characteristics (is nullable, is PK, is identity): true, false, false</remarks>
+		public virtual Nullable<System.DateTime> LastFailedLogin
+		{
+			get { return (Nullable<System.DateTime>)GetValue((int)UserFieldIndex.LastFailedLogin, false); }
+			set { SetValue((int)UserFieldIndex.LastFailedLogin, value); }
 		}
 
 		/// <summary>The LastLoginAt property of the Entity User<br/><br/></summary>
@@ -584,6 +600,14 @@ namespace GroceryEcommerce.EntityClasses
 		{
 			get { return (System.String)GetValue((int)UserFieldIndex.LastName, true); }
 			set { SetValue((int)UserFieldIndex.LastName, value); }
+		}
+
+		/// <summary>The LockedUntil property of the Entity User<br/><br/></summary>
+		/// <remarks>Mapped on  table field: "users"."locked_until".<br/>Table field type characteristics (type, precision, scale, length): TimestampTz, 0, 0, 0.<br/>Table field behavior characteristics (is nullable, is PK, is identity): true, false, false</remarks>
+		public virtual Nullable<System.DateTime> LockedUntil
+		{
+			get { return (Nullable<System.DateTime>)GetValue((int)UserFieldIndex.LockedUntil, false); }
+			set { SetValue((int)UserFieldIndex.LockedUntil, value); }
 		}
 
 		/// <summary>The PasswordHash property of the Entity User<br/><br/></summary>
@@ -792,12 +816,18 @@ namespace GroceryEcommerce
 		Email,
 		///<summary>EmailVerified. </summary>
 		EmailVerified,
+		///<summary>FailedLoginAttempts. </summary>
+		FailedLoginAttempts,
 		///<summary>FirstName. </summary>
 		FirstName,
+		///<summary>LastFailedLogin. </summary>
+		LastFailedLogin,
 		///<summary>LastLoginAt. </summary>
 		LastLoginAt,
 		///<summary>LastName. </summary>
 		LastName,
+		///<summary>LockedUntil. </summary>
+		LockedUntil,
 		///<summary>PasswordHash. </summary>
 		PasswordHash,
 		///<summary>PhoneNumber. </summary>

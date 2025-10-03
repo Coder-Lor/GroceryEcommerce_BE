@@ -61,12 +61,18 @@ namespace GroceryEcommerce.HelperClasses
 		public static EntityField2 Email { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(UserFieldIndex.Email); }}
 		/// <summary>Creates a new UserEntity.EmailVerified field instance</summary>
 		public static EntityField2 EmailVerified { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(UserFieldIndex.EmailVerified); }}
+		/// <summary>Creates a new UserEntity.FailedLoginAttempts field instance</summary>
+		public static EntityField2 FailedLoginAttempts { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(UserFieldIndex.FailedLoginAttempts); }}
 		/// <summary>Creates a new UserEntity.FirstName field instance</summary>
 		public static EntityField2 FirstName { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(UserFieldIndex.FirstName); }}
+		/// <summary>Creates a new UserEntity.LastFailedLogin field instance</summary>
+		public static EntityField2 LastFailedLogin { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(UserFieldIndex.LastFailedLogin); }}
 		/// <summary>Creates a new UserEntity.LastLoginAt field instance</summary>
 		public static EntityField2 LastLoginAt { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(UserFieldIndex.LastLoginAt); }}
 		/// <summary>Creates a new UserEntity.LastName field instance</summary>
 		public static EntityField2 LastName { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(UserFieldIndex.LastName); }}
+		/// <summary>Creates a new UserEntity.LockedUntil field instance</summary>
+		public static EntityField2 LockedUntil { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(UserFieldIndex.LockedUntil); }}
 		/// <summary>Creates a new UserEntity.PasswordHash field instance</summary>
 		public static EntityField2 PasswordHash { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(UserFieldIndex.PasswordHash); }}
 		/// <summary>Creates a new UserEntity.PhoneNumber field instance</summary>
@@ -1132,6 +1138,12 @@ namespace GroceryEcommerce.HelperClasses
 		public static EntityField2 LastLoginAt	{ get { return ModelInfoProviderSingleton.GetInstance().CreateField2(authUserFieldIndex.LastLoginAt); } }
 		/// <summary>Creates a new authUserTypedView.Username field instance</summary>
 		public static EntityField2 Username	{ get { return ModelInfoProviderSingleton.GetInstance().CreateField2(authUserFieldIndex.Username); } }
+		/// <summary>Creates a new authUserTypedView.FailedLoginAttempts field instance</summary>
+		public static EntityField2 FailedLoginAttempts	{ get { return ModelInfoProviderSingleton.GetInstance().CreateField2(authUserFieldIndex.FailedLoginAttempts); } }
+		/// <summary>Creates a new authUserTypedView.LastFailedLogin field instance</summary>
+		public static EntityField2 LastFailedLogin	{ get { return ModelInfoProviderSingleton.GetInstance().CreateField2(authUserFieldIndex.LastFailedLogin); } }
+		/// <summary>Creates a new authUserTypedView.LockedUntil field instance</summary>
+		public static EntityField2 LockedUntil	{ get { return ModelInfoProviderSingleton.GetInstance().CreateField2(authUserFieldIndex.LockedUntil); } }
 	}
 
 	/// <summary>Field Creation Class for typedview authUserAddressTypedView</summary>

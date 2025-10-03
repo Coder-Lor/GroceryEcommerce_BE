@@ -171,9 +171,12 @@ namespace GroceryEcommerce.HelperClasses
 			this.AddElementFieldInfo("UserEntity", "DateOfBirth", typeof(Nullable<System.DateTime>), false, false, false, true,  (int)UserFieldIndex.DateOfBirth, 0, 0, 0);
 			this.AddElementFieldInfo("UserEntity", "Email", typeof(System.String), false, false, false, false,  (int)UserFieldIndex.Email, 255, 0, 0);
 			this.AddElementFieldInfo("UserEntity", "EmailVerified", typeof(System.Boolean), false, false, false, false,  (int)UserFieldIndex.EmailVerified, 0, 0, 0);
+			this.AddElementFieldInfo("UserEntity", "FailedLoginAttempts", typeof(System.Int32), false, false, false, false,  (int)UserFieldIndex.FailedLoginAttempts, 0, 0, 10);
 			this.AddElementFieldInfo("UserEntity", "FirstName", typeof(System.String), false, false, false, true,  (int)UserFieldIndex.FirstName, 100, 0, 0);
+			this.AddElementFieldInfo("UserEntity", "LastFailedLogin", typeof(Nullable<System.DateTime>), false, false, false, true,  (int)UserFieldIndex.LastFailedLogin, 0, 0, 0);
 			this.AddElementFieldInfo("UserEntity", "LastLoginAt", typeof(Nullable<System.DateTime>), false, false, false, true,  (int)UserFieldIndex.LastLoginAt, 0, 0, 0);
 			this.AddElementFieldInfo("UserEntity", "LastName", typeof(System.String), false, false, false, true,  (int)UserFieldIndex.LastName, 100, 0, 0);
+			this.AddElementFieldInfo("UserEntity", "LockedUntil", typeof(Nullable<System.DateTime>), false, false, false, true,  (int)UserFieldIndex.LockedUntil, 0, 0, 0);
 			this.AddElementFieldInfo("UserEntity", "PasswordHash", typeof(System.String), false, false, false, false,  (int)UserFieldIndex.PasswordHash, 500, 0, 0);
 			this.AddElementFieldInfo("UserEntity", "PhoneNumber", typeof(System.String), false, false, false, true,  (int)UserFieldIndex.PhoneNumber, 20, 0, 0);
 			this.AddElementFieldInfo("UserEntity", "PhoneVerified", typeof(System.Boolean), false, false, false, false,  (int)UserFieldIndex.PhoneVerified, 0, 0, 0);
@@ -867,6 +870,9 @@ namespace GroceryEcommerce.HelperClasses
 			this.AddElementFieldInfo("authUserTypedView", "UpdatedAt", typeof(Nullable<System.DateTime>), false, false, true, false, (int)authUserFieldIndex.UpdatedAt, 0, 0, 0);
 			this.AddElementFieldInfo("authUserTypedView", "LastLoginAt", typeof(Nullable<System.DateTime>), false, false, true, false, (int)authUserFieldIndex.LastLoginAt, 0, 0, 0);
 			this.AddElementFieldInfo("authUserTypedView", "Username", typeof(System.String), false, false, true, false, (int)authUserFieldIndex.Username, 200, 0, 0);
+			this.AddElementFieldInfo("authUserTypedView", "FailedLoginAttempts", typeof(System.Int32), false, false, true, false, (int)authUserFieldIndex.FailedLoginAttempts, 0, 0, 10);
+			this.AddElementFieldInfo("authUserTypedView", "LastFailedLogin", typeof(Nullable<System.DateTime>), false, false, true, false, (int)authUserFieldIndex.LastFailedLogin, 0, 0, 0);
+			this.AddElementFieldInfo("authUserTypedView", "LockedUntil", typeof(Nullable<System.DateTime>), false, false, true, false, (int)authUserFieldIndex.LockedUntil, 0, 0, 0);
 		}
 
 		/// <summary>Inits authUserAddressView's info objects</summary>

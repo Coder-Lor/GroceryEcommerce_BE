@@ -31,12 +31,18 @@ namespace GroceryEcommerce.TypedViewClasses
 		public System.String Email { get; set; }
 		/// <summary>Gets or sets the EmailVerified field.</summary>
 		public System.Boolean EmailVerified { get; set; }
+		/// <summary>Gets or sets the FailedLoginAttempts field.</summary>
+		public System.Int32 FailedLoginAttempts { get; set; }
 		/// <summary>Gets or sets the FirstName field.</summary>
 		public System.String FirstName { get; set; }
+		/// <summary>Gets or sets the LastFailedLogin field.</summary>
+		public Nullable<System.DateTime> LastFailedLogin { get; set; }
 		/// <summary>Gets or sets the LastLoginAt field.</summary>
 		public Nullable<System.DateTime> LastLoginAt { get; set; }
 		/// <summary>Gets or sets the LastName field.</summary>
 		public System.String LastName { get; set; }
+		/// <summary>Gets or sets the LockedUntil field.</summary>
+		public Nullable<System.DateTime> LockedUntil { get; set; }
 		/// <summary>Gets or sets the PasswordHash field.</summary>
 		public System.String PasswordHash { get; set; }
 		/// <summary>Gets or sets the PhoneNumber field.</summary>

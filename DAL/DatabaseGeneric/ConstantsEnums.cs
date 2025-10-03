@@ -82,6 +82,12 @@ namespace GroceryEcommerce
 		LastLoginAt,
 		///<summary>Username</summary>
 		Username,
+		///<summary>FailedLoginAttempts</summary>
+		FailedLoginAttempts,
+		///<summary>LastFailedLogin</summary>
+		LastFailedLogin,
+		///<summary>LockedUntil</summary>
+		LockedUntil,
 		/// <summary></summary>
 		AmountOfFields
 	}
