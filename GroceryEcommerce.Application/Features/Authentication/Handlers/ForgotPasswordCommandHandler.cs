@@ -1,10 +1,11 @@
 using GroceryEcommerce.Application.Common;
+using GroceryEcommerce.Application.Features.Authentication.Commands;
 using GroceryEcommerce.Application.Interfaces.Repositories;
 using GroceryEcommerce.Application.Interfaces.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace GroceryEcommerce.Application.Features.Authentication.Commands;
+namespace GroceryEcommerce.Application.Features.Authentication.Handlers;
 
 public sealed class ForgotPasswordCommandHandler(
     IUserRepository userRepository,
@@ -67,7 +68,6 @@ public sealed class ForgotPasswordCommandHandler(
         var response = new ForgotPasswordResponse
         {
             Message = "Password reset instructions have been sent to your email",
-            ResetToken = resetToken 
         };
 
         return Result<ForgotPasswordResponse>.Success(response);

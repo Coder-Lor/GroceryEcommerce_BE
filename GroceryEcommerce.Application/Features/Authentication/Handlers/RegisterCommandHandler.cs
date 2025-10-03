@@ -1,12 +1,13 @@
 using AutoMapper;
 using GroceryEcommerce.Application.Common;
+using GroceryEcommerce.Application.Features.Authentication.Commands;
 using GroceryEcommerce.Application.Interfaces.Repositories;
 using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Domain.Entities.Auth;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace GroceryEcommerce.Application.Features.Authentication.Commands;
+namespace GroceryEcommerce.Application.Features.Authentication.Handlers;
 
 public sealed class RegisterCommandHandler(
     IUserRepository userRepository,

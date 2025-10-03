@@ -1,15 +1,18 @@
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
+using StackExchange.Redis;
 using Microsoft.Extensions.Logging;
 
 namespace GroceryEcommerce.Application.Interfaces.Services;
 
 public class RedisCacheService(
     IDistributedCache cache,
+    IConnectionMultiplexer redis,
     ILogger<RedisCacheService> logger) : ICacheService
 {
     private readonly IDistributedCache _cache = cache;
     private readonly ILogger<RedisCacheService> _logger = logger;
+    private readonly IConnectionMultiplexer _redis = redis;
     
     public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
     {
@@ -59,9 +62,21 @@ public class RedisCacheService(
         }
     }
 
-    public Task RemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
+    public async Task RemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(pattern)) 
+            throw new ArgumentException("Value cannot be null or whitespace.", nameof(pattern));
+        
+        var endpoints = _redis.GetEndPoints();
+        var server = _redis.GetServer(endpoints.First());
+        
+        var keys = server.Keys(pattern: $"*{pattern}*", pageSize: 1000);
+        var db = _redis.GetDatabase();
+
+        foreach (var key in keys)
+        {
+            await db.KeyDeleteAsync(key);
+        }
     }
 
     public Task<T> GetOrSetAsync<T>(string key, Func<Task<T>> factory, TimeSpan? expiration, CancellationToken cancellationToken = default)

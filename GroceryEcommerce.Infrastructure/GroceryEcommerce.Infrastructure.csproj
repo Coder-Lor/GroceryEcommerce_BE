@@ -22,4 +22,8 @@
     <ProjectReference Include="..\GroceryEcommerce.Domain\GroceryEcommerce.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Caching\" />
+  </ItemGroup>
+
 </Project>
