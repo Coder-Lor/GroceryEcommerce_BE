@@ -63,10 +63,10 @@ public sealed class RegisterCommandHandler(
         var accessToken = await _tokenService.GenerateAccessTokenAsync(user.UserId, user.Email, new List<string> {"User"});
         var refreshToken = await _tokenService.GenerateRefreshTokenAsync(user.UserId);
 
-        var refreshTokenEntity = new RefreshTokens
+        var refreshTokenEntity = new RefreshToken
         {
             UserId = user.UserId,
-            RefreshToken = refreshToken,
+            RefreshTokenValue = refreshToken,
             ExpiresAt = DateTime.UtcNow.AddDays(7),
             Revoked = false,
             CreatedAt = DateTime.UtcNow,

@@ -89,7 +89,7 @@ public class AuthenticationRepository(
         }
     }
 
-    public async Task<Result<bool>> SaveRefreshTokenAsync(RefreshTokens refreshTokens, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> SaveRefreshTokenAsync(RefreshToken refreshTokens, CancellationToken cancellationToken = default)
     {
         try {
             using var adapter = (DataAccessAdapter) adapterFactory.CreateAdapter();

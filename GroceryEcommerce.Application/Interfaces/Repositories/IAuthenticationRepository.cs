@@ -7,7 +7,7 @@ public interface IAuthenticationRepository
 {
     Task<Result<User?>> ValidateUserCredentialsAsync(string emailOrUsername, string password, CancellationToken cancellationToken = default);
     Task<Result<bool>> CreateRefreshTokenAsync(Guid userId, string refreshToken, DateTime expiry, CancellationToken cancellationToken = default);
-    Task<Result<bool>> SaveRefreshTokenAsync(RefreshTokens refreshTokens, CancellationToken cancellationToken = default);
+    Task<Result<bool>> SaveRefreshTokenAsync(RefreshToken refreshTokens, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateRefreshTokenAsync(Guid userId, string refreshToken, DateTime expiry, CancellationToken cancellationToken = default);
     Task<Result<string?>> GetRefreshTokenAsync(Guid userId, CancellationToken cancellationToken = default);
     Task<Result<bool>> ValidateRefreshTokenAsync(Guid userId, string refreshToken, CancellationToken cancellationToken = default);

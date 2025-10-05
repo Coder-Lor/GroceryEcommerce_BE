@@ -1,28 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace GroceryEcommerce.Domain.Entities.Auth
+namespace GroceryEcommerce.Domain.Entities.Auth;
+
+public class RefreshToken
 {
-    public class RefreshTokens
-    {
-        [Key]
-        public Guid TokenId { get; set; }
-        [Required]
-        public required Guid UserId { get; set; }
-        [Required]
-        public required string RefreshToken { get; set; }
-        [Required]
-        public DateTime ExpiresAt { get; set; }
-        public bool Revoked { get; set; } = false;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        [StringLength(45)]
-        public string? CreatedByIp { get; set; }
-        public string? ReplacedByToken { get; set; }
-        public User? User { get; set; }
-    }
+    [Key]
+    public Guid TokenId { get; set; }
+    
+    public Guid UserId { get; set; }
+    
+    [Required]
+    public required string RefreshTokenValue { get; set; }
+    
+    public DateTime ExpiresAt { get; set; }
+    
+    public bool Revoked { get; set; } = false;
+    
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    
+    [StringLength(45)]
+    public string? CreatedByIp { get; set; }
+    
+    public string? ReplacedByToken { get; set; }
+    
+    // Navigation property
+    public User User { get; set; } = null!;
 }
