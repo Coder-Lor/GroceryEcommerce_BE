@@ -14,6 +14,10 @@ public class ProductTag
     [StringLength(150)]
     public string? Slug { get; set; }
     
+    public string? Description { get; set; }
+    
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    
     // Navigation properties
     public ICollection<ProductTagAssignment> ProductTagAssignments { get; set; } = new List<ProductTagAssignment>();
 }

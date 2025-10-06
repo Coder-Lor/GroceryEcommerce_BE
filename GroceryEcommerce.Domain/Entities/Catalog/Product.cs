@@ -74,5 +74,6 @@ public class Product
     public ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
     public ICollection<ProductTagAssignment> ProductTagAssignments { get; set; } = new List<ProductTagAssignment>();
     public ICollection<ProductQuestion> ProductQuestions { get; set; } = new List<ProductQuestion>();
+    public ICollection<Reviews.ProductReview> Reviews { get; set; } = new List<Reviews.ProductReview>();
     public ICollection<StockMovement> StockMovements { get; set; } = new List<StockMovement>();
 }

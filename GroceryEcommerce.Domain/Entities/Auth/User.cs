@@ -25,13 +25,18 @@ public class User
     public string? PhoneNumber { get; set; }
     
     public DateTime? DateOfBirth { get; set; }
+    
+    [Required]
+    [StringLength(200)]
+    public required string Username { get; set; }
+    
     public short Status { get; set; } = 1; // 1: Active, 0: Inactive, -1: Banned
     public bool EmailVerified { get; set; } = false;
     public bool PhoneVerified { get; set; } = false;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
     public DateTime? LastLoginAt { get; set; }
-    public int? FailedLoginAttempts { get; set; }
+    public int FailedLoginAttempts { get; set; } = 0;
     public DateTime? LastFailedLogin { get; set; }
     public DateTime? LockedUntil { get; set; }
     

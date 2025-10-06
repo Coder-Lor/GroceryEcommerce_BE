@@ -15,5 +15,5 @@ public class ProductTagAssignment
     
     // Navigation properties
     public Product Product { get; set; } = null!;
-    public ProductTag Tag { get; set; } = null!;
+    public ProductTag ProductTag { get; set; } = null!;
 }

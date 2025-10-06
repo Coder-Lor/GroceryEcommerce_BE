@@ -15,6 +15,8 @@ public class ProductAttributeValue
     [StringLength(500)]
     public required string Value { get; set; }
     
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    
     // Navigation properties
     public Product Product { get; set; } = null!;
     public ProductAttribute Attribute { get; set; } = null!;

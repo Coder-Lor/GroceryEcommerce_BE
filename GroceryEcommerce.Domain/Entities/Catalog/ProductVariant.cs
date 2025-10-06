@@ -34,6 +34,7 @@ public class ProductVariant
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
     
-    // Navigation property
+    // Navigation properties
     public Product Product { get; set; } = null!;
+    public ICollection<ProductAttributeValue> VariantAttributeValues { get; set; } = new List<ProductAttributeValue>();
 }

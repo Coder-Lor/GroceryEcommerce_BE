@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GroceryEcommerce.Application\GroceryEcommerce.Application.csproj" />
+    <ProjectReference Include="..\GroceryEcommerce.Infrastructure\GroceryEcommerce.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

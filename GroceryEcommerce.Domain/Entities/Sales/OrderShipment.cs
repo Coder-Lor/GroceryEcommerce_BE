@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using GroceryEcommerce.Domain.Entities.Auth;
 
 namespace GroceryEcommerce.Domain.Entities.Sales;
 
@@ -30,8 +31,11 @@ public class OrderShipment
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
     
+    public Guid? ShippedBy { get; set; }
+    
     // Navigation properties
     public Order Order { get; set; } = null!;
     public ShipmentCarrier? Carrier { get; set; }
+    public User? ShippedByUser { get; set; }
     public ICollection<ShipmentItem> ShipmentItems { get; set; } = new List<ShipmentItem>();
 }

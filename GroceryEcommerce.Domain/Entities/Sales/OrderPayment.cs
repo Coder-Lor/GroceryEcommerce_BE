@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using GroceryEcommerce.Domain.Entities.Auth;
 
 namespace GroceryEcommerce.Domain.Entities.Sales;
 
@@ -28,8 +29,12 @@ public class OrderPayment
     public DateTime? PaidAt { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
+    
+    public Guid? ProcessedBy { get; set; }
     
     // Navigation properties
     public Order Order { get; set; } = null!;
+    public User? ProcessedByUser { get; set; }
     public ICollection<OrderRefund> OrderRefunds { get; set; } = new List<OrderRefund>();
 }

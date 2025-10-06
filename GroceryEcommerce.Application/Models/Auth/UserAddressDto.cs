@@ -10,6 +10,7 @@ public class UserAddressDto
     public string State { get; set; } = string.Empty;
     public string ZipCode { get; set; } = string.Empty;
     public string Country { get; set; } = string.Empty;
+    public string FullAddress { get; set; } = string.Empty;
     public bool IsDefault { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }

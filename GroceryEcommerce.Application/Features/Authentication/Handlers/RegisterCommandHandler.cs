@@ -38,6 +38,7 @@ public sealed class RegisterCommandHandler(
         var hasedPassword = _passwordHashService.HashPassword(request.Password);
         var user = new User
         {
+            Username = request.Username,
             Email = request.Email,
             PasswordHash = hasedPassword,
             FirstName = null,

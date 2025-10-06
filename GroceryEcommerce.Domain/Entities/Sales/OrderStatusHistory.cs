@@ -25,4 +25,9 @@ public class OrderStatusHistory
     // Navigation properties
     public Order Order { get; set; } = null!;
     public User CreatedByUser { get; set; } = null!;
+    
+    // Computed properties for mapper
+    public short? OldStatus => FromStatus;
+    public short NewStatus => ToStatus;
+    public User? ChangedByUser => CreatedByUser;
 }

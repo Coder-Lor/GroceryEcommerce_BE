@@ -25,9 +25,11 @@ public class OrderRefund
     public DateTime? ProcessedAt { get; set; }
     
     public Guid? ProcessedBy { get; set; }
+    public Guid? RequestedBy { get; set; }
     
     // Navigation properties
     public Order Order { get; set; } = null!;
     public OrderPayment? Payment { get; set; }
     public User? ProcessedByUser { get; set; }
+    public User? RequestedByUser { get; set; }
 }

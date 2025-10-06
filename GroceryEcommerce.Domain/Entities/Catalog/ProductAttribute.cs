@@ -22,6 +22,7 @@ public class ProductAttribute
     public int DisplayOrder { get; set; } = 0;
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
     
     // Navigation properties
     public ICollection<ProductAttributeValue> ProductAttributeValues { get; set; } = new List<ProductAttributeValue>();

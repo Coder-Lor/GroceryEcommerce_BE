@@ -1,23 +1,114 @@
-var builder = WebApplication.CreateBuilder(args);
+using System.Data.Common;
+using System.Diagnostics;
+using System.Text;
+using GroceryEcommerce.Infrastructure;
+using GroceryEcommerce.Application.Mapping;
+using GroceryEcommerce.Application.Interfaces.Services;
+using GroceryEcommerce.Application.Interfaces.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Npgsql;
+using Scalar.AspNetCore;
+using SD.LLBLGen.Pro.DQE.PostgreSql;
+using SD.LLBLGen.Pro.ORMSupportClasses;
+
+internal class Program
+{
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+        builder.Services.AddControllers();
+        builder.Services.AddOpenApi();
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+        // Đăng ký DbProviderFactory với .NET
+        DbProviderFactories.RegisterFactory("Npgsql", NpgsqlFactory.Instance);
 
-var app = builder.Build();
+        // ⚡ Cấu hình LLBLGen DQE cho PostgreSQL (RuntimeConfiguration)
+        RuntimeConfiguration.ConfigureDQE<PostgreSqlDQEConfiguration>(c =>
+        {
+            c.AddDbProviderFactory(typeof(NpgsqlFactory)); // dùng provider Npgsql
+            c.SetTraceLevel(TraceLevel.Verbose); // bật log (optional)
+        });
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
+
+        // Clean Architecture layers
+        builder.Services.AddInfrastructure(builder.Configuration);
+        builder.Services.AddAutoMapper(cfg =>
+        {
+            cfg.AddProfile<AuthProfile>();
+            cfg.AddProfile<CatalogProfile>();
+            cfg.AddProfile<CartProfile>();
+            cfg.AddProfile<SalesProfile>();
+            cfg.AddProfile<InventoryProfile>();
+            cfg.AddProfile<MarketingProfile>();
+            cfg.AddProfile<ReviewsProfile>();
+            cfg.AddProfile<SystemProfile>();
+        });
+
+
+
+        // JWT Configuration
+                var jwtSettings = builder.Configuration.GetSection("JWT");
+                var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not configured");
+                var key = Encoding.ASCII.GetBytes(secretKey);
+
+                builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(key),
+                            ValidateIssuer = true,
+                            ValidIssuer = jwtSettings["Issuer"],
+                            ValidateAudience = true,
+                            ValidAudience = jwtSettings["Audience"],
+                            ValidateLifetime = true,
+                            ClockSkew = TimeSpan.Zero,
+                            RequireExpirationTime = true
+                        };
+
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnAuthenticationFailed = context =>
+                            {
+                                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                                return Task.CompletedTask;
+                            }
+                        };
+                    });
+
+                builder.Services.AddAuthorization();
+
+                // CORS
+
+                builder.Services.AddCors(options =>
+                {
+                    options.AddPolicy("AllowSpecificOrigins", policy =>
+                    {
+                        policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "https://localhost:7129")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials();
+                    });
+                });
+
+                var app = builder.Build();
+
+                if (app.Environment.IsDevelopment())
+                {
+                    app.MapOpenApi();
+                    app.MapScalarApiReference();
+                }
+
+                app.UseHttpsRedirection();
+                app.UseCors("AllowSpecificOrigins");
+                app.UseAuthentication();
+                app.UseAuthorization();
+                app.MapControllers();
+
+                app.Run();
+    }
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
