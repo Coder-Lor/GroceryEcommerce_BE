@@ -4,7 +4,6 @@ using GroceryEcommerce.Infrastructure.Persistence.Repositories;
 using GroceryEcommerce.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using RedisCacheService = GroceryEcommerce.Application.Interfaces.Services.RedisCacheService;
 
 namespace GroceryEcommerce.Infrastructure;
 
@@ -12,15 +11,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        // Add Redis Cache
-        services.AddStackExchangeRedisCache(options =>
-        {
-            options.Configuration = configuration.GetConnectionString("Redis");
-            options.InstanceName = "GroceryEcommerce";
-        });
-
         // Register Cache Service
-        services.AddScoped<ICacheService, RedisCacheService>();
+        services.AddScoped<ICacheService, CacheService>();
 
         // Register Repositories (Interfaces only - implementations will be created later)
         services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
