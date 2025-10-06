@@ -24,7 +24,7 @@ public class ReviewReport
     public Guid? ProcessedBy { get; set; }
     
     // Navigation properties
-    public ProductReview Review { get; set; } = null!;
+    public ProductReview ProductReview { get; set; } = null!;
     public User User { get; set; } = null!;
     public User? ProcessedByUser { get; set; }
 }

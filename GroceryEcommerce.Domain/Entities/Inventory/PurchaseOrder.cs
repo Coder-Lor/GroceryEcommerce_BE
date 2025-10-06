@@ -32,5 +32,6 @@ public class PurchaseOrder
     // Navigation properties
     public Supplier Supplier { get; set; } = null!;
     public User? CreatedByUser { get; set; }
+    public Warehouse? Warehouse { get; set; }
     public ICollection<PurchaseOrderItem> PurchaseOrderItems { get; set; } = new List<PurchaseOrderItem>();
 }

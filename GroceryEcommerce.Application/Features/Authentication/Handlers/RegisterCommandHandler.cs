@@ -14,11 +14,11 @@ public sealed class RegisterCommandHandler(
     IAuthenticationRepository authenticationRepository,
     IPasswordHashService passwordHashService,
     ITokenService tokenService,
-    IUnitOfWork unitOfWork,
+    IUnitOfWorkService unitOfWorkService,
     ILogger<RegisterCommandHandler> logger)
     : IRequestHandler<RegisterCommand, Result<RegisterResponse>>
 {
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IUnitOfWorkService _unitOfWorkService = unitOfWorkService;
     private readonly ITokenService _tokenService = tokenService;
     private readonly ILogger<RegisterCommandHandler> _logger = logger;
     private readonly IUserRepository _userRepository = userRepository;
@@ -27,72 +27,89 @@ public sealed class RegisterCommandHandler(
 
     public async Task<Result<RegisterResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Starting user registration for email: {Email}", request.Email);
-        var emailExitsResult = await _userRepository.ExistsByEmailAsync(request.Email, cancellationToken);
-        if (emailExitsResult is { IsSuccess: true, Data: true })
+        var hashEmail = _passwordHashService.HashPassword(request.Email);
+        _logger.LogInformation("Starting user registration for email: {Email}", hashEmail);
+        try
         {
-            _logger.LogWarning("Registration failed: Email {Email} already exists}", request.Email);
-            return Result<RegisterResponse>.Failure("Email already exists");
+            var emailExitsResult = await _userRepository.ExistsByEmailAsync(request.Email, cancellationToken);
+            if (emailExitsResult is { IsSuccess: true, Data: true })
+            {
+                _logger.LogWarning("Registration failed: Email {Email} already exists", hashEmail);
+                return Result<RegisterResponse>.Failure("Email already exists");
+            }
+
+            var hasedPassword = _passwordHashService.HashPassword(request.Password);
+            var user = new User
+            {
+                UserId = Guid.NewGuid(),
+                Username = request.Username,
+                Email = request.Email,
+                PasswordHash = hasedPassword,
+                FirstName = null,
+                LastName = null,
+                PhoneNumber = null,
+                DateOfBirth = null,
+                Status = 1, // active
+                EmailVerified = false,
+                PhoneVerified = false,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = null,
+                LastLoginAt = null
+            };
+            
+            // var accessToken = await _tokenService.GenerateAccessTokenAsync(user.UserId, user.Email, new List<string> {"User"});
+            // var refreshToken = await _tokenService.GenerateRefreshTokenAsync(user.UserId);
+            string accessToken = "";
+            string refreshToken = "";
+
+            await _unitOfWorkService.ExecuteInTransactionAsync(async _ =>
+            {
+
+                var addUserResult = await _userRepository.AddAsync(user, cancellationToken);
+                if (!addUserResult.IsSuccess)
+                {
+                    throw new Exception($"Failed to add user: {addUserResult.ErrorCode}");
+                }
+                
+                accessToken = await _tokenService.GenerateAccessTokenAsync(user.UserId, user.Email, new List<string> {"User"});
+                refreshToken = await _tokenService.GenerateRefreshTokenAsync(user.UserId);
+                
+                var refreshTokenEntity = new RefreshToken
+                {
+                    TokenId = Guid.NewGuid(),
+                    UserId = user.UserId,
+                    RefreshTokenValue = refreshToken,
+                    ExpiresAt = DateTime.UtcNow.AddDays(7),
+                    Revoked = false,
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedByIp = null
+                };
+                
+                var saveTokenResult = await _authenticationRepository.SaveRefreshTokenAsync(refreshTokenEntity, cancellationToken);
+                if (!saveTokenResult.IsSuccess)
+                {
+                    _logger.LogError("Failed to save refresh token: {Error}", saveTokenResult.ErrorCode);
+                    throw new InvalidOperationException($"Failed to save refresh token: {saveTokenResult.ErrorCode}");
+                }
+                
+            }, cancellationToken);
+
+            _logger.LogInformation("User registered successfully: {UserId}", user.UserId);
+            
+            var response = new RegisterResponse
+            {
+                UserId = user.UserId.ToString(),
+                Token = accessToken,
+                RefreshToken = refreshToken,
+                ExpiresAt = DateTime.UtcNow.AddMinutes(30)
+            };
+
+            return Result<RegisterResponse>.Success(response);
         }
-
-        var hasedPassword = _passwordHashService.HashPassword(request.Password);
-        var user = new User
+        catch (Exception ex)
         {
-            Username = request.Username,
-            Email = request.Email,
-            PasswordHash = hasedPassword,
-            FirstName = null,
-            LastName = null,
-            PhoneNumber = null,
-            DateOfBirth = null,
-            Status = 1, // active
-            EmailVerified = false,
-            PhoneVerified = false,
-            CreatedAt = default,
-            UpdatedAt = null,
-            LastLoginAt = null
-        };
-
-        var addUserResult = await _userRepository.AddAsync(user, cancellationToken);
-        if (!addUserResult.IsSuccess)
-        {
-            _logger.LogError("Failed to add user to database: {Error}", addUserResult.ErrorCode);
-            return Result<RegisterResponse>.Failure("Failed to create user account");
+            _logger.LogError(ex, "Error registering user: {Email}", request.Email);
+            return Result<RegisterResponse>.Failure("An error occurred while registering user");
         }
-        
-        // gen tokens 
-        var accessToken = await _tokenService.GenerateAccessTokenAsync(user.UserId, user.Email, new List<string> {"User"});
-        var refreshToken = await _tokenService.GenerateRefreshTokenAsync(user.UserId);
-
-        var refreshTokenEntity = new RefreshToken
-        {
-            UserId = user.UserId,
-            RefreshTokenValue = refreshToken,
-            ExpiresAt = DateTime.UtcNow.AddDays(7),
-            Revoked = false,
-            CreatedAt = DateTime.UtcNow,
-            CreatedByIp = null
-        };
-
-        var saveTokenResult = await _authenticationRepository.SaveRefreshTokenAsync(refreshTokenEntity, cancellationToken);
-        if (!saveTokenResult.IsSuccess)
-        {
-            _logger.LogError("Failed to save refresh token: {Error}", saveTokenResult.ErrorCode);
-            return Result<RegisterResponse>.Failure("Failed to create user session");
-        }
-
-        await _unitOfWork.CommitAsync(cancellationToken);
-        _logger.LogInformation("User registered successfully: {UserId}", user.UserId);
-        
-
-        var response = new RegisterResponse
-        {
-            UserId = user.UserId.ToString(),
-            Token = accessToken,
-            RefreshToken = refreshToken,
-            ExpiresAt = DateTime.UtcNow.AddMinutes(30)
-        };
-
-        return Result<RegisterResponse>.Success(response);
     }
 }

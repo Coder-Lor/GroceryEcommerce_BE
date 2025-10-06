@@ -29,7 +29,7 @@ public class OrderRefund
     
     // Navigation properties
     public Order Order { get; set; } = null!;
-    public OrderPayment? Payment { get; set; }
+    public OrderPayment? OrderPayment { get; set; }
     public User? ProcessedByUser { get; set; }
     public User? RequestedByUser { get; set; }
 }

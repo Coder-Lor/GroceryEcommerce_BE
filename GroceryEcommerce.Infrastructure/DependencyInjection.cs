@@ -1,5 +1,7 @@
 ﻿using GroceryEcommerce.Application.Interfaces.Repositories;
 using GroceryEcommerce.Application.Interfaces.Services;
+using GroceryEcommerce.DatabaseSpecific;
+using GroceryEcommerce.Infrastructure.Mapping;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories;
 using GroceryEcommerce.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
@@ -11,11 +13,11 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        // Register Cache Service
-        services.AddScoped<ICacheService, CacheService>();
-
         // Register Repositories (Interfaces only - implementations will be created later)
+        services.AddSingleton<IDataAccessAdapterFactory, DataAccessAdapterFactory>();
         services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         // services.AddScoped<ICatalogRepository, CatalogRepository>();
         // services.AddScoped<ICartRepository, CartRepository>();
         // services.AddScoped<ISalesRepository, SalesRepository>();
@@ -34,11 +36,17 @@ public static class DependencyInjection
         // services.AddScoped<ISystemService, SystemService>();
 
         // Register existing services
-        services.AddScoped<IDataAccessAdapterFactory, DataAccessAdapterFactory>();
+        services.AddScoped<DataAccessAdapter>(provider =>
+        {
+            var factory = provider.GetRequiredService<IDataAccessAdapterFactory>();
+            return (DataAccessAdapter)factory.CreateAdapter();
+        });
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IJwtTokenGeneratorService, JwtTokenGeneratorService>();
         services.AddScoped<IPasswordHashService, PasswordHashService>();
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IUnitOfWorkService, UnitOfWorkService>();
+        services.AddSingleton<ICacheService, CacheService>();
 
         return services;
     }

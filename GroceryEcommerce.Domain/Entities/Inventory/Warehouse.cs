@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using GroceryEcommerce.Domain.Entities.Sales;
 
 namespace GroceryEcommerce.Domain.Entities.Inventory;
 
@@ -33,5 +34,7 @@ public class Warehouse
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     // Navigation properties
+    public ICollection<PurchaseOrder> PurchaseOrders { get; set; } = new List<PurchaseOrder>();
+    public ICollection<OrderShipment> OrderShipments { get; set; } = new List<OrderShipment>();
     public ICollection<StockMovement> StockMovements { get; set; } = new List<StockMovement>();
 }

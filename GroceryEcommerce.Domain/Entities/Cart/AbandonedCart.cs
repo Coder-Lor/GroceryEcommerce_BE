@@ -17,6 +17,6 @@ public class AbandonedCart
     public bool Notified { get; set; } = false;
     
     // Navigation properties
-    public ShoppingCart Cart { get; set; } = null!;
+    public ShoppingCart ShoppingCart { get; set; }
     public User? User { get; set; }
 }

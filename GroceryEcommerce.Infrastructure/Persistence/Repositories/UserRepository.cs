@@ -71,18 +71,33 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories
 
         public async Task<Result<bool>> ExistsByEmailAsync(string email, CancellationToken cancellationToken = default) {
             try {
-                using var adapter = (DataAccessAdapter) adapterFactory.CreateAdapter();
-
-                var fields = new EntityField2(UserFields.Email);
+                using var adapter = (DataAccessAdapter)adapterFactory.CreateAdapter();
                 var bucket = new RelationPredicateBucket(UserFields.Email == email);
-
-                int totalCount = adapter.GetDbCount((IEntityFields2) fields, bucket);
+                var collection = new EntityCollection<UserEntity>();
+                var totalCount = await Task.Run(() => adapter.GetDbCount(collection, bucket), cancellationToken);
 
                 return Result<bool>.Success(totalCount > 0);
             }
             catch (Exception ex) {
                 logger.LogError(ex, "Error checking if email exists: {Email}", email);
                 return Result<bool>.Failure("An error occurred while checking email", "USER_EXISTS_ERROR");
+            }
+        }
+        
+        public async Task<Result<bool>> ExistsByUsernameAsync(string username, CancellationToken cancellationToken = default) {
+            try
+            {
+                using var adapter = (DataAccessAdapter)adapterFactory.CreateAdapter();
+                var bucket = new RelationPredicateBucket(UserFields.Username == username);
+                var collection = new EntityCollection<UserEntity>();
+                
+                var totalCount = await Task.Run(() => adapter.GetDbCount(collection, bucket), cancellationToken);
+                return Result<bool>.Success(totalCount > 0);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error checking if username exists: {Username}", username);
+                return Result<bool>.Failure("An error occurred while checking username", "USER_EXISTS_ERROR");
             }
         }
 

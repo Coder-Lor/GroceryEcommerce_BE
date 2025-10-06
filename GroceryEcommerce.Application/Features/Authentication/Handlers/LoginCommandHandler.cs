@@ -14,14 +14,14 @@ public sealed class LoginCommandHandler(
     IPasswordHashService passwordHashService,
     ITokenService tokenService,
     ICacheService cacheService,
-    IUnitOfWork unitOfWork,
+    IUnitOfWorkService unitOfWorkService,
     IMapper mapper,
     ILogger<LoginCommandHandler> logger)
     : IRequestHandler<LoginCommand, Result<LoginResponse>>
 {
     private const int MaxFailedAttempts = 5;
     private readonly IMapper _mapper = mapper;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IUnitOfWorkService _unitOfWorkService = unitOfWorkService;
     private readonly ITokenService _tokenService = tokenService;
     private readonly ICacheService _cacheService = cacheService;
     private readonly ILogger<LoginCommandHandler> _logger = logger;

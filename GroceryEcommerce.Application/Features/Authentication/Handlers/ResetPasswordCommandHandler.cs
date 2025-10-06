@@ -12,14 +12,14 @@ namespace GroceryEcommerce.Application.Features.Authentication.Handlers;
 public class ResetPasswordCommandHandler(
     IUserRepository userRepository,
     IPasswordHashService passwordHashService,
-    IUnitOfWork unitOfWork,
+    IUnitOfWorkService unitOfWorkService,
     IEmailService emailService,
     ILogger<ResetPasswordCommandHandler> logger)
     : IRequestHandler<ResetPasswordCommand, Result<ResetPasswordResponse>>
 {
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IPasswordHashService _passwordHashService = passwordHashService;
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IUnitOfWorkService _unitOfWorkService = unitOfWorkService;
     private readonly IEmailService _emailService = emailService;   
     private readonly ILogger<ResetPasswordCommandHandler> _logger = logger;
     public async Task<Result<ResetPasswordResponse>> Handle(ResetPasswordCommand request,
@@ -56,7 +56,7 @@ public class ResetPasswordCommandHandler(
 
         user.PasswordHash = _passwordHashService.HashPassword(newPassword);
         await _userRepository.UpdateAsync(user, cancellationToken);
-        var count =  await _unitOfWork.SaveChangesAsync(cancellationToken);
+        var count =  await _unitOfWorkService.SaveChangesAsync(cancellationToken);
 
         if (count == 0)
         {

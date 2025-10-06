@@ -14,6 +14,6 @@ public class ShipmentItem
     public int Quantity { get; set; }
     
     // Navigation properties
-    public OrderShipment Shipment { get; set; } = null!;
+    public OrderShipment OrderShipment { get; set; } = null!;
     public OrderItem OrderItem { get; set; } = null!;
 }

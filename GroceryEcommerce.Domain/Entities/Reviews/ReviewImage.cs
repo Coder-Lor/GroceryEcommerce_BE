@@ -16,5 +16,5 @@ public class ReviewImage
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     // Navigation property
-    public ProductReview Review { get; set; } = null!;
+    public ProductReview ProductReview { get; set; } = null!;
 }

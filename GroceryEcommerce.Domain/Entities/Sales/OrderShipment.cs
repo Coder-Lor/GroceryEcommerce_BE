@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using GroceryEcommerce.Domain.Entities.Auth;
+using GroceryEcommerce.Domain.Entities.Inventory;
 
 namespace GroceryEcommerce.Domain.Entities.Sales;
 
@@ -35,7 +36,8 @@ public class OrderShipment
     
     // Navigation properties
     public Order Order { get; set; } = null!;
-    public ShipmentCarrier? Carrier { get; set; }
+    public ShipmentCarrier? ShipmentCarrier { get; set; }
+    public Warehouse? Warehouse { get; set; }
     public User? ShippedByUser { get; set; }
     public ICollection<ShipmentItem> ShipmentItems { get; set; } = new List<ShipmentItem>();
 }

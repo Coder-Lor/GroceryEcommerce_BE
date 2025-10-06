@@ -14,5 +14,5 @@ public interface ITokenService
     Task RevokeAllUserRefreshTokensAsync(Guid userId);
     Task CleanupExpiredTokensAsync();
     Task<bool> IsTokenRevokedAsync(string token);
-    string GetUserIdFromExpiredToken(string token);
+    Task<string> GetUserIdFromExpiredToken(string token);
 }

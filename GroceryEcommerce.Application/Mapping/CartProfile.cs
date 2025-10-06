@@ -53,9 +53,9 @@ public class CartProfile : Profile
             .ForMember(dest => dest.UserName,
                 opt => opt.MapFrom(src => $"{src.User!.FirstName} {src.User.LastName}".Trim()))
             .ForMember(dest => dest.CartValue,
-                opt => opt.MapFrom(src => src.Cart.ShoppingCartItems.Sum(item => item.UnitPrice * item.Quantity)))
-            .ForMember(dest => dest.ItemCount, opt => opt.MapFrom(src => src.Cart.ShoppingCartItems.Count))
+                opt => opt.MapFrom(src => src.ShoppingCart.ShoppingCartItems.Sum(item => item.UnitPrice * item.Quantity)))
+            .ForMember(dest => dest.ItemCount, opt => opt.MapFrom(src => src.ShoppingCart.ShoppingCartItems.Count))
             .ForMember(dest => dest.IsRecovered, opt => opt.MapFrom(src => false))
-            .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Cart.ShoppingCartItems));
+            .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.ShoppingCart.ShoppingCartItems));
     }
 }

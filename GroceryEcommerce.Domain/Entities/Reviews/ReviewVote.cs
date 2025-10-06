@@ -17,6 +17,6 @@ public class ReviewVote
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     // Navigation properties
-    public ProductReview Review { get; set; } = null!;
+    public ProductReview ProductReview { get; set; } = null!;
     public User User { get; set; } = null!;
 }

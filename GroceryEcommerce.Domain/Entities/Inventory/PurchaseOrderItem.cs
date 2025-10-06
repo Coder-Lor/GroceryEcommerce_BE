@@ -25,5 +25,5 @@ public class PurchaseOrderItem
     // Navigation properties
     public PurchaseOrder PurchaseOrder { get; set; } = null!;
     public Product Product { get; set; } = null!;
-    public ProductVariant? Variant { get; set; }
+    public ProductVariant? ProductVariant { get; set; }
 }

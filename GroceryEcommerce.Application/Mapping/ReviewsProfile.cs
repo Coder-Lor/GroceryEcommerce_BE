@@ -74,7 +74,7 @@ public class ReviewsProfile : Profile
         CreateMap<ReviewReport, ReviewReportDto>()
             .ForMember(dest => dest.ReviewReportId, opt => opt.MapFrom(src => src.ReportId))
             .ForMember(dest => dest.ProductReviewId, opt => opt.MapFrom(src => src.ReviewId))
-            .ForMember(dest => dest.ReviewTitle, opt => opt.MapFrom(src => src.Review.Title))
+            .ForMember(dest => dest.ReviewTitle, opt => opt.MapFrom(src => src.ProductReview.Title))
             .ForMember(dest => dest.ReportedBy, opt => opt.MapFrom(src => src.UserId))
             .ForMember(dest => dest.ReportedByName, opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}".Trim()))
             .ForMember(dest => dest.ReportReason, opt => opt.MapFrom(src => (short)1)) // Default to first reason since entity doesn't have ReportReason
