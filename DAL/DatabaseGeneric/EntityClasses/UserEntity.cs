@@ -236,6 +236,15 @@ namespace GroceryEcommerce.EntityClasses
  			return filter;
 		}
 
+		/// <summary>Method which will construct a filter (predicate expression) for the unique constraint defined on the fields: Username .</summary>
+		/// <returns>true if succeeded and the contents is read, false otherwise</returns>
+		public IPredicateExpression ConstructFilterForUCUsername()
+		{
+			var filter = new PredicateExpression();
+			filter.Add(GroceryEcommerce.HelperClasses.UserFields.Username == this.Fields.GetCurrentValue((int)UserFieldIndex.Username));
+ 			return filter;
+		}
+
 		/// <summary>Creates a new IRelationPredicateBucket object which contains the predicate expression and relation collection to fetch the related entities of type 'AuditLog' to this entity.</summary>
 		/// <returns></returns>
 		public virtual IRelationPredicateBucket GetRelationInfoAuditLogs() { return CreateRelationInfoForNavigator("AuditLogs"); }
