@@ -4,6 +4,7 @@ using GroceryEcommerce.DatabaseSpecific;
 using GroceryEcommerce.Infrastructure.Mapping;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories;
 using GroceryEcommerce.Infrastructure.Services;
+using GroceryEcommerce.Infrastructure.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +19,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        
         // services.AddScoped<ICatalogRepository, CatalogRepository>();
         // services.AddScoped<ICartRepository, CartRepository>();
         // services.AddScoped<ISalesRepository, SalesRepository>();
@@ -41,6 +43,7 @@ public static class DependencyInjection
             var factory = provider.GetRequiredService<IDataAccessAdapterFactory>();
             return (DataAccessAdapter)factory.CreateAdapter();
         });
+        services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IJwtTokenGeneratorService, JwtTokenGeneratorService>();
         services.AddScoped<IPasswordHashService, PasswordHashService>();

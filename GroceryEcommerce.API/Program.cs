@@ -4,6 +4,7 @@ using System.Text;
 using GroceryEcommerce.Infrastructure;
 using GroceryEcommerce.Application.Mapping;
 using GroceryEcommerce.Infrastructure.Mapping;
+using GroceryEcommerce.Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
@@ -30,6 +31,8 @@ internal class Program
             c.AddDbProviderFactory(typeof(NpgsqlFactory)); // dùng provider Npgsql
             c.SetTraceLevel(TraceLevel.Verbose); // bật log (optional)
         });
+        
+        
 
 
         // Clean Architecture layers
@@ -99,7 +102,7 @@ internal class Program
             });
 
         builder.Services.AddAuthorization();
-
+        
         // CORS
 
         builder.Services.AddCors(options =>

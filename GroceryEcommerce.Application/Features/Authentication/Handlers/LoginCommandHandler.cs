@@ -8,7 +8,8 @@ using Microsoft.Extensions.Logging;
 
 namespace GroceryEcommerce.Application.Features.Authentication.Handlers;
 
-public sealed class LoginCommandHandler(
+public sealed class 
+    LoginCommandHandler(
     IAuthenticationRepository authenticationRepository,
     IUserRepository userRepository,
     IPasswordHashService passwordHashService,

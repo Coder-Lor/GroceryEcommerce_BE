@@ -13,6 +13,7 @@ public sealed class RegisterCommandHandler(
     IUserRepository userRepository,
     IAuthenticationRepository authenticationRepository,
     IPasswordHashService passwordHashService,
+    IEmailService emailService,
     ITokenService tokenService,
     IUnitOfWorkService unitOfWorkService,
     ILogger<RegisterCommandHandler> logger)
@@ -22,6 +23,7 @@ public sealed class RegisterCommandHandler(
     private readonly ITokenService _tokenService = tokenService;
     private readonly ILogger<RegisterCommandHandler> _logger = logger;
     private readonly IUserRepository _userRepository = userRepository;
+    private readonly IEmailService _emailService = emailService;   
     private readonly IPasswordHashService _passwordHashService = passwordHashService;
     private readonly IAuthenticationRepository _authenticationRepository = authenticationRepository;
 
@@ -36,6 +38,12 @@ public sealed class RegisterCommandHandler(
             {
                 _logger.LogWarning("Registration failed: Email {Email} already exists", hashEmail);
                 return Result<RegisterResponse>.Failure("Email already exists");
+            }
+            var usernameExitsResult = await _userRepository.ExistsByUsernameAsync(request.Username, cancellationToken);
+            if (usernameExitsResult is { IsSuccess: true, Data: true })
+            {
+                _logger.LogWarning("Registration failed: Username {Username} already exists", request.Username);
+                return Result<RegisterResponse>.Failure("Username already exists");           
             }
 
             var hasedPassword = _passwordHashService.HashPassword(request.Password);
@@ -57,8 +65,6 @@ public sealed class RegisterCommandHandler(
                 LastLoginAt = null
             };
             
-            // var accessToken = await _tokenService.GenerateAccessTokenAsync(user.UserId, user.Email, new List<string> {"User"});
-            // var refreshToken = await _tokenService.GenerateRefreshTokenAsync(user.UserId);
             string accessToken = "";
             string refreshToken = "";
 
@@ -93,7 +99,21 @@ public sealed class RegisterCommandHandler(
                 }
                 
             }, cancellationToken);
-
+            
+            var verifyToken = Guid.NewGuid().ToString();
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await _emailService.SendEmailVerificationAsync(request.Email, verifyToken);
+                    _logger.LogInformation("Verification email sent successfully to {Email}", hashEmail);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to send verification email to {Email}", hashEmail);
+                }
+            }, cancellationToken);
+            
             _logger.LogInformation("User registered successfully: {UserId}", user.UserId);
             
             var response = new RegisterResponse

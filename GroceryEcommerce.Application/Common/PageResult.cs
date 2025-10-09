@@ -10,7 +10,7 @@ public class PagedResult<T>
         PageSize = pageSize;
     }
 
-    public IReadOnlyList<T> Items { get; init; } = new List<T>();
+    public IReadOnlyList<T> Items { get; set; }
     public int TotalCount { get; init; }
     public int Page { get; init; }
     public int PageSize { get; init; }
