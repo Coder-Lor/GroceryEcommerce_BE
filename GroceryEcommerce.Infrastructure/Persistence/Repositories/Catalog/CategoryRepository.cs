@@ -1,0 +1,811 @@
+using AutoMapper;
+using GroceryEcommerce.Application.Common;
+using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
+using GroceryEcommerce.Application.Interfaces.Repositories.Common;
+using GroceryEcommerce.Application.Interfaces.Services;
+using GroceryEcommerce.DatabaseSpecific;
+using GroceryEcommerce.Domain.Entities.Catalog;
+using GroceryEcommerce.EntityClasses;
+using GroceryEcommerce.FactoryClasses;
+using GroceryEcommerce.HelperClasses;
+using Microsoft.Extensions.Logging;
+using SD.LLBLGen.Pro.ORMSupportClasses;
+using SD.LLBLGen.Pro.QuerySpec;
+using SD.LLBLGen.Pro.QuerySpec.Adapter;
+
+namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
+
+public class CategoryRepository(
+    DataAccessAdapter adapter,
+    IMapper mapper,
+    ICacheService cacheService,
+    ILogger<CategoryRepository> logger
+    ): ICategoryRepository, IPagedRepository<Category>
+{
+    
+    public IReadOnlyList<SearchableField> GetSearchableFields()
+    {
+        return new List<SearchableField>
+        {
+            new SearchableField("Name", typeof(string), true, true),
+            new SearchableField("Description", typeof(string), true, false),
+            new SearchableField("Slug", typeof(string), true, false),
+            new SearchableField("MetaTitle", typeof(string), true, false)
+        };
+    }
+    
+    public async Task<Result<Category?>> GetByIdAsync(Guid categoryId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (categoryId == Guid.Empty)
+            {
+                logger.LogWarning("Attempted to fetch category with empty GUID.");
+                return Result<Category?>.Failure("Invalid category ID.");
+            }
+            var cacheKey = $"Category_{categoryId}";
+            var cachedCategory = await cacheService.GetAsync<Category>(cacheKey, cancellationToken);
+            if (cachedCategory != null)
+            {
+                logger.LogInformation("Category fetched from cache: {CategoryId}", categoryId);
+                return Result<Category?>.Success(cachedCategory);
+            }
+
+            var qf = new QueryFactory();
+            var query = qf.Category
+                .Where(CategoryFields.CategoryId == categoryId);
+            
+            var categoryEntity = await adapter.FetchFirstAsync(query, cancellationToken);
+            if (categoryEntity == null)
+            {
+                logger.LogInformation("Category not found: {CategoryId}", categoryId);
+                return Result<Category?>.Failure("Category not found.");
+            }
+            var category = mapper.Map<Category>(categoryEntity);
+            await cacheService.SetAsync(cacheKey, category, TimeSpan.FromHours(1), cancellationToken);
+            logger.LogInformation("Category fetched from database and cached: {CategoryId}", categoryId);
+            return Result<Category?>.Success(category);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error fetching category by ID: {CategoryId}", categoryId);
+            return Result<Category?>.Failure("An error occurred while fetching the category.");
+        }
+    }
+
+    public async Task<Result<Category?>> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                logger.LogWarning("name of category is required");
+                return Result<Category?>.Failure("Invalid category name");
+            }
+            
+            var cacheKey = $"Category_Name_{name}";
+            var cachedCategory = await cacheService.GetAsync<Category>(cacheKey, cancellationToken);
+            if (cachedCategory != null)
+            {
+                logger.LogInformation("Category fetched from cache: {Name}", name);
+                return Result<Category?>.Success(cachedCategory);
+            }
+            
+            var qf = new QueryFactory();
+            var query = qf.Category
+                .Where(CategoryFields.Name == name);
+            
+            var categoryEntity = await adapter.FetchFirstAsync(query, cancellationToken);
+            if (categoryEntity == null)
+            {
+                logger.LogInformation("Category not found: {Name}", name);
+                return Result<Category?>.Failure("Category not found.");
+            }
+            var category = mapper.Map<Category>(categoryEntity);
+            await cacheService.SetAsync(cacheKey, category, TimeSpan.FromHours(1), cancellationToken);
+            logger.LogInformation("Category fetched from database and cached: {Name}", name);
+            return Result<Category?>.Success(category);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error fetching category by name: {Name}", name);
+            return Result<Category?>.Failure("An errorr occurred while fetching the category.");
+        }
+    }
+
+    public async Task<Result<Category?>> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(slug))
+            {
+                logger.LogWarning("slug of category is required");
+                return Result<Category?>.Failure("Invalid category slug");
+            }
+            
+            var cacheKey = $"Category_Slug_{slug}";
+            
+            var cachedCategory = await cacheService.GetAsync<Category>(cacheKey, cancellationToken);
+            if (cachedCategory != null)
+            {
+                logger.LogInformation("Category fetched from cache: {Slug}", slug);
+                return Result<Category?>.Success(cachedCategory);
+            }
+            
+            var qf = new QueryFactory();
+            var query = qf.Category
+                .Where(CategoryFields.Slug == slug);
+            
+            var categoryEntity = await adapter.FetchFirstAsync(query, cancellationToken);
+            if (categoryEntity == null)
+            {
+                logger.LogInformation("Category not found: {Slug}", slug);
+                return Result<Category?>.Failure("Category not found.");
+            }
+            var category = mapper.Map<Category>(categoryEntity);
+            await cacheService.SetAsync(cacheKey, category, TimeSpan.FromHours(1), cancellationToken);
+            logger.LogInformation("Category fetched from database and cached: {Slug}", slug);
+            return Result<Category?>.Success(category);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error fetching category by slug: {Slug}", slug);
+            return Result<Category?>.Failure("An error occurred while fetching the category.");
+        }
+    }
+
+    public async Task<Result<List<Category>>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var cacheKey = "All_Categories";
+            var cachedCategories = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            if (cachedCategories != null)
+            {
+                logger.LogInformation("All categories fetched from cache.");
+                return Result<List<Category>>.Success(cachedCategories);
+            }
+
+            var qf = new QueryFactory();
+            var query = qf.Category
+                .OrderBy(CategoryFields.Name.Descending());
+            
+            var categoryEntities = await adapter.FetchQueryAsync(query, cancellationToken);
+            var categories = mapper.Map<List<Category>>(categoryEntities);
+            await cacheService.SetAsync(cacheKey, categories, TimeSpan.FromHours(1), cancellationToken);
+            logger.LogInformation("All categories fetched from database and cached.");
+            return Result<List<Category>>.Success(categories);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error fetching all categories");
+            return Result<List<Category>>.Failure("An error occurred while fetching all categories.");
+        }
+    }
+
+
+    public async Task<Result<PagedResult<Category>>> GetPagedAsync(PagedRequest request, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (request.Page <= 0 || request.PageSize <= 0)
+            {
+                logger.LogWarning("Invalid paged request");
+                return Result<PagedResult<Category>>.Failure("Invalid paged request.");
+            }
+
+            var qf = new QueryFactory();
+            var query = qf.Category;
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                query = query.Where(
+                    CategoryFields.Name.Contains(request.Search) |
+                    CategoryFields.Slug.Contains(request.Search)
+                );
+            }
+
+            if (request.Filters != null && request.Filters.Any())
+            {
+                foreach (var filter in request.Filters)
+                {
+                    switch (filter.Key.ToLower())
+                    {
+                        case "name":
+                            if (filter.Value is string name)
+                                query = query.Where(CategoryFields.Name.Contains(name));
+                            break;
+                        case "slug":
+                            if (filter.Value is string slug)
+                                query = query.Where(CategoryFields.Slug.Contains(slug));
+                            break;
+                        case "status":
+                            if (filter.Value is short statusValue)
+                                query = query.Where(CategoryFields.Status == statusValue);
+                            break;
+                    }
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(request.SortBy))
+            {
+                var sortField = request.SortBy?.ToLower() switch
+                {
+                    "name" => CategoryFields.Name,
+                    "slug" => CategoryFields.Slug,
+                    _ => CategoryFields.CreatedAt
+                };
+
+                if (request.IsSortDescending)
+                    query = query.OrderBy(sortField.Descending());
+                else
+                    query = query.OrderBy(sortField.Ascending());
+            }
+            else
+            {
+                query = query.OrderBy(CategoryFields.CreatedAt.Descending());
+            }
+            
+                
+            query = query.Page(request.Page, request.PageSize);
+            var totalCount = await adapter.FetchScalarAsync<int>(
+                query.Select(() => Functions.CountRow()),
+                cancellationToken
+            );
+                
+            var entities = new EntityCollection<CategoryEntity>();
+            await adapter.FetchQueryAsync(query, entities, cancellationToken);
+
+            var categories = mapper.Map<List<Category>>(entities);
+            var pagedResult = new PagedResult<Category>(categories, totalCount, request.Page, request.PageSize);
+                
+            logger.LogInformation("Paged categories fetched: Page {Page}, PageSize {PageSize}", request.Page, request.PageSize);
+            return Result<PagedResult<Category>>.Success(pagedResult);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error fetching categories by page");
+            return Result<PagedResult<Category>>.Failure("An error occurred while fetching categories.");
+        }
+    }
+
+    public async Task<Result<Category>> CreateAsync(Category category, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var entity = mapper.Map<CategoryEntity>(category);
+            entity.IsNew = true;
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
+            if (saved)
+            {
+                await cacheService.RemoveAsync("All_Categories", cancellationToken);
+                await cacheService.RemoveAsync("Root_Categories", cancellationToken);
+                
+                logger.LogInformation("Category created: {Name}", category.Name);
+                return Result<Category>.Success(category);
+            }
+            logger.LogWarning("Failed to create category: {Name}", category.Name);
+            return Result<Category>.Failure("Failed to create category.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error creating category: {Name}", category.Name);
+            return Result<Category>.Failure("An error occurred while creating category.");
+        }
+    }
+
+    public async Task<Result<bool>> UpdateAsync(Category category, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var entity = mapper.Map<CategoryEntity>(category);
+            entity.IsNew = true;
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
+            if (saved)
+            {
+                await cacheService.RemoveAsync("All_Categories", cancellationToken);
+                await cacheService.RemoveAsync("Root_Categories", cancellationToken);
+                
+                logger.LogInformation("Category updated: {Name}", category.Name);
+                return Result<bool>.Success(saved);
+            }
+            logger.LogWarning("Failed to update category: {Name}", category.Name);
+            return Result<bool>.Failure("Failed to update category.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating category: {Name}", category.Name);
+            return Result<bool>.Failure("An error occurred while updating category.");
+        }
+    }
+
+    public async Task<Result<bool>> DeleteAsync(Guid categoryId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (categoryId == Guid.Empty)
+            {
+                logger.LogWarning("Category id is required");
+                return Result<bool>.Failure("Invalid category ID.");
+            }
+            var entity = new CategoryEntity(categoryId);
+            var deleted = await adapter.DeleteEntityAsync(entity, cancellationToken);
+            if (deleted)
+            {
+                await cacheService.RemoveAsync("All_Categories", cancellationToken);
+                await cacheService.RemoveAsync("Root_Categories", cancellationToken);
+                
+                logger.LogInformation("Category deleted: {CategoryId}", categoryId);
+                return Result<bool>.Success(deleted);
+            }
+            logger.LogWarning("Failed to delete category: {CategoryId}", categoryId);
+            return Result<bool>.Failure("Failed to delete category.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error deleting category: {CategoryId}", categoryId);
+            return Result<bool>.Failure("An error occurred while deleting category.");
+        }
+    }
+
+    public async Task<Result<List<Category>>> GetRootCategoriesAsync(CancellationToken ct = default)
+    {
+        try
+        {
+            const string cacheKey = "Root_Categories";
+            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, ct);
+            if (cached != null)
+            {
+                logger.LogInformation("Root categories fetched from cache");
+                return Result<List<Category>>.Success(cached);
+            }
+
+            var qf = new QueryFactory();
+            var query = qf.Category
+                .Where(CategoryFields.CategoryId == Guid.Empty)
+                .OrderBy(CategoryFields.Name.Ascending());
+            
+            var entities = await adapter.FetchQueryAsync(query, ct);
+            var result = mapper.Map<List<Category>>(entities);
+
+            await cacheService.SetAsync(cacheKey, result, TimeSpan.FromHours(1), ct);
+            return Result<List<Category>>.Success(result);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting root categories");
+            return Result<List<Category>>.Failure("An error occurred while retrieving root categories");
+        }
+    }
+
+    public async Task<Result<List<Category>>> GetSubCategoriesAsync(Guid parentCategoryId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (parentCategoryId == Guid.Empty)
+            {
+                logger.LogWarning("Parent category id is required");
+                return Result<List<Category>>.Failure("Invalid parent category ID.");
+            }
+            
+            var cacheKey = $"Sub_Categories_{parentCategoryId}";
+            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                logger.LogInformation("Sub categories fetched from cache: {ParentCategoryId}", parentCategoryId);
+                return Result<List<Category>>.Success(cached);
+            }
+            
+            var qf = new QueryFactory();
+            var query = qf.Category
+                .Where(CategoryFields.ParentCategoryId == parentCategoryId)
+                .OrderBy(CategoryFields.Name.Ascending());
+            
+            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
+            if (entities.Count == 0) return Result<List<Category>>.Success(new List<Category>());
+            
+            var result = mapper.Map<List<Category>>(entities);
+            if (result.Count == 0)
+            {
+                logger.LogInformation("No sub categories found for parent category: {ParentCategoryId}", parentCategoryId);
+                return Result<List<Category>>.Success(new List<Category>());
+            }
+            
+            logger.LogInformation("Sub categories fetched for parent category: {ParentCategoryId}", parentCategoryId);
+            return Result<List<Category>>.Success(result);
+            
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting sub categories");
+            return Result<List<Category>>.Failure("An error occurred while retrieving sub categories");
+        }
+    }
+
+    public async Task<Result<List<Category>>> GetCategoryPathAsync(Guid categoryId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (categoryId == Guid.Empty)
+            {
+                logger.LogWarning("Category id is required");
+                return Result<List<Category>>.Failure("Invalid category ID.");
+            }
+            
+            var cacheKey = $"Category_Path_{categoryId}";
+            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                logger.LogInformation("Category path fetched from cache: {CategoryId}", categoryId);
+                return Result<List<Category>>.Success(cached);
+            }
+            
+            var qf = new QueryFactory();
+            var query = qf.Category
+                .Where(CategoryFields.CategoryId == categoryId)
+                .OrderBy(CategoryFields.Name.Ascending());
+            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
+            if (entities.Count == 0) return Result<List<Category>>.Success(new List<Category>());
+            
+            var result = mapper.Map<List<Category>>(entities);
+            if (result.Count == 0)
+            {
+                logger.LogInformation("No category path found for category: {CategoryId}", categoryId);
+                return Result<List<Category>>.Success(new List<Category>());
+            }
+            logger.LogInformation("Category path fetched for category: {CategoryId}", categoryId);
+            return Result<List<Category>>.Success(result);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting category path");
+            return Result<List<Category>>.Failure("An error occurred while retrieving category path");
+        }
+    }
+
+    public async Task<Result<List<Category>>> GetCategoryTreeAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var cacheKey = "Category_Tree";
+            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                logger.LogInformation("Category tree fetched from cache");
+                return Result<List<Category>>.Success(cached);
+            }
+            
+            var qf = new QueryFactory();
+            
+            var query = qf.Category
+                .WithPath(
+                    CategoryEntity.PrefetchPathCategories
+                    .WithSubPath(
+                        CategoryEntity.PrefetchPathCategories
+                            .WithSubPath(CategoryEntity.PrefetchPathCategories)
+                    )
+                )
+                .OrderBy(CategoryFields.Name.Ascending());
+
+            var entities = new EntityCollection<CategoryEntity>();
+            await adapter.FetchQueryAsync(query, entities, cancellationToken);
+            
+            var result = mapper.Map<List<Category>>(entities);
+            if (result.Count == 0)
+            {
+                logger.LogInformation("No category tree found");
+                return Result<List<Category>>.Success(new List<Category>());
+            }
+            await cacheService.SetAsync(cacheKey, result, TimeSpan.FromHours(1), cancellationToken);
+            logger.LogInformation("Category tree fetched");
+            return Result<List<Category>>.Success(result);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting category tree");
+            return Result<List<Category>>.Failure("An error occurred while retrieving category tree");
+        }
+    }
+
+    public async Task<Result<bool>> HasSubCategoriesAsync(Guid categoryId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (categoryId == Guid.Empty)
+            {
+                logger.LogWarning("Category id is required");
+                return Result<bool>.Failure("Invalid category ID.");
+            }
+            var cacheKey = $"Categories_{categoryId}";
+            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            if (cached != null && cached.Count > 0)
+            {
+                logger.LogInformation("Category has sub categories (from cache): {CategoryId}", categoryId);
+                return Result<bool>.Success(true);
+            }
+            
+            var qf = new QueryFactory();
+            var query = qf.Category
+                .Where(CategoryFields.ParentCategoryId == categoryId);
+                
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
+            if (entity == null) return Result<bool>.Success(false);
+            
+            logger.LogInformation("Category has sub categories: {CategoryId}", categoryId);
+            return Result<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error checking if category has sub categories");
+            return Result<bool>.Failure("An error occurred while checking if category has sub categories");
+        }
+    }
+
+    public async Task<Result<bool>> IsRootCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (categoryId == Guid.Empty)
+            {
+                logger.LogWarning("Category id is required");
+                return Result<bool>.Failure("Invalid category ID.");
+            }
+            var cacheKey = $"Categories_{categoryId}";
+            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            if (cached != null && cached.Count > 0)
+            {
+                logger.LogInformation("Category is root category (from cache): {CategoryId}", categoryId);
+                return Result<bool>.Success(true);           
+            }
+            
+            var qf = new QueryFactory();
+            var query = qf.Category
+                .Where(CategoryFields.CategoryId == categoryId);
+                
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
+            if (entity == null) return Result<bool>.Success(false);
+            
+            logger.LogInformation("Category is root category: {CategoryId}", categoryId);
+            return Result<bool>.Success(entity.ParentCategoryId == Guid.Empty);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error checking if category is root category");
+            return Result<bool>.Failure("An error occurred while checking if category is root category");            
+        }
+    }
+
+    public async Task<Result<bool>> ExistsAsync(string name, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                logger.LogWarning("Category name is required");
+                return Result<bool>.Failure("Invalid category name.");
+            }
+            var cacheKey = $"Category_Name_{name}";
+            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            if (cached != null && cached.Count > 0)
+            {
+                logger.LogInformation("Category exists (from cache): {Name}", name);
+                return Result<bool>.Success(true);
+            }
+            
+            var qf = new QueryFactory();
+            var query = qf.Category
+                .Where(CategoryFields.Name == name);
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
+            if (entity == null) return Result<bool>.Success(false);
+            logger.LogInformation("Category exists: {Name}", name);
+            return Result<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error checking if category exists by name: {Name}", name);
+            return Result<bool>.Failure("An error occurred while checking if category exists.");
+        }
+    }
+
+    public async Task<Result<bool>> ExistsAsync(Guid categoryId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (categoryId == Guid.Empty)
+            {
+                logger.LogWarning("Category id is required");
+                return Result<bool>.Failure("Invalid category ID.");
+            }
+            var cacheKey = $"Category_{categoryId}";
+            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            if (cached != null && cached.Count > 0)
+            {
+                logger.LogInformation("Category exists (from cache): {CategoryId}", categoryId);
+                return Result<bool>.Success(true);
+            }
+            
+            var qf = new QueryFactory();
+            var query = qf.Category
+                .Where(CategoryFields.CategoryId == categoryId);
+            
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
+            if (entity == null) return Result<bool>.Success(false);
+            logger.LogInformation("Category exists: {CategoryId}", categoryId);
+            return Result<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error checking if category exists by id: {CategoryId}", categoryId);
+            return Result<bool>.Failure("An error occurred while checking if category exists.");       
+        }
+    }
+
+    public async Task<Result<(bool ExitsByName, bool ExitsById)>> ExistsAsync(string name, Guid categoryId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                logger.LogWarning("Category name is required");
+                return Result<(bool ExitsByName, bool ExitsById)>.Failure("Invalid category name.");
+            }
+            if (categoryId == Guid.Empty)
+            {
+                logger.LogWarning("Category id is required");
+                return Result<(bool ExitsByName, bool ExitsById)>.Failure("Invalid category ID.");
+            }
+            
+            var cachedById = $"Category_{categoryId}";
+            var cachedId = await cacheService.GetAsync<Category>(cachedById, cancellationToken);
+            if (cachedId != null)
+            {
+                logger.LogInformation("Category exists (from cache): {Name}, {CategoryId}", name, categoryId);
+                return Result<(bool ExitsByName, bool ExitsById)>.Success((false, true));
+            }
+            
+            var cachedByName = $"Category_Name_{name}";
+            var cachedName = await cacheService.GetAsync<Category>(cachedByName, cancellationToken);
+            if (cachedName != null)
+            {
+                logger.LogInformation("Category exists (from cache): {Name}, {CategoryId}", name, categoryId);
+                return Result<(bool ExitsByName, bool ExitsById)>.Success((true, false));
+            }
+            
+            var qf = new QueryFactory();
+            var query = qf.Category
+                .Where(CategoryFields.CategoryId == categoryId | CategoryFields.Name == name)
+                .Limit(2);
+            var entities = new EntityCollection<CategoryEntity>();
+            await adapter.FetchQueryAsync(query, entities, cancellationToken);
+
+            var hasName = entities.Any(e => e.Name == name);
+            var hasId = entities.Any(e => e.CategoryId == categoryId);
+            logger.LogInformation("Category exists: {Name}, {CategoryId}", name, categoryId);
+            return Result<(bool ExitsByName, bool ExitsById)>.Success((hasName, hasId));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error checking if category exists by name and id: {Name}, {CategoryId}", name, categoryId);
+            return Result<(bool ExitsByName, bool ExitsById)>.Failure("An error occurred while checking if category exists.");       
+        }
+    }
+
+    public async Task<Result<List<Category>>> GetActiveCategoriesAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var cacheKey = "Active_Categories";
+            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                logger.LogInformation("Active categories fetched from cache");
+                return Result<List<Category>>.Success(cached);
+            }
+            
+            var qf = new QueryFactory();
+            var query = qf.Category
+                .Where(CategoryFields.Status == 1)
+                .OrderBy(CategoryFields.Name.Ascending());
+            
+            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
+            var result = mapper.Map<List<Category>>(entities);
+            if (result.Count == 0)
+            {
+                logger.LogInformation("No active categories found");
+                return Result<List<Category>>.Success(new List<Category>());
+            }
+            
+            await cacheService.SetAsync(cacheKey, result, TimeSpan.FromHours(1), cancellationToken);
+            logger.LogInformation("Active categories fetched");
+            return Result<List<Category>>.Success(result);       
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting active categories");
+            return Result<List<Category>>.Failure("An error occurred while retrieving active categories.");       
+        }
+    }
+
+    public async Task<Result<List<Category>>> SearchByNameAsync(string searchTerm, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                logger.LogWarning("Search term is required");
+                return Result<List<Category>>.Failure("Invalid search term.");
+            }
+            
+            var cacheKey = $"Categories_Name_{searchTerm}";
+            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                logger.LogInformation("Categories searched by name (from cache): {SearchTerm}", searchTerm);
+                return Result<List<Category>>.Success(cached);           
+            }
+            
+            var qf = new QueryFactory();
+            var query = qf.Category
+                .Where(CategoryFields.Name.Contains(searchTerm))
+                .OrderBy(CategoryFields.Name.Ascending());
+            
+            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
+            var result = mapper.Map<List<Category>>(entities);
+            if (result.Count == 0)
+            {
+                logger.LogInformation("No categories found by name: {SearchTerm}", searchTerm);
+                return Result<List<Category>>.Success(new List<Category>());
+            }
+            
+            await cacheService.SetAsync(cacheKey, result, TimeSpan.FromHours(1), cancellationToken);
+            logger.LogInformation("Categories searched by name: {SearchTerm}", searchTerm);
+            return Result<List<Category>>.Success(result);       
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error searching categories by name: {SearchTerm}", searchTerm);
+            return Result<List<Category>>.Failure("An error occurred while searching categories by name.");       
+        }
+    }
+
+    public async Task<Result<bool>> IsCategoryInUseAsync(Guid categoryId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (categoryId == Guid.Empty)
+            {
+                logger.LogWarning("Category id is required");
+                return Result<bool>.Failure("Invalid category ID.");
+            }
+            
+            var cachedKey = $"Category_{categoryId}";
+            var cached = await cacheService.GetAsync<Category>(cachedKey, cancellationToken);
+            
+            var qf = new QueryFactory();
+            var query = qf.Product
+                .Where(ProductFields.CategoryId == categoryId);
+            
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
+            if (entity == null) return Result<bool>.Success(false);
+            
+            logger.LogInformation("Category is in use: {CategoryId}", categoryId);
+            return Result<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error checking if category is in use: {CategoryId}", categoryId);
+            return Result<bool>.Failure("An error occurred while checking if category is in use.");       
+        }
+    }
+
+    public Task<Result<int>> GetProductCountByCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<Result<PagedResult<Product>>> IPagedRepository<Product>.GetPagedAsync(PagedRequest request, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+}

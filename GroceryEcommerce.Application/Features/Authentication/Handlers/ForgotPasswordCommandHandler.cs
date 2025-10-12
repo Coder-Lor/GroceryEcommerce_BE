@@ -1,6 +1,7 @@
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Features.Authentication.Commands;
 using GroceryEcommerce.Application.Interfaces.Repositories;
+using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
 using GroceryEcommerce.Application.Interfaces.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -18,9 +19,6 @@ public sealed class ForgotPasswordCommandHandler(
     private readonly ICacheService _cacheService = cacheService;
     private readonly IEmailService _emailService = emailService;
     private readonly ILogger<ForgotPasswordCommandHandler> _logger = logger;
-    
-    // cần sưửa lại cách lưu reset token
-
     public async Task<Result<ForgotPasswordResponse>> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Forgot password request for email: {Email}", request.Email);

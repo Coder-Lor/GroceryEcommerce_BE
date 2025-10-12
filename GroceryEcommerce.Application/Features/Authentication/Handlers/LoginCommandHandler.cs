@@ -2,6 +2,7 @@ using AutoMapper;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Features.Authentication.Commands;
 using GroceryEcommerce.Application.Interfaces.Repositories;
+using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
 using GroceryEcommerce.Application.Interfaces.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;

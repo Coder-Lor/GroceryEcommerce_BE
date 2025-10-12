@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using GroceryEcommerce.Application.Interfaces.Repositories;
+using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
 using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Domain.Entities.Auth;
 using Microsoft.Extensions.Configuration;

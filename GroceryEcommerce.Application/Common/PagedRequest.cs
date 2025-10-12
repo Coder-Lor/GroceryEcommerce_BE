@@ -19,7 +19,7 @@ public class PagedRequest
 
     public string? Search { get; set; } = string.Empty;
     public string? SortBy { get; set; }
-    public bool SortDescending { get; set; } = false;
+    public bool IsSortDescending { get; set; } = false;
     public Dictionary<string, object>? Filters { get; set; }
 
     public void AddFilter(string field, object value)

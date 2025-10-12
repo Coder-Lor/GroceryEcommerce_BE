@@ -6,6 +6,8 @@ using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Domain.Entities.Auth;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
+using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
 
 namespace GroceryEcommerce.Application.Features.Authentication.Handlers;
 
@@ -29,24 +31,51 @@ public sealed class RegisterCommandHandler(
 
     public async Task<Result<RegisterResponse>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
+        var stopwatch = Stopwatch.StartNew();
         var hashEmail = _passwordHashService.HashPassword(request.Email);
         _logger.LogInformation("Starting user registration for email: {Email}", hashEmail);
         try
         {
-            var emailExitsResult = await _userRepository.ExistsByEmailAsync(request.Email, cancellationToken);
-            if (emailExitsResult is { IsSuccess: true, Data: true })
+            var validationStopwatch = Stopwatch.StartNew();
+            // var emailExitsResult = await _userRepository.ExistsByEmailAsync(request.Email, cancellationToken);
+            // if (emailExitsResult is { IsSuccess: true, Data: true })
+            // {
+            //     _logger.LogWarning("Registration failed: Email {Email} already exists", hashEmail);
+            //     return Result<RegisterResponse>.Failure("Email already exists");
+            // }
+            // var usernameExitsResult = await _userRepository.ExistsByUsernameAsync(request.Username, cancellationToken);
+            // if (usernameExitsResult is { IsSuccess: true, Data: true })
+            // {
+            //     _logger.LogWarning("Registration failed: Username {Username} already exists", request.Username);
+            //     return Result<RegisterResponse>.Failure("Username already exists");           
+            // }
+            
+            var existenceResult = await _userRepository.CheckUserExistenceAsync(request.Email, request.Username, cancellationToken);
+            if (!existenceResult.IsSuccess)
+            {
+                _logger.LogWarning("Registration failed: Could not validate user existence for Email {Email} and Username {Username}", hashEmail, request.Username);
+                return Result<RegisterResponse>.Failure("Failed to validate user existence");
+            }
+
+            var (emailExists, usernameExists) = existenceResult.Data;
+            if (emailExists)
             {
                 _logger.LogWarning("Registration failed: Email {Email} already exists", hashEmail);
                 return Result<RegisterResponse>.Failure("Email already exists");
             }
-            var usernameExitsResult = await _userRepository.ExistsByUsernameAsync(request.Username, cancellationToken);
-            if (usernameExitsResult is { IsSuccess: true, Data: true })
+            if (usernameExists)
             {
                 _logger.LogWarning("Registration failed: Username {Username} already exists", request.Username);
                 return Result<RegisterResponse>.Failure("Username already exists");           
             }
+            validationStopwatch.Stop();
+            _logger.LogInformation("Validation completed in {ValidationTime}ms", validationStopwatch.ElapsedMilliseconds);
 
+            var userCreationStopwatch = Stopwatch.StartNew();
             var hasedPassword = _passwordHashService.HashPassword(request.Password);
+            userCreationStopwatch.Stop();
+            _logger.LogInformation("User creation completed in {UserCreationTime}ms", userCreationStopwatch.ElapsedMilliseconds);
+
             var user = new User
             {
                 UserId = Guid.NewGuid(),
@@ -68,9 +97,9 @@ public sealed class RegisterCommandHandler(
             string accessToken = "";
             string refreshToken = "";
 
+            var dbTransactionStopwatch = Stopwatch.StartNew();
             await _unitOfWorkService.ExecuteInTransactionAsync(async _ =>
             {
-
                 var addUserResult = await _userRepository.AddAsync(user, cancellationToken);
                 if (!addUserResult.IsSuccess)
                 {
@@ -99,8 +128,11 @@ public sealed class RegisterCommandHandler(
                 }
                 
             }, cancellationToken);
+            dbTransactionStopwatch.Stop();
+            _logger.LogInformation("Database transaction completed in {DbTransactionTime}ms", dbTransactionStopwatch.ElapsedMilliseconds);
             
             var verifyToken = Guid.NewGuid().ToString();
+            var emailVerificationStopwatch = Stopwatch.StartNew();
             _ = Task.Run(async () =>
             {
                 try
@@ -112,9 +144,12 @@ public sealed class RegisterCommandHandler(
                 {
                     _logger.LogError(ex, "Failed to send verification email to {Email}", hashEmail);
                 }
-            }, cancellationToken);
+            }, CancellationToken.None); 
+            emailVerificationStopwatch.Stop();
+            _logger.LogInformation("Email verification completed in {EmailVerificationTime}ms", emailVerificationStopwatch.ElapsedMilliseconds);
             
-            _logger.LogInformation("User registered successfully: {UserId}", user.UserId);
+            stopwatch.Stop();
+            _logger.LogInformation("User registration completed in {TotalElapsedMs}ms", stopwatch.ElapsedMilliseconds);
             
             var response = new RegisterResponse
             {
@@ -128,6 +163,8 @@ public sealed class RegisterCommandHandler(
         }
         catch (Exception ex)
         {
+            stopwatch.Stop();
+            _logger.LogInformation("Total time taken: {TotalTime}ms", stopwatch.ElapsedMilliseconds);
             _logger.LogError(ex, "Error registering user: {Email}", request.Email);
             return Result<RegisterResponse>.Failure("An error occurred while registering user");
         }
