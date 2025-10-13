@@ -479,82 +479,32 @@ public class ProductRepository(
         }
     }
 
-    public Task<Result<PagedResult<Product>>> GetByCategoryIdAsync(PagedRequest request, Guid categoryId, CancellationToken cancellationToken = default)
-    {
-        request.AddFilter("CategoryId", categoryId, FilterOperator.Equals);
-        if (!request.HasSorting)
-        {
-            request.WithSorting("Name", SortDirection.Ascending);
-        }
-        return GetPagedAsync(request, cancellationToken);
-    }
+    public async Task<Result<PagedResult<Product>>> GetByCategoryIdAsync(PagedRequest request, Guid categoryId, CancellationToken cancellationToken = default) 
+        => await GetPagedConfiguredAsync(request, r => r.WithFilter("CategoryId", categoryId, FilterOperator.Equals), cancellationToken: cancellationToken);
 
-    public Task<Result<PagedResult<Product>>> GetByBrandIdAsync(PagedRequest request, Guid brandId, CancellationToken cancellationToken = default)
-    {
-        request.AddFilter("BrandId", brandId, FilterOperator.Equals);
-        if (!request.HasSorting)
-        {
-            request.WithSorting("Name", SortDirection.Ascending);
-        }
-        return GetPagedAsync(request, cancellationToken);
-    }
+    public async Task<Result<PagedResult<Product>>> GetByBrandIdAsync(PagedRequest request, Guid brandId, CancellationToken cancellationToken = default)
+        => await GetPagedConfiguredAsync(request, r => r.WithFilter("BrandId", brandId, FilterOperator.Equals), cancellationToken: cancellationToken);
 
-    public Task<Result<PagedResult<Product>>> GetFeaturedProductsAsync(PagedRequest request, CancellationToken cancellationToken = default)
-    {
-        request.AddFilter("IsFeatured", true, FilterOperator.Equals);
-        if (!request.HasSorting)
-        {
-            request.WithSorting("CreatedAt", SortDirection.Descending);
-        }
-        return GetPagedAsync(request, cancellationToken);
-    }
+    public async Task<Result<PagedResult<Product>>> GetFeaturedProductsAsync(PagedRequest request, CancellationToken cancellationToken = default)
+        => await GetPagedConfiguredAsync(request, r => r.WithFilter("IsFeatured", true, FilterOperator.Equals), cancellationToken: cancellationToken);
 
     public async Task<Result<PagedResult<Product>>> GetActiveProductsAsync(PagedRequest request, CancellationToken cancellationToken = default)
-    {
-        // Status == 1
-        request.AddFilter("Status", 1, FilterOperator.Equals);
-        // Gợi ý sort mặc định nếu caller không truyền
-        if (!request.HasSorting)
-        {
-            request.WithSorting("CreatedAt", SortDirection.Descending);
-        }
-        return await GetPagedAsync(request, cancellationToken);
-    }
+        => await GetPagedConfiguredAsync(request, r => r.WithFilter("Status", 1, FilterOperator.Equals), cancellationToken: cancellationToken);
 
     public async Task<Result<PagedResult<Product>>> GetLowStockProductsAsync(PagedRequest request, int threshold = 10, CancellationToken cancellationToken = default)
-    {
-        // StockQuantity <= threshold
-        request.AddFilter("Stock", threshold, FilterOperator.LessThanOrEqual);
-        if (!request.HasSorting)
-        {
-            request.WithSorting("Stock", SortDirection.Ascending);
-        }
-        return await GetPagedAsync(request, cancellationToken);
-    }
-
-
+        => await GetPagedConfiguredAsync(request, r => r.WithFilter("Stock", threshold, FilterOperator.LessThanOrEqual), cancellationToken: cancellationToken);
+    
     public async Task<Result<PagedResult<Product>>> SearchProductsAsync(PagedRequest request, string searchTerm, CancellationToken cancellationToken = default)
-    {
-        request.Search = searchTerm;
-        if (!request.HasSorting)
-        {
-            request.WithSorting(GetDefaultSortField() ?? "Name", SortDirection.Ascending);
-        }
-        return await GetPagedAsync(request, cancellationToken);
-    }
+        => await GetPagedConfiguredAsync(request, r => r.WithSearch(searchTerm), cancellationToken: cancellationToken);
 
-    public async Task<Result<PagedResult<Product>>> GetProductsByPriceRangeAsync(PagedRequest request, decimal minPrice, decimal maxPrice, CancellationToken cancellationToken = default)
-    {
-        request.AddFilter("Price", minPrice, FilterOperator.GreaterThanOrEqual);
-        request.AddFilter("Price", maxPrice, FilterOperator.LessThanOrEqual);
-        
-        if (!request.HasSorting)
-        {
-            request.WithSorting(GetDefaultSortField() ?? "Name", SortDirection.Ascending);
-        }
-        
-        return await GetPagedAsync(request, cancellationToken);
-    }
+    public async Task<Result<PagedResult<Product>>> GetProductsByPriceRangeAsync(PagedRequest request, decimal minPrice,
+        decimal maxPrice, CancellationToken cancellationToken = default)
+        => await GetPagedConfiguredAsync(
+            request, 
+    r => { r.AddFilter("Price", minPrice, FilterOperator.GreaterThanOrEqual); 
+            r.AddFilter("Price", maxPrice, FilterOperator.LessThanOrEqual); }, 
+            GetDefaultSortField() ?? "Name", SortDirection.Ascending, cancellationToken: cancellationToken
+        );
 
     public async Task<Result<bool>> UpdateStockAsync(Guid productId, int quantity, CancellationToken cancellationToken = default)
     {
