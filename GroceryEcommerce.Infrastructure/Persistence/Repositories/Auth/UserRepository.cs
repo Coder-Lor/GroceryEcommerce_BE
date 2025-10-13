@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
+using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.DatabaseSpecific;
 using GroceryEcommerce.Domain.Entities.Auth;
 using GroceryEcommerce.EntityClasses;
 using GroceryEcommerce.FactoryClasses;
 using GroceryEcommerce.HelperClasses;
+using GroceryEcommerce.Infrastructure.Persistence.Repositories.Common;
 using Microsoft.Extensions.Logging;
 using SD.LLBLGen.Pro.ORMSupportClasses;
 using SD.LLBLGen.Pro.QuerySpec;
@@ -16,9 +18,183 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
     public class UserRepository(
         DataAccessAdapter adapter,
         IMapper mapper,
+        ICacheService cacheService,
         ILogger<UserRepository> logger
-    ) :IUserRepository
+    ) : BasePagedRepository<UserEntity,User>(adapter, mapper, cacheService, logger),IUserRepository
     {
+
+        public EntityField2? GetSortField(string? sortBy)
+        {
+            return sortBy?.ToLower() switch
+            {
+                "email" => (EntityField2) UserFields.Email,
+                "username" => (EntityField2) UserFields.Username,
+                "firstname" => (EntityField2) UserFields.FirstName,
+                "lastname" => (EntityField2) UserFields.LastName,
+                "phonenumber" => (EntityField2) UserFields.PhoneNumber,
+                "status" => (EntityField2) UserFields.Status,
+                "emailverified" => (EntityField2) UserFields.EmailVerified,
+                "phonenumberverified" => (EntityField2) UserFields.PhoneVerified,
+                "createdat" => (EntityField2) UserFields.CreatedAt,
+                "lastloginat" => (EntityField2) UserFields.LastLoginAt,
+                _ => (EntityField2) UserFields.Username,
+            };
+        }
+        public override IReadOnlyList<SearchableField> GetSearchableFields() {
+            return new List<SearchableField>
+            {
+                new SearchableField("Email", typeof(string), true, true),
+                new SearchableField("Username", typeof(string), true, true),
+                new SearchableField("FirstName", typeof(string), true, true),
+                new SearchableField("LastName", typeof(string), true, true),
+                new SearchableField("PhoneNumber", typeof(string), true, false),
+                new SearchableField("Status", typeof(short), false, true),
+                new SearchableField("EmailVerified", typeof(bool), false, true),
+                new SearchableField("PhoneVerified", typeof(bool), false, true),
+                new SearchableField("CreatedAt", typeof(DateTime), false, true),
+                new SearchableField("LastLoginAt", typeof(DateTime?), false, true)
+            }.AsReadOnly();
+        }
+
+        public override string? GetDefaultSortField()
+        {
+            return "Username";
+        }
+
+        public override IReadOnlyList<FieldMapping> GetFieldMappings()
+        {
+            return new List<FieldMapping>
+            {
+                new FieldMapping
+                {
+                    FieldName = "Email", FieldType = typeof(string), IsSearchable = true, IsSortable = true,
+                    IsFilterable = true
+                },
+                new FieldMapping
+                {
+                    FieldName = "Username", FieldType = typeof(string), IsSearchable = true, IsSortable = true,
+                    IsFilterable = true
+                },
+                new FieldMapping
+                {
+                    FieldName = "FirstName", FieldType = typeof(string), IsSearchable = true, IsSortable = true,
+                    IsFilterable = true
+                },
+                new FieldMapping
+                {
+                    FieldName = "LastName", FieldType = typeof(string), IsSearchable = true, IsSortable = true,
+                    IsFilterable = true
+                },
+                new FieldMapping
+                {
+                    FieldName = "PhoneNumber", FieldType = typeof(string), IsSearchable = true, IsSortable = true,
+                    IsFilterable = true
+                },
+                new FieldMapping
+                {
+                    FieldName = "Status", FieldType = typeof(short), IsSearchable = false, IsSortable = true,
+                    IsFilterable = true
+                },
+                new FieldMapping
+                {
+                    FieldName = "EmailVerified", FieldType = typeof(bool), IsSearchable = false, IsSortable = true,
+                    IsFilterable = true
+                },
+                new FieldMapping
+                {
+                    FieldName = "PhoneVerified", FieldType = typeof(bool), IsSearchable = false, IsSortable = true,
+                    IsFilterable = true
+                },
+                new FieldMapping
+                {
+                    FieldName = "CreatedAt", FieldType = typeof(DateTime), IsSearchable = false, IsSortable = true,
+                    IsFilterable = true
+                },
+                new FieldMapping
+                {
+                    FieldName = "LastLoginAt", FieldType = typeof(DateTime?), IsSearchable = false, IsSortable = true,
+                    IsFilterable = true
+                }
+            };
+        }
+
+        protected override EntityQuery<UserEntity> ApplySearch(EntityQuery<UserEntity> query, string searchTerm)
+        {
+            return query.Where(
+                UserFields.Username.Contains(searchTerm) |
+                UserFields.Email.Contains(searchTerm) |
+                UserFields.FirstName.Contains(searchTerm) |
+                UserFields.LastName.Contains(searchTerm)
+            );
+        }
+
+        protected override EntityQuery<UserEntity> ApplyFilter(EntityQuery<UserEntity> query, FilterCriteria filter)
+        {
+            return filter.Operator switch
+            {
+                FilterOperator.Equals when filter.FieldName.Equals("email", StringComparison.OrdinalIgnoreCase) =>
+                    query.Where(UserFields.Email == filter.Value.ToString()),
+
+                FilterOperator.Contains when filter.FieldName.Equals("email", StringComparison.OrdinalIgnoreCase) =>
+                    query.Where(UserFields.Email.Contains(filter.Value.ToString())),
+
+                FilterOperator.Equals when filter.FieldName.Equals("username", StringComparison.OrdinalIgnoreCase) =>
+                    query.Where(UserFields.Username == filter.Value.ToString()),
+
+                FilterOperator.Contains when filter.FieldName.Equals("username", StringComparison.OrdinalIgnoreCase) =>
+                    query.Where(UserFields.Username.Contains(filter.Value.ToString())),
+
+                FilterOperator.Equals when filter.FieldName.Equals("firstname", StringComparison.OrdinalIgnoreCase) =>
+                    query.Where(UserFields.FirstName == filter.Value.ToString()),
+                FilterOperator.Contains when filter.FieldName.Equals("firstname", StringComparison.OrdinalIgnoreCase) =>
+                    query.Where(UserFields.FirstName.Contains(filter.Value.ToString())),
+
+                FilterOperator.Equals when filter.FieldName.Equals("lastname", StringComparison.OrdinalIgnoreCase) =>
+                    query.Where(UserFields.LastName == filter.Value.ToString()),
+                FilterOperator.Contains when filter.FieldName.Equals("lastname", StringComparison.OrdinalIgnoreCase) =>
+                    query.Where(UserFields.LastName.Contains(filter.Value.ToString())),
+
+                FilterOperator.Equals when filter.FieldName.Equals("phonenumber", StringComparison.OrdinalIgnoreCase) =>
+                    query.Where(UserFields.PhoneNumber == filter.Value.ToString()),
+                FilterOperator.Contains when filter.FieldName.Equals("phonenumber", StringComparison.OrdinalIgnoreCase)
+                    =>
+                    query.Where(UserFields.PhoneNumber.Contains(filter.Value.ToString())),
+
+                FilterOperator.Equals when filter.FieldName.Equals("status", StringComparison.OrdinalIgnoreCase) =>
+                    query.Where(UserFields.Status == Convert.ToInt16(filter.Value)),
+                
+                FilterOperator.GreaterThan when filter.FieldName.Equals("createdat", StringComparison.OrdinalIgnoreCase) =>
+                    query.Where(UserFields.CreatedAt > Convert.ToDateTime(filter.Value)),
+                
+                FilterOperator.LessThan when filter.FieldName.Equals("createdat", StringComparison.OrdinalIgnoreCase) =>
+                    query.Where(UserFields.CreatedAt < Convert.ToDateTime(filter.Value)),
+                
+                _ => query
+            };
+        }
+
+        protected override EntityQuery<UserEntity> ApplySorting(EntityQuery<UserEntity> query, string? sortBy, SortDirection sortDirection)
+        {
+            var sortField = GetSortField(sortBy);
+            if (sortField is null) return query;
+
+            return sortDirection == SortDirection.Descending
+                ? query.OrderBy(sortField.Descending())
+                : query.OrderBy(sortField.Ascending());
+        }
+
+        protected override EntityQuery<UserEntity> ApplyDefaultSorting(EntityQuery<UserEntity> query)
+        {
+            return query.OrderBy(UserFields.Username.Ascending());       
+        }
+
+        protected override async Task<IList<UserEntity>> FetchEntitiesAsync(EntityQuery<UserEntity> query, CancellationToken cancellationToken)
+        {
+            var entitties = new EntityCollection<UserEntity>();
+            await adapter.FetchQueryAsync(query, entitties, cancellationToken);
+            return entitties;
+        }
+        
         public async Task<Result<bool>> AddAsync(User user, CancellationToken cancellationToken = default) {
             try {
 
@@ -59,20 +235,6 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
                 return Result<bool>.Failure("An error occurred while deleting user", "USER_DELETE_ERROR");
             }
         }
-
-        // public async Task<Result<bool>> ExistsByEmailAsync(string email, CancellationToken cancellationToken = default) {
-        //     try {
-        //         var bucket = new RelationPredicateBucket(UserFields.Email == email);
-        //         var collection = new EntityCollection<UserEntity>();
-        //         var totalCount = await Task.Run(() => adapter.GetDbCount(collection, bucket), cancellationToken);
-        //
-        //         return Result<bool>.Success(totalCount > 0);
-        //     }
-        //     catch (Exception ex) {
-        //         logger.LogError(ex, "Error checking if email exists: {Email}", email);
-        //         return Result<bool>.Failure("An error occurred while checking email", "USER_EXISTS_ERROR");
-        //     }
-        // }
         
         public async Task<Result<bool>> ExistsByEmailAsync(string email, CancellationToken cancellationToken = default) {
             try
@@ -92,22 +254,6 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
                 return Result<bool>.Failure("An error occurred while checking email", "USER_EXISTS_ERROR");
             }
         }
-        
-        // public async Task<Result<bool>> ExistsByUsernameAsync(string username, CancellationToken cancellationToken = default) {
-        //     try
-        //     {
-        //         var bucket = new RelationPredicateBucket(UserFields.Username == username);
-        //         var collection = new EntityCollection<UserEntity>();
-        //         
-        //         var totalCount = await Task.Run(() => adapter.GetDbCount(collection, bucket), cancellationToken);
-        //         return Result<bool>.Success(totalCount > 0);
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         logger.LogError(ex, "Error checking if username exists: {Username}", username);
-        //         return Result<bool>.Failure("An error occurred while checking username", "USER_EXISTS_ERROR");
-        //     }
-        // }
         
         public async Task<Result<bool>> ExistsByUsernameAsync(string username, CancellationToken cancellationToken = default) {
             try
@@ -212,104 +358,6 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
                 logger.LogError(ex, "Error getting user by username: {Username}", username);
                 return Result<User?>.Failure("An error occurred while retrieving user", "USER_GET_ERROR");
             }
-        }
-
-        public async Task<Result<PagedResult<User>>> GetPagedAsync(PagedRequest request, CancellationToken cancellationToken = default) {
-            try {
-                var qf = new QueryFactory();
-                var q = qf.User;
-
-                // Apply search filter
-                if (!string.IsNullOrWhiteSpace(request.Search)) {
-                    var searchPattern = $"%{request.Search}%";
-                    q.Where(
-                        UserFields.Email.Like(searchPattern)
-                        .Or(UserFields.FirstName.Like(searchPattern))
-                        .Or(UserFields.LastName.Like(searchPattern))
-                        .Or(UserFields.Username.Like(searchPattern))
-                    );
-                }
-
-                // Apply custom filters
-                if (request.Filters != null && request.Filters.Any()) {
-                    foreach (var filter in request.Filters) {
-                        switch (filter.Key.ToLower()) {
-                            case "status":
-                            if (filter.Value is short statusValue)
-                                q.Where(UserFields.Status == statusValue);
-                            break;
-                            case "emailverified":
-                            if (filter.Value is bool emailVerified)
-                                q.Where(UserFields.EmailVerified == emailVerified);
-                            break;
-                            case "phoneverified":
-                            if (filter.Value is bool phoneVerified)
-                                q.Where(UserFields.PhoneVerified == phoneVerified);
-                            break;
-                        }
-                    }
-                }
-
-                // Apply sorting
-                if (!string.IsNullOrWhiteSpace(request.SortBy)) {
-                    var sortField = request.SortBy.ToLower() switch {
-                        "email" => UserFields.Email,
-                        "firstname" => UserFields.FirstName,
-                        "lastname" => UserFields.LastName,
-                        "username" => UserFields.Username,
-                        "createdat" => UserFields.CreatedAt,
-                        "lastloginat" => UserFields.LastLoginAt,
-                        _ => UserFields.CreatedAt
-                    };
-
-                    if (request.IsSortDescending)
-                        q.OrderBy(sortField.Descending());
-                    else
-                        q.OrderBy(sortField.Ascending());
-                }
-                else {
-                    q.OrderBy(UserFields.CreatedAt.Descending());
-                }
-
-                // Apply pagination
-                q.Page(request.Page, request.PageSize);
-                var totalCount = await adapter.FetchScalarAsync<int>(
-                    q.Select(() => Functions.CountRow()),
-                    cancellationToken
-                );
-                
-                var entities = new EntityCollection<UserEntity>();
-                await adapter.FetchQueryAsync(q, entities, cancellationToken);
-
-
-                var users = mapper.Map<List<User>>(entities);
-                var pagedResult = new PagedResult<User>(users, totalCount, request.Page, request.PageSize);
-
-                logger.LogInformation("Retrieved {Count} users (Page {Page}/{TotalPages})",
-                    users.Count, request.Page, pagedResult.TotalPages);
-
-                return Result<PagedResult<User>>.Success(pagedResult);
-            }
-            catch (Exception ex) {
-                logger.LogError(ex, "Error getting paged users");
-                return Result<PagedResult<User>>.Failure("An error occurred while retrieving users", "USER_PAGED_ERROR");
-            }
-        }
-
-        public IReadOnlyList<SearchableField> GetSearchableFields() {
-            return new List<SearchableField>
-            {
-                new SearchableField("Email", typeof(string), true, true),
-                new SearchableField("Username", typeof(string), true, true),
-                new SearchableField("FirstName", typeof(string), true, true),
-                new SearchableField("LastName", typeof(string), true, true),
-                new SearchableField("PhoneNumber", typeof(string), true, false),
-                new SearchableField("Status", typeof(short), false, true),
-                new SearchableField("EmailVerified", typeof(bool), false, true),
-                new SearchableField("PhoneVerified", typeof(bool), false, true),
-                new SearchableField("CreatedAt", typeof(DateTime), false, true),
-                new SearchableField("LastLoginAt", typeof(DateTime?), false, true)
-            }.AsReadOnly();
         }
 
         public async Task<Result<User?>> GetUserByEmailOrUsernameAsync(string emailOrUsername, CancellationToken cancellationToken = default) {

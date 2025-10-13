@@ -31,8 +31,9 @@ public static class DependencyInjection
         {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
             var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
             var logger = provider.GetRequiredService<ILogger<UserRepository>>();
-            return new UserRepository(adapter, mapper, logger);
+            return new UserRepository(adapter, mapper, cacheService, logger);
         });
 
         services.AddScoped<IAuthenticationRepository>(provider =>

@@ -4,10 +4,9 @@ using GroceryEcommerce.Domain.Entities.Catalog;
 
 namespace GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
 
-public interface IProductRepository : IPagedRepository<Product>
+public interface IProductRepository
 {
     // Basic CRUD operations
-    Task<Result<PagedResult<Product>>> GetProductsAsync(PagedRequest request, CancellationToken cancellationToken = default);
     Task<Result<Product?>> GetByIdAsync(Guid productId, CancellationToken cancellationToken = default);
     Task<Result<Product?>> GetBySkuAsync(string sku, CancellationToken cancellationToken = default);
     Task<Result<Product?>> GetBySlugAsync(string slug, CancellationToken cancellationToken = default);

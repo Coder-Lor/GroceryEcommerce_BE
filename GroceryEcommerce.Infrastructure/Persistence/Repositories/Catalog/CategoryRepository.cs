@@ -8,6 +8,7 @@ using GroceryEcommerce.Domain.Entities.Catalog;
 using GroceryEcommerce.EntityClasses;
 using GroceryEcommerce.FactoryClasses;
 using GroceryEcommerce.HelperClasses;
+using GroceryEcommerce.Infrastructure.Persistence.Repositories.Common;
 using Microsoft.Extensions.Logging;
 using SD.LLBLGen.Pro.ORMSupportClasses;
 using SD.LLBLGen.Pro.QuerySpec;
@@ -19,20 +20,120 @@ public class CategoryRepository(
     DataAccessAdapter adapter,
     IMapper mapper,
     ICacheService cacheService,
-    ILogger<CategoryRepository> logger
-    ): ICategoryRepository, IPagedRepository<Category>
+    ILogger<CategoryRepository> logger)
+    : BasePagedRepository<CategoryEntity, Category>(adapter, mapper, cacheService, logger), ICategoryRepository
 {
-    
-    public IReadOnlyList<SearchableField> GetSearchableFields()
+    public override IReadOnlyList<SearchableField> GetSearchableFields()
     {
         return new List<SearchableField>
         {
             new SearchableField("Name", typeof(string), true, true),
             new SearchableField("Description", typeof(string), true, false),
             new SearchableField("Slug", typeof(string), true, false),
-            new SearchableField("MetaTitle", typeof(string), true, false)
+            new SearchableField("MetaTitle", typeof(string), true, false),
+            new SearchableField("Status", typeof(short), false, true),
+            new SearchableField("CreatedAt", typeof(DateTime), false, true),
+            new SearchableField("DisplayOrder", typeof(int), false, true)
         };
     }
+
+    public override string? GetDefaultSortField()
+    {
+        return "Name";
+    }
+
+    public override IReadOnlyList<FieldMapping> GetFieldMappings()
+    {
+        return new List<FieldMapping>
+        {
+            new FieldMapping { FieldName = "Name", FieldType = typeof(string), IsSearchable = true, IsSortable = true, IsFilterable = true },
+            new FieldMapping { FieldName = "Description", FieldType = typeof(string), IsSearchable = true, IsSortable = false, IsFilterable = true },
+            new FieldMapping { FieldName = "Slug", FieldType = typeof(string), IsSearchable = true, IsSortable = true, IsFilterable = true },
+            new FieldMapping { FieldName = "Status", FieldType = typeof(short), IsSearchable = false, IsSortable = true, IsFilterable = true },
+            new FieldMapping { FieldName = "CreatedAt", FieldType = typeof(DateTime), IsSearchable = false, IsSortable = true, IsFilterable = true },
+            new FieldMapping { FieldName = "DisplayOrder", FieldType = typeof(int), IsSearchable = false, IsSortable = true, IsFilterable = true }
+        };
+    }
+
+    protected override EntityQuery<CategoryEntity> ApplySearch(EntityQuery<CategoryEntity> query, string searchTerm)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm)) return query;
+        searchTerm = searchTerm.Trim().ToLower();
+        
+        return query.Where(
+            CategoryFields.Name.Contains(searchTerm) |
+            CategoryFields.Slug.Contains(searchTerm) |
+            CategoryFields.Description.Contains(searchTerm)
+        );
+    }
+
+    protected override EntityQuery<CategoryEntity> ApplyFilter(EntityQuery<CategoryEntity> query, FilterCriteria filter)
+    {
+        return filter.Operator switch
+        {
+            FilterOperator.Equals when filter.FieldName.Equals("name", StringComparison.OrdinalIgnoreCase) =>
+                query.Where(CategoryFields.Name == filter.Value.ToString()),
+            
+            FilterOperator.Contains when filter.FieldName.Equals("name", StringComparison.OrdinalIgnoreCase) =>
+                query.Where(CategoryFields.Name.Contains(filter.Value.ToString())),
+            
+            FilterOperator.Equals when filter.FieldName.Equals("slug", StringComparison.OrdinalIgnoreCase) =>
+                query.Where(CategoryFields.Slug == filter.Value.ToString()),
+            
+            FilterOperator.Contains when filter.FieldName.Equals("slug", StringComparison.OrdinalIgnoreCase) =>
+                query.Where(CategoryFields.Slug.Contains(filter.Value.ToString())),
+            
+            FilterOperator.Equals when filter.FieldName.Equals("status", StringComparison.OrdinalIgnoreCase) =>
+                query.Where(CategoryFields.Status == Convert.ToInt16(filter.Value)),
+            
+            FilterOperator.GreaterThan when filter.FieldName.Equals("createdat", StringComparison.OrdinalIgnoreCase) =>
+                query.Where(CategoryFields.CreatedAt > Convert.ToDateTime(filter.Value)),
+            
+            FilterOperator.LessThan when filter.FieldName.Equals("createdat", StringComparison.OrdinalIgnoreCase) =>
+                query.Where(CategoryFields.CreatedAt < Convert.ToDateTime(filter.Value)),
+            
+            FilterOperator.In when filter.FieldName.Equals("status", StringComparison.OrdinalIgnoreCase) =>
+                query.Where(CategoryFields.Status.In(filter.Value)),
+            
+            _ => query
+        };
+    }
+
+    protected override EntityQuery<CategoryEntity> ApplySorting(EntityQuery<CategoryEntity> query, string? sortBy, SortDirection sortDirection)
+    {
+        var sortField = GetSortField(sortBy);
+        if (sortField is null) return query;
+
+        return sortDirection == SortDirection.Descending
+            ? query.OrderBy(sortField.Descending())
+            : query.OrderBy(sortField.Ascending());
+    }
+
+    protected override EntityQuery<CategoryEntity> ApplyDefaultSorting(EntityQuery<CategoryEntity> query)
+    {
+        return query.OrderBy(CategoryFields.Name.Ascending());
+    }
+
+    protected override async Task<IList<CategoryEntity>> FetchEntitiesAsync(EntityQuery<CategoryEntity> query, CancellationToken cancellationToken)
+    {
+        var entities = new EntityCollection<CategoryEntity>();
+        await adapter.FetchQueryAsync(query, entities, cancellationToken);
+        return entities;
+    }
+
+    private EntityField2? GetSortField(string? sortBy)
+    {
+        return sortBy?.ToLower() switch
+        {
+            "name" => (EntityField2)CategoryFields.Name,
+            "slug" => (EntityField2)CategoryFields.Slug,
+            "createdat" => (EntityField2)CategoryFields.CreatedAt,
+            "displayorder" => (EntityField2)CategoryFields.DisplayOrder,
+            "status" => (EntityField2)CategoryFields.Status,
+            _ => (EntityField2)CategoryFields.Name
+        };
+    }
+    
     
     public async Task<Result<Category?>> GetByIdAsync(Guid categoryId, CancellationToken cancellationToken = default)
     {
@@ -40,14 +141,14 @@ public class CategoryRepository(
         {
             if (categoryId == Guid.Empty)
             {
-                logger.LogWarning("Attempted to fetch category with empty GUID.");
+                Logger.LogWarning("Attempted to fetch category with empty GUID.");
                 return Result<Category?>.Failure("Invalid category ID.");
             }
             var cacheKey = $"Category_{categoryId}";
-            var cachedCategory = await cacheService.GetAsync<Category>(cacheKey, cancellationToken);
+            var cachedCategory = await CacheService.GetAsync<Category>(cacheKey, cancellationToken);
             if (cachedCategory != null)
             {
-                logger.LogInformation("Category fetched from cache: {CategoryId}", categoryId);
+                Logger.LogInformation("Category fetched from cache: {CategoryId}", categoryId);
                 return Result<Category?>.Success(cachedCategory);
             }
 
@@ -58,17 +159,17 @@ public class CategoryRepository(
             var categoryEntity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (categoryEntity == null)
             {
-                logger.LogInformation("Category not found: {CategoryId}", categoryId);
+                Logger.LogInformation("Category not found: {CategoryId}", categoryId);
                 return Result<Category?>.Failure("Category not found.");
             }
-            var category = mapper.Map<Category>(categoryEntity);
-            await cacheService.SetAsync(cacheKey, category, TimeSpan.FromHours(1), cancellationToken);
-            logger.LogInformation("Category fetched from database and cached: {CategoryId}", categoryId);
+            var category = Mapper.Map<Category>(categoryEntity);
+            await CacheService.SetAsync(cacheKey, category, TimeSpan.FromHours(1), cancellationToken);
+                Logger.LogInformation("Category fetched from database and cached: {CategoryId}", categoryId);
             return Result<Category?>.Success(category);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error fetching category by ID: {CategoryId}", categoryId);
+            Logger.LogError(ex, "Error fetching category by ID: {CategoryId}", categoryId);
             return Result<Category?>.Failure("An error occurred while fetching the category.");
         }
     }
@@ -84,7 +185,7 @@ public class CategoryRepository(
             }
             
             var cacheKey = $"Category_Name_{name}";
-            var cachedCategory = await cacheService.GetAsync<Category>(cacheKey, cancellationToken);
+            var cachedCategory = await CacheService.GetAsync<Category>(cacheKey, cancellationToken);
             if (cachedCategory != null)
             {
                 logger.LogInformation("Category fetched from cache: {Name}", name);
@@ -101,8 +202,8 @@ public class CategoryRepository(
                 logger.LogInformation("Category not found: {Name}", name);
                 return Result<Category?>.Failure("Category not found.");
             }
-            var category = mapper.Map<Category>(categoryEntity);
-            await cacheService.SetAsync(cacheKey, category, TimeSpan.FromHours(1), cancellationToken);
+            var category = Mapper.Map<Category>(categoryEntity);
+            await CacheService.SetAsync(cacheKey, category, TimeSpan.FromHours(1), cancellationToken);
             logger.LogInformation("Category fetched from database and cached: {Name}", name);
             return Result<Category?>.Success(category);
         }
@@ -125,7 +226,7 @@ public class CategoryRepository(
             
             var cacheKey = $"Category_Slug_{slug}";
             
-            var cachedCategory = await cacheService.GetAsync<Category>(cacheKey, cancellationToken);
+            var cachedCategory = await CacheService.GetAsync<Category>(cacheKey, cancellationToken);
             if (cachedCategory != null)
             {
                 logger.LogInformation("Category fetched from cache: {Slug}", slug);
@@ -142,8 +243,8 @@ public class CategoryRepository(
                 logger.LogInformation("Category not found: {Slug}", slug);
                 return Result<Category?>.Failure("Category not found.");
             }
-            var category = mapper.Map<Category>(categoryEntity);
-            await cacheService.SetAsync(cacheKey, category, TimeSpan.FromHours(1), cancellationToken);
+            var category = Mapper.Map<Category>(categoryEntity);
+            await CacheService.SetAsync(cacheKey, category, TimeSpan.FromHours(1), cancellationToken);
             logger.LogInformation("Category fetched from database and cached: {Slug}", slug);
             return Result<Category?>.Success(category);
         }
@@ -182,93 +283,7 @@ public class CategoryRepository(
             return Result<List<Category>>.Failure("An error occurred while fetching all categories.");
         }
     }
-
-
-    public async Task<Result<PagedResult<Category>>> GetPagedAsync(PagedRequest request, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            if (request.Page <= 0 || request.PageSize <= 0)
-            {
-                logger.LogWarning("Invalid paged request");
-                return Result<PagedResult<Category>>.Failure("Invalid paged request.");
-            }
-
-            var qf = new QueryFactory();
-            var query = qf.Category;
-
-            if (!string.IsNullOrWhiteSpace(request.Search))
-            {
-                query = query.Where(
-                    CategoryFields.Name.Contains(request.Search) |
-                    CategoryFields.Slug.Contains(request.Search)
-                );
-            }
-
-            if (request.Filters != null && request.Filters.Any())
-            {
-                foreach (var filter in request.Filters)
-                {
-                    switch (filter.Key.ToLower())
-                    {
-                        case "name":
-                            if (filter.Value is string name)
-                                query = query.Where(CategoryFields.Name.Contains(name));
-                            break;
-                        case "slug":
-                            if (filter.Value is string slug)
-                                query = query.Where(CategoryFields.Slug.Contains(slug));
-                            break;
-                        case "status":
-                            if (filter.Value is short statusValue)
-                                query = query.Where(CategoryFields.Status == statusValue);
-                            break;
-                    }
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(request.SortBy))
-            {
-                var sortField = request.SortBy?.ToLower() switch
-                {
-                    "name" => CategoryFields.Name,
-                    "slug" => CategoryFields.Slug,
-                    _ => CategoryFields.CreatedAt
-                };
-
-                if (request.IsSortDescending)
-                    query = query.OrderBy(sortField.Descending());
-                else
-                    query = query.OrderBy(sortField.Ascending());
-            }
-            else
-            {
-                query = query.OrderBy(CategoryFields.CreatedAt.Descending());
-            }
-            
-                
-            query = query.Page(request.Page, request.PageSize);
-            var totalCount = await adapter.FetchScalarAsync<int>(
-                query.Select(() => Functions.CountRow()),
-                cancellationToken
-            );
-                
-            var entities = new EntityCollection<CategoryEntity>();
-            await adapter.FetchQueryAsync(query, entities, cancellationToken);
-
-            var categories = mapper.Map<List<Category>>(entities);
-            var pagedResult = new PagedResult<Category>(categories, totalCount, request.Page, request.PageSize);
-                
-            logger.LogInformation("Paged categories fetched: Page {Page}, PageSize {PageSize}", request.Page, request.PageSize);
-            return Result<PagedResult<Category>>.Success(pagedResult);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error fetching categories by page");
-            return Result<PagedResult<Category>>.Failure("An error occurred while fetching categories.");
-        }
-    }
-
+    
     public async Task<Result<Category>> CreateAsync(Category category, CancellationToken cancellationToken = default)
     {
         try
@@ -779,18 +794,18 @@ public class CategoryRepository(
                 return Result<bool>.Failure("Invalid category ID.");
             }
             
-            var cachedKey = $"Category_{categoryId}";
-            var cached = await cacheService.GetAsync<Category>(cachedKey, cancellationToken);
-            
             var qf = new QueryFactory();
-            var query = qf.Product
-                .Where(ProductFields.CategoryId == categoryId);
-            
+            var query = qf.Category
+                .Where(CategoryFields.CategoryId == categoryId);
+
             var entity = await adapter.FetchFirstAsync(query, cancellationToken);
-            if (entity == null) return Result<bool>.Success(false);
-            
-            logger.LogInformation("Category is in use: {CategoryId}", categoryId);
-            return Result<bool>.Success(true);
+            if (entity != null)
+            {
+                logger.LogInformation("Category is active and in use: {CategoryId}", categoryId);
+                return Result<bool>.Success(entity.Status == 1);
+            }
+            logger.LogWarning("Category not found or inactive: {CategoryId}", categoryId);
+            return Result<bool>.Failure("Category not found or inactive.");
         }
         catch (Exception ex)
         {
@@ -799,13 +814,29 @@ public class CategoryRepository(
         }
     }
 
-    public Task<Result<int>> GetProductCountByCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default)
+    public async Task<Result<int>> GetProductCountByCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
-    }
+        try
+        {
+            if (categoryId == Guid.Empty)
+            {
+                logger.LogWarning("Category id is required");
+                return Result<int>.Failure("Invalid category ID.");
+            }
 
-    Task<Result<PagedResult<Product>>> IPagedRepository<Product>.GetPagedAsync(PagedRequest request, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
+            var qf = new QueryFactory();
+            var query = qf.Product
+                .Where(ProductFields.CategoryId == categoryId)
+                .Select(() => Functions.CountRow());
+
+            var count = await adapter.FetchScalarAsync<int>(query, cancellationToken);
+            logger.LogInformation("Product count fetched for category: {CategoryId}, Count: {Count}", categoryId, count);
+            return Result<int>.Success(count);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting product count by category: {CategoryId}", categoryId);
+            return Result<int>.Failure("An error occurred while retrieving product count by category.");
+        }
     }
 }

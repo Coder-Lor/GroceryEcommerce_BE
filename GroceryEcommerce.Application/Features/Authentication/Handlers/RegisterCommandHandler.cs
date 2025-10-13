@@ -37,19 +37,6 @@ public sealed class RegisterCommandHandler(
         try
         {
             var validationStopwatch = Stopwatch.StartNew();
-            // var emailExitsResult = await _userRepository.ExistsByEmailAsync(request.Email, cancellationToken);
-            // if (emailExitsResult is { IsSuccess: true, Data: true })
-            // {
-            //     _logger.LogWarning("Registration failed: Email {Email} already exists", hashEmail);
-            //     return Result<RegisterResponse>.Failure("Email already exists");
-            // }
-            // var usernameExitsResult = await _userRepository.ExistsByUsernameAsync(request.Username, cancellationToken);
-            // if (usernameExitsResult is { IsSuccess: true, Data: true })
-            // {
-            //     _logger.LogWarning("Registration failed: Username {Username} already exists", request.Username);
-            //     return Result<RegisterResponse>.Failure("Username already exists");           
-            // }
-            
             var existenceResult = await _userRepository.CheckUserExistenceAsync(request.Email, request.Username, cancellationToken);
             if (!existenceResult.IsSuccess)
             {

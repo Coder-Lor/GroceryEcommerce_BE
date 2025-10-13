@@ -1,7 +1,7 @@
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Domain.Entities.Catalog;
 
-namespace GroceryEcommerce.Application.Interfaces.Repositories;
+namespace GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
 
 public interface IProductAttributeRepository
 {

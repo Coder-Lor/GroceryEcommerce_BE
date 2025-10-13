@@ -4,7 +4,7 @@ using GroceryEcommerce.Domain.Entities.Auth;
 
 namespace GroceryEcommerce.Application.Interfaces.Repositories.Auth;
 
-public interface IUserRepository : IPagedRepository<User>
+public interface IUserRepository
 {
     Task<Result<User?>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<Result<User?>> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
