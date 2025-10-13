@@ -479,251 +479,81 @@ public class ProductRepository(
         }
     }
 
-    public async Task<Result<List<Product>>> GetByCategoryIdAsync(Guid categoryId, CancellationToken cancellationToken = default)
+    public Task<Result<PagedResult<Product>>> GetByCategoryIdAsync(PagedRequest request, Guid categoryId, CancellationToken cancellationToken = default)
     {
-        try
+        request.AddFilter("CategoryId", categoryId, FilterOperator.Equals);
+        if (!request.HasSorting)
         {
-            if (categoryId == Guid.Empty)
-            {
-                logger.LogWarning("Category id is required");
-                return Result<List<Product>>.Failure("Invalid category ID.");
-            }
-            
-            var cacheKey = $"Products_Category_{categoryId}";
-            var cached = await cacheService.GetAsync<List<Product>>(cacheKey, cancellationToken);
-            if (cached != null)
-            {
-                logger.LogInformation("Products by category fetched from cache: {CategoryId}", categoryId);
-                return Result<List<Product>>.Success(cached);
-            }
-
-            var qf = new QueryFactory();
-            var query = qf.Product
-                .Where(ProductFields.CategoryId == categoryId);
-            
-            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
-            var products = mapper.Map<List<Product>>(entities);
-            await cacheService.SetAsync(cacheKey, products, TimeSpan.FromHours(1), cancellationToken);
-            logger.LogInformation("Products by category fetched from database and cached: {CategoryId}", categoryId);
-            return Result<List<Product>>.Success(products);
+            request.WithSorting("Name", SortDirection.Ascending);
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error getting products by category id: {CategoryId}", categoryId);
-            return Result<List<Product>>.Failure("An error occurred while fetching products by category id.");
-        }
+        return GetPagedAsync(request, cancellationToken);
     }
 
-    public async Task<Result<List<Product>>> GetByBrandIdAsync(Guid brandId, CancellationToken cancellationToken = default)
+    public Task<Result<PagedResult<Product>>> GetByBrandIdAsync(PagedRequest request, Guid brandId, CancellationToken cancellationToken = default)
     {
-        try
+        request.AddFilter("BrandId", brandId, FilterOperator.Equals);
+        if (!request.HasSorting)
         {
-            if (brandId == Guid.Empty)
-            {
-                logger.LogWarning("Brand id is required");
-                return Result<List<Product>>.Failure("Invalid brand ID.");
-            }
-            var cacheKey = $"Products_Brand_{brandId}";
-            var cached = await cacheService.GetAsync<List<Product>>(cacheKey, cancellationToken);
-            if (cached != null)
-            {
-                logger.LogInformation("Products by brand fetched from cache: {BrandId}", brandId);
-                return Result<List<Product>>.Success(cached);
-            }
-            var qf = new QueryFactory();
-            var query = qf.Product
-                .Where(ProductFields.BrandId == brandId);
-            
-            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
-            var products = mapper.Map<List<Product>>(entities);
-            await cacheService.SetAsync(cacheKey, products, TimeSpan.FromHours(1), cancellationToken);
-            logger.LogInformation("Products by brand fetched from database and cached: {BrandId}", brandId);
-            return Result<List<Product>>.Success(products);
+            request.WithSorting("Name", SortDirection.Ascending);
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error getting products by brand id: {BrandId}", brandId);
-            return Result<List<Product>>.Failure("An error occurred while fetching products by brand id.");
-        }
+        return GetPagedAsync(request, cancellationToken);
     }
 
-    public async Task<Result<List<Product>>> GetFeaturedProductsAsync(CancellationToken cancellationToken = default)
+    public Task<Result<PagedResult<Product>>> GetFeaturedProductsAsync(PagedRequest request, CancellationToken cancellationToken = default)
     {
-        try
+        request.AddFilter("IsFeatured", true, FilterOperator.Equals);
+        if (!request.HasSorting)
         {
-            var cacheKey = "Featured_Products";
-            var cached = await cacheService.GetAsync<List<Product>>(cacheKey, cancellationToken);
-            if (cached != null)
-            {
-                logger.LogInformation("Featured products fetched from cache");
-                return Result<List<Product>>.Success(cached);
-            }
-            
-            var qf = new QueryFactory();
-            var query = qf.Product
-                .Where(ProductFields.IsFeatured == true);
-            
-            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
-            var products = mapper.Map<List<Product>>(entities);
-            if (products.Count == 0)
-            {
-                logger.LogWarning("No featured products found");
-                return Result<List<Product>>.Success(products);
-            }
-            
-            await cacheService.SetAsync(cacheKey, products, TimeSpan.FromHours(1), cancellationToken);
-            logger.LogInformation("Featured products fetched from database and cached");
-            return Result<List<Product>>.Success(products);
+            request.WithSorting("CreatedAt", SortDirection.Descending);
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error getting featured products");
-            return Result<List<Product>>.Failure("An error occurred while fetching featured products.");
-        }
+        return GetPagedAsync(request, cancellationToken);
     }
 
-    public async Task<Result<List<Product>>> GetActiveProductsAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<PagedResult<Product>>> GetActiveProductsAsync(PagedRequest request, CancellationToken cancellationToken = default)
     {
-        try
+        // Status == 1
+        request.AddFilter("Status", 1, FilterOperator.Equals);
+        // Gợi ý sort mặc định nếu caller không truyền
+        if (!request.HasSorting)
         {
-            var cacheKey = "Active_Products";
-            var cached = await cacheService.GetAsync<List<Product>>(cacheKey, cancellationToken);
-            if (cached != null)
-            {
-                logger.LogInformation("Active products fetched from cache");
-                return Result<List<Product>>.Success(cached);
-            }
-            
-            var qf = new QueryFactory();
-            var query = qf.Product.Where(ProductFields.Status == 1);
-            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
-            
-            var products = mapper.Map<List<Product>>(entities);
-            if (products.Count == 0)
-            {
-                logger.LogWarning("No active products found");
-                return Result<List<Product>>.Success(products);
-            }
-            
-            await cacheService.SetAsync(cacheKey, products, TimeSpan.FromHours(1), cancellationToken);
-            logger.LogInformation("Active products fetched from database and cached");
-            return Result<List<Product>>.Success(products);
+            request.WithSorting("CreatedAt", SortDirection.Descending);
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error getting active products");
-            return Result<List<Product>>.Failure("An error occurred while fetching active products.");       
-        }
+        return await GetPagedAsync(request, cancellationToken);
     }
 
-    public async Task<Result<List<Product>>> GetLowStockProductsAsync(int threshold = 10, CancellationToken cancellationToken = default)
+    public async Task<Result<PagedResult<Product>>> GetLowStockProductsAsync(PagedRequest request, int threshold = 10, CancellationToken cancellationToken = default)
     {
-        try
+        // StockQuantity <= threshold
+        request.AddFilter("Stock", threshold, FilterOperator.LessThanOrEqual);
+        if (!request.HasSorting)
         {
-            var cacheKey = $"Low_Stock_Products_{threshold}";
-            var cached = await cacheService.GetAsync<List<Product>>(cacheKey, cancellationToken);
-            if (cached != null)
-            {
-                logger.LogInformation("Low stock products fetched from cache");
-                return Result<List<Product>>.Success(cached);
-            }
-            
-            var qf = new QueryFactory();
-            var query = qf.Product.Where(ProductFields.StockQuantity <= threshold);
-            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
-            
-            var products = mapper.Map<List<Product>>(entities);
-            if (products.Count == 0)
-            {
-                logger.LogWarning("No low stock products found");
-                return Result<List<Product>>.Success(products);
-            }
-            await cacheService.SetAsync(cacheKey, products, TimeSpan.FromHours(1), cancellationToken);
-            logger.LogInformation("Low stock products fetched from database and cached");
-            return Result<List<Product>>.Success(products);       
+            request.WithSorting("Stock", SortDirection.Ascending);
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error getting low stock products");
-            return Result<List<Product>>.Failure("An error occurred while fetching low stock products.");      
-        }
+        return await GetPagedAsync(request, cancellationToken);
     }
 
-    public async Task<Result<List<Product>>> SearchProductsAsync(string searchTerm, CancellationToken cancellationToken = default)
+
+    public async Task<Result<PagedResult<Product>>> SearchProductsAsync(PagedRequest request, string searchTerm, CancellationToken cancellationToken = default)
     {
-        try
+        request.Search = searchTerm;
+        if (!request.HasSorting)
         {
-            if (string.IsNullOrWhiteSpace(searchTerm))
-            {
-                logger.LogWarning("Search term is required");
-                return Result<List<Product>>.Failure("Search term cannot be empty.");
-            }
-            var cachKey = $"Search_Products_{searchTerm}";
-            var cached = await cacheService.GetAsync<List<Product>>(cachKey, cancellationToken);
-            if (cached != null)
-            {
-                logger.LogInformation("Search products fetched from cache");
-                return Result<List<Product>>.Success(cached);
-            }
-            
-            var qf = new QueryFactory();
-            var query = qf.Product
-                .Where(ProductFields.Name.Contains(searchTerm) |
-                       ProductFields.Description.Contains(searchTerm) |
-                       ProductFields.MetaTitle.Contains(searchTerm) |
-                       ProductFields.Sku.Contains(searchTerm));
-            
-            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
-            var products = mapper.Map<List<Product>>(entities);
-            if (products.Count == 0)
-            {
-                logger.LogWarning("No products found for search term: {SearchTerm}", searchTerm);
-                return Result<List<Product>>.Success(products);
-            }
-            
-            await cacheService.SetAsync(cachKey, products, TimeSpan.FromHours(1), cancellationToken);
-            logger.LogInformation("Search products fetched from database and cached");
-            return Result<List<Product>>.Success(products);      
+            request.WithSorting(GetDefaultSortField() ?? "Name", SortDirection.Ascending);
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error searching products");
-            return Result<List<Product>>.Failure("An error occurred while searching products.");      
-        }
+        return await GetPagedAsync(request, cancellationToken);
     }
 
-    public async Task<Result<List<Product>>> GetProductsByPriceRangeAsync(decimal minPrice, decimal maxPrice, CancellationToken cancellationToken = default)
+    public async Task<Result<PagedResult<Product>>> GetProductsByPriceRangeAsync(PagedRequest request, decimal minPrice, decimal maxPrice, CancellationToken cancellationToken = default)
     {
-        try
+        request.AddFilter("Price", minPrice, FilterOperator.GreaterThanOrEqual);
+        request.AddFilter("Price", maxPrice, FilterOperator.LessThanOrEqual);
+        
+        if (!request.HasSorting)
         {
-            var cacheKey = $"Product_Price_Range_{minPrice}_{maxPrice}";
-            var cached = await cacheService.GetAsync<List<Product>>(cacheKey, cancellationToken);
-            if (cached != null)
-            {
-                logger.LogInformation("Products by price range fetched from cache");
-                return Result<List<Product>>.Success(cached);
-            }
-            
-            var qf = new QueryFactory();
-            var query = qf.Product.Where(ProductFields.Price >= minPrice & ProductFields.Price <= maxPrice);
-            
-            var entity = await adapter.FetchQueryAsync(query, cancellationToken);
-            var products = mapper.Map<List<Product>>(entity);
-            if (products.Count == 0)
-            {
-                logger.LogWarning("No products found for price range: {MinPrice} - {MaxPrice}", minPrice, maxPrice);
-                return Result<List<Product>>.Success(products);
-            }
-            
-            await cacheService.SetAsync(cacheKey, products, TimeSpan.FromHours(1), cancellationToken);
-            logger.LogInformation("Products by price range fetched from database and cached");
-            return Result<List<Product>>.Success(products);      
+            request.WithSorting(GetDefaultSortField() ?? "Name", SortDirection.Ascending);
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error getting products by price range");
-            return Result<List<Product>>.Failure("An error occurred while fetching products by price range.");      
-        }
+        
+        return await GetPagedAsync(request, cancellationToken);
     }
 
     public async Task<Result<bool>> UpdateStockAsync(Guid productId, int quantity, CancellationToken cancellationToken = default)
