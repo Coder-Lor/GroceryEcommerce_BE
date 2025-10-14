@@ -115,7 +115,7 @@ public class PagedRequest
                 
                 if (searchableField == null)
                     errors.Add($"Field '{filter.FieldName}' is not filterable");
-                else if (!searchableField.IsSearchable)
+                else if (!searchableField.IsFilterable)
                     errors.Add($"Field '{filter.FieldName}' is not filterable");
             }
         }
@@ -151,6 +151,20 @@ public static class PagedRequestExtensions
     {
         request.Page = page;
         request.PageSize = pageSize;
+        return request;
+    }
+
+    public static PagedRequest EnsureSorting(this PagedRequest request, string defaultSortBy, SortDirection defaultDirection = SortDirection.Ascending)
+    {
+        if (!request.HasSorting)
+            request.WithSorting(defaultSortBy, defaultDirection);
+        return request;
+    }
+
+    public static PagedRequest WithRangeFilter(this PagedRequest request, string fieldName, object minValue, object maxValue)
+    {
+        request.AddFilter(fieldName, minValue, FilterOperator.GreaterThanOrEqual);
+        request.AddFilter(fieldName, maxValue, FilterOperator.LessThanOrEqual);
         return request;
     }
 

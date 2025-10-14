@@ -33,22 +33,40 @@ public class ProductRepository(
             _ => null
         };
     }
+    
+    private static readonly Dictionary<string, EntityField2> FieldMap = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["name"] = ProductFields.Name,
+        ["slug"] = ProductFields.Slug,
+        ["status"] = ProductFields.Status,
+        ["createdat"] = ProductFields.CreatedAt,
+        ["updatedat"] = ProductFields.UpdatedAt,
+        ["sku"] = ProductFields.Sku,
+        ["price"] = ProductFields.Price,
+        ["stock"] = ProductFields.StockQuantity,
+        ["categoryid"] = ProductFields.CategoryId,
+        ["brandid"] = ProductFields.BrandId,
+        ["isfeatured"] = ProductFields.IsFeatured
+    };
+    
+    
     public override IReadOnlyList<SearchableField> GetSearchableFields()
     {
         return new List<SearchableField>
         {
-            new SearchableField("Name", typeof(string), true, true),
-            new SearchableField("Description", typeof(string), true, false),
-            new SearchableField("Slug", typeof(string), true, false),
-            new SearchableField("MetaTitle", typeof(string), true, false),
-            new SearchableField("Status", typeof(short), false, true),
-            new SearchableField("CreatedAt", typeof(DateTime), false, true),
-            new SearchableField("DisplayOrder", typeof(int), false, true),
-            new SearchableField("Price", typeof(decimal), false, true),
-            new SearchableField("Stock", typeof(int), false, true),
-            new SearchableField("Sku", typeof(string), false, true),
-            new SearchableField("CategoryId", typeof(Guid), false, true),
-            new SearchableField("BrandId", typeof(Guid), false, true)
+            new SearchableField("Name", typeof(string), true, true, true),
+            new SearchableField("Description", typeof(string), true, false, true),
+            new SearchableField("Slug", typeof(string), true, true, true),
+            new SearchableField("MetaTitle", typeof(string), true, false, true),
+            new SearchableField("Status", typeof(short), false, true, true),
+            new SearchableField("CreatedAt", typeof(DateTime), false, true, true),
+            new SearchableField("DisplayOrder", typeof(int), false, true, true),
+            new SearchableField("Price", typeof(decimal), true, true, true),
+            new SearchableField("Stock", typeof(int), true, true, true),
+            new SearchableField("Sku", typeof(string), true, true, true),
+            new SearchableField("CategoryId", typeof(Guid), true, true, true),
+            new SearchableField("BrandId", typeof(Guid), true, true, true),
+            new SearchableField("IsFeatured", typeof(bool), false, true, true)
         };
     }
 
@@ -138,50 +156,23 @@ public class ProductRepository(
 
     protected override EntityQuery<ProductEntity> ApplyFilter(EntityQuery<ProductEntity> query, FilterCriteria filter)
     {
+        if (!FieldMap.TryGetValue(filter.FieldName, out var field)) return query;
         return filter.Operator switch
         {
-            FilterOperator.Equals when filter.FieldName.Equals("name", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(ProductFields.Name == filter.Value.ToString()),
-
-            FilterOperator.Contains when filter.FieldName.Equals("name", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(ProductFields.Name.Contains(filter.Value.ToString())),
-
-            FilterOperator.Equals when filter.FieldName.Equals("slug", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(ProductFields.Slug == filter.Value.ToString()),
-
-            FilterOperator.Contains when filter.FieldName.Equals("slug", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(ProductFields.Slug.Contains(filter.Value.ToString())),
-
-            FilterOperator.Equals when filter.FieldName.Equals("status", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(ProductFields.Status == Convert.ToInt16(filter.Value)),
-
-            FilterOperator.GreaterThan when filter.FieldName.Equals("createdat", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(ProductFields.CreatedAt > Convert.ToDateTime(filter.Value)),
-
-            FilterOperator.LessThan when filter.FieldName.Equals("createdat", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(ProductFields.CreatedAt < Convert.ToDateTime(filter.Value)),
-
-            FilterOperator.GreaterThan when filter.FieldName.Equals("updatedat", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(ProductFields.UpdatedAt > Convert.ToDateTime(filter.Value)),
-
-            FilterOperator.LessThan when filter.FieldName.Equals("updatedat", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(ProductFields.UpdatedAt < Convert.ToDateTime(filter.Value)),
-
-            FilterOperator.Equals when filter.FieldName.Equals("sku", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(ProductFields.Sku == filter.Value.ToString()),
-
-            FilterOperator.Contains when filter.FieldName.Equals("sku", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(ProductFields.Sku.Contains(filter.Value.ToString())),
-
-            FilterOperator.Equals when filter.FieldName.Equals("price", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(ProductFields.Price == Convert.ToDecimal(filter.Value)),
-
-            FilterOperator.GreaterThan when filter.FieldName.Equals("price", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(ProductFields.Price > Convert.ToDecimal(filter.Value)),
-
-            FilterOperator.LessThan when filter.FieldName.Equals("price", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(ProductFields.Price < Convert.ToDecimal(filter.Value)),
-
+            FilterOperator.Equals => query.Where(field == filter.Value),
+            FilterOperator.NotEquals => query.Where(field != filter.Value),
+            FilterOperator.Contains => query.Where(field.Contains(filter.Value.ToString())),
+            FilterOperator.NotContains => query.Where(!field.Contains(filter.Value.ToString())),
+            FilterOperator.GreaterThan => query.Where(field > Convert.ToDecimal(filter.Value)),
+            FilterOperator.LessThan => query.Where(field < Convert.ToDecimal(filter.Value)),
+            FilterOperator.GreaterThanOrEqual => query.Where(field >= Convert.ToDecimal(filter.Value)),
+            FilterOperator.LessThanOrEqual => query.Where(field <= Convert.ToDecimal(filter.Value)),
+            FilterOperator.In => query.Where(field.In(filter.Value.ToString())),
+            FilterOperator.NotIn => query.Where(field.NotIn(filter.Value.ToString())),
+            FilterOperator.StartsWith => query.Where(field.StartsWith(filter.Value.ToString())),
+            FilterOperator.EndsWith => query.Where(field.EndsWith(filter.Value.ToString())),
+            FilterOperator.IsNull => query.Where(field.IsNull()),
+            FilterOperator.IsNotNull => query.Where(field.IsNotNull()),
             _ => query
         };
     }
@@ -210,123 +201,35 @@ public class ProductRepository(
         return entities;
     }
 
-    public async Task<Result<Product?>> GetByIdAsync(Guid productId, CancellationToken cancellationToken = default)
+
+    public Task<Result<Product?>> GetByIdAsync(Guid productId, CancellationToken cancellationToken = default)
     {
-        try
+        if (productId == Guid.Empty)
         {
-            if (productId == Guid.Empty)
-            {
-                logger.LogWarning("Product id is required");
-                return Result<Product?>.Failure("Invalid product ID.");
-            }
-            
-            var cacheKey = $"Product_{productId}";
-            var cached = await cacheService.GetAsync<Product>(cacheKey, cancellationToken);
-            if (cached != null)
-            {
-                logger.LogInformation("Product fetched from cache: {ProductId}", productId);
-                return Result<Product?>.Success(cached);
-            }
-
-            var qf = new QueryFactory();
-            var query = qf.Product
-                .Where(ProductFields.ProductId == productId);
-
-            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
-            if (entity == null)
-            {
-                logger.LogWarning("Product not found: {ProductId}", productId);
-                return Result<Product?>.Failure("Product not found.");
-            }
-            var product = mapper.Map<Product>(entity);
-            await cacheService.SetAsync(cacheKey, product, TimeSpan.FromHours(1), cancellationToken);
-            logger.LogInformation("Product fetched from database and cached: {ProductId}", productId);
-            return Result<Product?>.Success(product);
+            logger.LogWarning("Product id is required");
+            return Task.FromResult(Result<Product?>.Failure("Invalid product ID."));
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error getting product by id: {ProductId}", productId);
-            return Result<Product?>.Failure("An error occurred while fetching the product.");       
-        }
+        return GetSingleAsync(ProductFields.ProductId, productId, "Product", TimeSpan.FromHours(1), cancellationToken);
     }
 
-    public async Task<Result<Product?>> GetBySkuAsync(string sku, CancellationToken cancellationToken = default)
+    public Task<Result<Product?>> GetBySkuAsync(string sku, CancellationToken cancellationToken = default)
     {
-        try
+        if (string.IsNullOrWhiteSpace(sku))
         {
-            if (string.IsNullOrWhiteSpace(sku))
-            {
-                logger.LogWarning("Product sku is required");
-                return Result<Product?>.Failure("Invalid product SKU.");
-            }
-            var cacheKey = $"Product_Sku_{sku}";
-            var cached = await cacheService.GetAsync<Product>(cacheKey, cancellationToken);
-            if (cached != null)
-            {
-                logger.LogInformation("Product fetched from cache: {Sku}", sku);
-                return Result<Product?>.Success(cached);
-            }
-            
-            var qf = new QueryFactory();
-            var query = qf.Product
-                .Where(ProductFields.Sku == sku);
-            
-            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
-            if (entity == null)
-            {
-                logger.LogWarning("Product not found: {Sku}", sku);
-                return Result<Product?>.Failure("Product not found.");
-            }
-            var product = mapper.Map<Product>(entity);
-            await cacheService.SetAsync(cacheKey, product, TimeSpan.FromHours(1), cancellationToken);
-            logger.LogInformation("Product fetched from database and cached: {Sku}", sku);
-            return Result<Product?>.Success(product);   
+            logger.LogWarning("Product sku is required");
+            return Task.FromResult(Result<Product?>.Failure("Invalid product SKU."));
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error getting product by sku: {Sku}", sku);
-            return Result<Product?>.Failure("An error occurred while fetching the product.");      
-        }
+        return GetSingleAsync(ProductFields.Sku, sku, "Product_Sku", TimeSpan.FromHours(1), cancellationToken);
     }
 
-    public async Task<Result<Product?>> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)
+    public Task<Result<Product?>> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)
     {
-        try
+        if (string.IsNullOrWhiteSpace(slug))
         {
-            if (string.IsNullOrWhiteSpace(slug))
-            {
-                logger.LogWarning("Product slug is required");
-                return Result<Product?>.Failure("Invalid product slug.");
-            }
-            
-            var cacheKey = $"Product_Slug_{slug}";
-            var cached = await cacheService.GetAsync<Product>(cacheKey, cancellationToken);
-            if (cached != null)
-            {
-                logger.LogInformation("Product fetched from cache: {Slug}", slug);
-                return Result<Product?>.Success(cached);
-            }
-
-            var qf = new QueryFactory();
-            var query = qf.Product
-                .Where(ProductFields.Slug == slug);
-            
-            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
-            if (entity == null)
-            {
-                logger.LogWarning("Product not found: {Slug}", slug);
-                return Result<Product?>.Failure("Product not found.");
-            }
-            var product = mapper.Map<Product>(entity);
-            await cacheService.SetAsync(cacheKey, product, TimeSpan.FromHours(1), cancellationToken);
-            logger.LogInformation("Product fetched from database and cached: {Slug}", slug);
-            return Result<Product?>.Success(product);  
+            logger.LogWarning("Product slug is required");
+            return Task.FromResult(Result<Product?>.Failure("Invalid product slug."));
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error getting product by slug: {Slug}", slug);
-            return Result<Product?>.Failure("An error occurred while fetching the product.");      
-        }
+        return GetSingleAsync(ProductFields.Slug, slug, "Product_Slug", TimeSpan.FromHours(1), cancellationToken);
     }
 
     public async Task<Result<Product>> CreateAsync(Product product, CancellationToken cancellationToken = default)
@@ -405,105 +308,50 @@ public class ProductRepository(
         }
     }
 
-    public async Task<Result<bool>> ExistsAsync(string sku, CancellationToken cancellationToken = default)
+    public Task<Result<bool>> ExistsAsync(string sku, CancellationToken cancellationToken = default)
     {
-        try
+        if (string.IsNullOrWhiteSpace(sku))
         {
-            if (string.IsNullOrWhiteSpace(sku))
-            {
-                logger.LogWarning("Product sku is required");
-                return Result<bool>.Failure("Invalid product SKU.");
-            }
-            
-            var cacheKey = $"Product_Sku_{sku}";
-            var cached = await cacheService.GetAsync<Product>(cacheKey, cancellationToken);
-            if (cached != null)
-            {
-                logger.LogInformation("Product existence fetched from cache: {Sku}", sku);
-                return Result<bool>.Success(true);
-            }
-            
-            var qf = new QueryFactory();
-            var query = qf.Product
-                .Where(ProductFields.Sku == sku);
-            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
-            if (entity == null)
-            {
-                logger.LogInformation("Product not found: {Sku}", sku);
-                return Result<bool>.Success(false);
-            }
-            logger.LogInformation("Product existence fetched from database: {Sku}", sku);
-            return Result<bool>.Success(true);
+            logger.LogWarning("Product sku is required");
+            return Task.FromResult(Result<bool>.Failure("Invalid product SKU."));
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error checking if product exists: {Sku}", sku);
-            return Result<bool>.Failure("An error occurred while checking if product exists.");
-        }
+        return ExistsByCountAsync(ProductFields.Sku, sku, cancellationToken);
     }
 
-    public async Task<Result<bool>> ExistsAsync(Guid productId, CancellationToken cancellationToken = default)
+    public Task<Result<bool>> ExistsAsync(Guid productId, CancellationToken cancellationToken = default)
     {
-        try
+        if (productId == Guid.Empty)
         {
-            if (productId == Guid.Empty)
-            {
-                logger.LogWarning("Product id is required");
-                return Result<bool>.Failure("Invalid product ID.");
-            }
-            
-            var cacheKey = $"Product_{productId}";
-            var cached = await cacheService.GetAsync<Product>(cacheKey, cancellationToken);
-            if (cached != null)
-            {
-                logger.LogInformation("Product existence fetched from cache: {ProductId}", productId);
-                return Result<bool>.Success(true);
-            }
-            
-            var qf = new QueryFactory();
-            var query = qf.Product
-                .Where(ProductFields.ProductId == productId);
-            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
-            if (entity == null)
-            {
-                logger.LogInformation("Product not found: {ProductId}", productId);
-                return Result<bool>.Success(false);
-            }
-            logger.LogInformation("Product existence fetched from database: {ProductId}", productId);
-            return Result<bool>.Success(true);
+            logger.LogWarning("Product id is required");
+            return Task.FromResult(Result<bool>.Failure("Invalid product ID."));
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error checking if product exists: {ProductId}", productId);
-            return Result<bool>.Failure("An error occurred while checking if product exists.");
-        }
+        return ExistsByCountAsync(ProductFields.ProductId, productId, cancellationToken);
     }
 
-    public async Task<Result<PagedResult<Product>>> GetByCategoryIdAsync(PagedRequest request, Guid categoryId, CancellationToken cancellationToken = default) 
-        => await GetPagedConfiguredAsync(request, r => r.WithFilter("CategoryId", categoryId, FilterOperator.Equals), cancellationToken: cancellationToken);
+    public async Task<Result<PagedResult<Product>>> GetByCategoryIdAsync(PagedRequest request, Guid categoryId, CancellationToken cancellationToken = default)
+        => await GetPagedConfiguredAsync(request, r => r.WithFilter("CategoryId", categoryId), cancellationToken: cancellationToken);
 
     public async Task<Result<PagedResult<Product>>> GetByBrandIdAsync(PagedRequest request, Guid brandId, CancellationToken cancellationToken = default)
-        => await GetPagedConfiguredAsync(request, r => r.WithFilter("BrandId", brandId, FilterOperator.Equals), cancellationToken: cancellationToken);
+        => await GetPagedConfiguredAsync(request, r => r.WithFilter("BrandId", brandId), cancellationToken: cancellationToken);
 
     public async Task<Result<PagedResult<Product>>> GetFeaturedProductsAsync(PagedRequest request, CancellationToken cancellationToken = default)
-        => await GetPagedConfiguredAsync(request, r => r.WithFilter("IsFeatured", true, FilterOperator.Equals), cancellationToken: cancellationToken);
+        => await GetPagedConfiguredAsync(request, r => r.WithFilter("IsFeatured", true), cancellationToken: cancellationToken);
 
     public async Task<Result<PagedResult<Product>>> GetActiveProductsAsync(PagedRequest request, CancellationToken cancellationToken = default)
-        => await GetPagedConfiguredAsync(request, r => r.WithFilter("Status", 1, FilterOperator.Equals), cancellationToken: cancellationToken);
+        => await GetPagedConfiguredAsync(request, r => r.WithFilter("Status", 1), cancellationToken: cancellationToken);
 
     public async Task<Result<PagedResult<Product>>> GetLowStockProductsAsync(PagedRequest request, int threshold = 10, CancellationToken cancellationToken = default)
         => await GetPagedConfiguredAsync(request, r => r.WithFilter("Stock", threshold, FilterOperator.LessThanOrEqual), cancellationToken: cancellationToken);
-    
+
     public async Task<Result<PagedResult<Product>>> SearchProductsAsync(PagedRequest request, string searchTerm, CancellationToken cancellationToken = default)
         => await GetPagedConfiguredAsync(request, r => r.WithSearch(searchTerm), cancellationToken: cancellationToken);
 
-    public async Task<Result<PagedResult<Product>>> GetProductsByPriceRangeAsync(PagedRequest request, decimal minPrice,
+    public Task<Result<PagedResult<Product>>> GetProductsByPriceRangeAsync(PagedRequest request, decimal minPrice,
         decimal maxPrice, CancellationToken cancellationToken = default)
-        => await GetPagedConfiguredAsync(
+        => GetPagedConfiguredAsync(
             request, 
-    r => { r.AddFilter("Price", minPrice, FilterOperator.GreaterThanOrEqual); 
-            r.AddFilter("Price", maxPrice, FilterOperator.LessThanOrEqual); }, 
-            GetDefaultSortField() ?? "Name", SortDirection.Ascending, cancellationToken: cancellationToken
+            r => r.WithRangeFilter("Price", minPrice, maxPrice), 
+            GetDefaultSortField() ?? "Name", SortDirection.Ascending, cancellationToken
         );
 
     public async Task<Result<bool>> UpdateStockAsync(Guid productId, int quantity, CancellationToken cancellationToken = default)

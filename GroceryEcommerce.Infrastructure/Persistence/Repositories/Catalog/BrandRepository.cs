@@ -20,12 +20,26 @@ public class BrandRepository(
 {
     public override IReadOnlyList<SearchableField> GetSearchableFields()
     {
-        throw new NotImplementedException();
+        return new List<SearchableField>
+        {
+            new SearchableField("BrandId", typeof(Guid), false, true),
+            new SearchableField("CreatedAt", typeof(DateTime), false, true),
+            new SearchableField("CreatedBy", typeof(string), true, false),
+            new SearchableField("Description", typeof(string), true, false),
+            new SearchableField("LogoUrl", typeof(string), true, false),
+            new SearchableField("Name", typeof(string), true, true),
+            new SearchableField("Slug", typeof(string), true, true),
+            new SearchableField("Status", typeof(short), false, true),
+            new SearchableField("UpdatedAt", typeof(DateTime), false, true),
+            new SearchableField("UpdatedBy", typeof(string), true, false),
+            new SearchableField("Website", typeof(string), true, false)
+        };
     }
+
 
     public override string? GetDefaultSortField()
     {
-        throw new NotImplementedException();
+        return "Name";   
     }
 
     public override IReadOnlyList<FieldMapping> GetFieldMappings()

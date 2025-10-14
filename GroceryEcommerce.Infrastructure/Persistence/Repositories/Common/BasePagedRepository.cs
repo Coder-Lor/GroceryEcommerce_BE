@@ -17,7 +17,7 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
     ICacheService cacheService,
     ILogger logger)
     : IPagedRepository<TDomainEntity>
-    where TEntity : class, IEntityCore
+    where TEntity : EntityBase2
     where TDomainEntity : class
 {
     protected readonly DataAccessAdapter Adapter = adapter;
@@ -42,6 +42,70 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
             request.WithSorting(defaultSortField, defaultSortDirection);
         }
         return GetPagedAsync(request, cancellationToken);
+    }
+
+    protected async Task<Result<TDomainEntity?>> GetSingleAsync<TValue>(
+        EntityField2 field,
+        TValue value,
+        string cacheKeyPrefix,
+        TimeSpan cacheTtl,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var cacheKey = $"{cacheKeyPrefix}_{value}";
+            var cached = await CacheService.GetAsync<TDomainEntity>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                Logger.LogInformation("{EntityName} fetched from cache by {Field}: {Value}", 
+                    typeof(TDomainEntity).Name, field.Name, value);
+                return Result<TDomainEntity?>.Success(cached);
+            }
+
+            var qf = new QueryFactory();
+            var query = qf.Create<TEntity>().Where(field == value);
+            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
+            if (entity == null)
+            {
+                Logger.LogWarning("{EntityName} not found by {Field}: {Value}", 
+                    typeof(TDomainEntity).Name, field.Name, value);
+                return Result<TDomainEntity?>.Failure($"{typeof(TDomainEntity).Name} not found.");
+            }
+
+            var domainEntity = Mapper.Map<TDomainEntity>(entity);
+            await CacheService.SetAsync(cacheKey, domainEntity, cacheTtl, cancellationToken);
+            Logger.LogInformation("{EntityName} fetched from database and cached by {Field}: {Value}", 
+                typeof(TDomainEntity).Name, field.Name, value);
+            return Result<TDomainEntity?>.Success(domainEntity);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error getting {EntityName} by {Field}: {Value}", 
+                typeof(TDomainEntity).Name, field.Name, value);
+            return Result<TDomainEntity?>.Failure($"An error occurred while fetching {typeof(TDomainEntity).Name}.");
+        }
+    }
+
+    protected async Task<Result<bool>> ExistsByCountAsync<TValue>(
+        EntityField2 field,
+        TValue value,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var qf = new QueryFactory();
+            var countQuery = qf.Create<TEntity>().Where(field == value).Select(() => Functions.CountRow());
+            var count = await Adapter.FetchScalarAsync<int>(countQuery, cancellationToken);
+            Logger.LogInformation("Exists check for {EntityName} by {Field}: {Value} -> {Exists}", 
+                typeof(TDomainEntity).Name, field.Name, value, count > 0);
+            return Result<bool>.Success(count > 0);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error checking if {EntityName} exists by {Field}: {Value}", 
+                typeof(TDomainEntity).Name, field.Name, value);
+            return Result<bool>.Failure($"An error occurred while checking if {typeof(TDomainEntity).Name} exists.");
+        }
     }
 
     public virtual async Task<Result<PagedResult<TDomainEntity>>> GetPagedAsync(
