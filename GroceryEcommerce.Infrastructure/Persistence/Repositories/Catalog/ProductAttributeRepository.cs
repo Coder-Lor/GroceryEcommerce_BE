@@ -139,8 +139,6 @@ public class ProductAttributeRepository(
                 logger.LogInformation("Attributes fetched from cache");
                 return Result<List<ProductAttribute>>.Success(cachedAttributes);
             }
-            var qf = new QueryFactory();
-
             var query = @"SELECT * FROM catalog.product_attributes ORDER BY display_order ASC;";
             var entities = await Adapter.FetchQueryAsync<ProductAttributeEntity>(query, cancellationToken);
 
