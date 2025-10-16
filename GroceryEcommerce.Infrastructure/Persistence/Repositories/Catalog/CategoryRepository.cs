@@ -1,7 +1,6 @@
 using AutoMapper;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
-using GroceryEcommerce.Application.Interfaces.Repositories.Common;
 using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.DatabaseSpecific;
 using GroceryEcommerce.Domain.Entities.Catalog;
@@ -27,17 +26,17 @@ public class CategoryRepository(
     {
         return new List<SearchableField>
         {
-            new SearchableField("Name", typeof(string), true, true),
-            new SearchableField("Description", typeof(string), true, false),
-            new SearchableField("Slug", typeof(string), true, false),
-            new SearchableField("MetaTitle", typeof(string), true, false),
-            new SearchableField("Status", typeof(short), false, true),
-            new SearchableField("CreatedAt", typeof(DateTime), false, true),
-            new SearchableField("DisplayOrder", typeof(int), false, true)
+            new SearchableField("Name", typeof(string)),
+            new SearchableField("Description", typeof(string)),
+            new SearchableField("Slug", typeof(string)),
+            new SearchableField("MetaTitle", typeof(string)),
+            new SearchableField("Status", typeof(short)),
+            new SearchableField("CreatedAt", typeof(DateTime)),
+            new SearchableField("DisplayOrder", typeof(int))
         };
     }
 
-    public override string? GetDefaultSortField()
+    public override string GetDefaultSortField()
     {
         return "Name";
     }
@@ -98,7 +97,7 @@ public class CategoryRepository(
     protected override async Task<IList<CategoryEntity>> FetchEntitiesAsync(EntityQuery<CategoryEntity> query, CancellationToken cancellationToken)
     {
         var entities = new EntityCollection<CategoryEntity>();
-        await adapter.FetchQueryAsync(query, entities, cancellationToken);
+        await Adapter.FetchQueryAsync(query, entities, cancellationToken);
         return entities;
     }
 
@@ -106,12 +105,12 @@ public class CategoryRepository(
     {
         return sortBy?.ToLower() switch
         {
-            "name" => (EntityField2)CategoryFields.Name,
-            "slug" => (EntityField2)CategoryFields.Slug,
-            "createdat" => (EntityField2)CategoryFields.CreatedAt,
-            "displayorder" => (EntityField2)CategoryFields.DisplayOrder,
-            "status" => (EntityField2)CategoryFields.Status,
-            _ => (EntityField2)CategoryFields.Name
+            "name" => CategoryFields.Name,
+            "slug" => CategoryFields.Slug,
+            "createdat" => CategoryFields.CreatedAt,
+            "displayorder" => CategoryFields.DisplayOrder,
+            "status" => CategoryFields.Status,
+            _ => CategoryFields.Name
         };
     }
     
@@ -137,7 +136,7 @@ public class CategoryRepository(
             var query = qf.Category
                 .Where(CategoryFields.CategoryId == categoryId);
             
-            var categoryEntity = await adapter.FetchFirstAsync(query, cancellationToken);
+            var categoryEntity = await Adapter.FetchFirstAsync(query, cancellationToken);
             if (categoryEntity == null)
             {
                 Logger.LogInformation("Category not found: {CategoryId}", categoryId);
@@ -177,7 +176,7 @@ public class CategoryRepository(
             var query = qf.Category
                 .Where(CategoryFields.Name == name);
             
-            var categoryEntity = await adapter.FetchFirstAsync(query, cancellationToken);
+            var categoryEntity = await Adapter.FetchFirstAsync(query, cancellationToken);
             if (categoryEntity == null)
             {
                 logger.LogInformation("Category not found: {Name}", name);
@@ -218,7 +217,7 @@ public class CategoryRepository(
             var query = qf.Category
                 .Where(CategoryFields.Slug == slug);
             
-            var categoryEntity = await adapter.FetchFirstAsync(query, cancellationToken);
+            var categoryEntity = await Adapter.FetchFirstAsync(query, cancellationToken);
             if (categoryEntity == null)
             {
                 logger.LogInformation("Category not found: {Slug}", slug);
@@ -241,7 +240,7 @@ public class CategoryRepository(
         try
         {
             var cacheKey = "All_Categories";
-            var cachedCategories = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            var cachedCategories = await CacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
             if (cachedCategories != null)
             {
                 logger.LogInformation("All categories fetched from cache.");
@@ -252,9 +251,9 @@ public class CategoryRepository(
             var query = qf.Category
                 .OrderBy(CategoryFields.Name.Descending());
             
-            var categoryEntities = await adapter.FetchQueryAsync(query, cancellationToken);
-            var categories = mapper.Map<List<Category>>(categoryEntities);
-            await cacheService.SetAsync(cacheKey, categories, TimeSpan.FromHours(1), cancellationToken);
+            var categoryEntities = await Adapter.FetchQueryAsync(query, cancellationToken);
+            var categories = Mapper.Map<List<Category>>(categoryEntities);
+            await CacheService.SetAsync(cacheKey, categories, TimeSpan.FromHours(1), cancellationToken);
             logger.LogInformation("All categories fetched from database and cached.");
             return Result<List<Category>>.Success(categories);
         }
@@ -269,13 +268,13 @@ public class CategoryRepository(
     {
         try
         {
-            var entity = mapper.Map<CategoryEntity>(category);
+            var entity = Mapper.Map<CategoryEntity>(category);
             entity.IsNew = true;
-            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
+            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved)
             {
-                await cacheService.RemoveAsync("All_Categories", cancellationToken);
-                await cacheService.RemoveAsync("Root_Categories", cancellationToken);
+                await CacheService.RemoveAsync("All_Categories", cancellationToken);
+                await CacheService.RemoveAsync("Root_Categories", cancellationToken);
                 
                 logger.LogInformation("Category created: {Name}", category.Name);
                 return Result<Category>.Success(category);
@@ -294,13 +293,13 @@ public class CategoryRepository(
     {
         try
         {
-            var entity = mapper.Map<CategoryEntity>(category);
+            var entity = Mapper.Map<CategoryEntity>(category);
             entity.IsNew = true;
-            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
+            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved)
             {
-                await cacheService.RemoveAsync("All_Categories", cancellationToken);
-                await cacheService.RemoveAsync("Root_Categories", cancellationToken);
+                await CacheService.RemoveAsync("All_Categories", cancellationToken);
+                await CacheService.RemoveAsync("Root_Categories", cancellationToken);
                 
                 logger.LogInformation("Category updated: {Name}", category.Name);
                 return Result<bool>.Success(saved);
@@ -325,11 +324,11 @@ public class CategoryRepository(
                 return Result<bool>.Failure("Invalid category ID.");
             }
             var entity = new CategoryEntity(categoryId);
-            var deleted = await adapter.DeleteEntityAsync(entity, cancellationToken);
+            var deleted = await Adapter.DeleteEntityAsync(entity, cancellationToken);
             if (deleted)
             {
-                await cacheService.RemoveAsync("All_Categories", cancellationToken);
-                await cacheService.RemoveAsync("Root_Categories", cancellationToken);
+                await CacheService.RemoveAsync("All_Categories", cancellationToken);
+                await CacheService.RemoveAsync("Root_Categories", cancellationToken);
                 
                 logger.LogInformation("Category deleted: {CategoryId}", categoryId);
                 return Result<bool>.Success(deleted);
@@ -349,7 +348,7 @@ public class CategoryRepository(
         try
         {
             const string cacheKey = "Root_Categories";
-            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, ct);
+            var cached = await CacheService.GetAsync<List<Category>>(cacheKey, ct);
             if (cached != null)
             {
                 logger.LogInformation("Root categories fetched from cache");
@@ -361,10 +360,10 @@ public class CategoryRepository(
                 .Where(CategoryFields.CategoryId == Guid.Empty)
                 .OrderBy(CategoryFields.Name.Ascending());
             
-            var entities = await adapter.FetchQueryAsync(query, ct);
-            var result = mapper.Map<List<Category>>(entities);
+            var entities = await Adapter.FetchQueryAsync(query, ct);
+            var result = Mapper.Map<List<Category>>(entities);
 
-            await cacheService.SetAsync(cacheKey, result, TimeSpan.FromHours(1), ct);
+            await CacheService.SetAsync(cacheKey, result, TimeSpan.FromHours(1), ct);
             return Result<List<Category>>.Success(result);
         }
         catch (Exception ex)
@@ -385,7 +384,7 @@ public class CategoryRepository(
             }
             
             var cacheKey = $"Sub_Categories_{parentCategoryId}";
-            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            var cached = await CacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
             if (cached != null)
             {
                 logger.LogInformation("Sub categories fetched from cache: {ParentCategoryId}", parentCategoryId);
@@ -397,10 +396,10 @@ public class CategoryRepository(
                 .Where(CategoryFields.ParentCategoryId == parentCategoryId)
                 .OrderBy(CategoryFields.Name.Ascending());
             
-            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
+            var entities = await Adapter.FetchQueryAsync(query, cancellationToken);
             if (entities.Count == 0) return Result<List<Category>>.Success(new List<Category>());
             
-            var result = mapper.Map<List<Category>>(entities);
+            var result = Mapper.Map<List<Category>>(entities);
             if (result.Count == 0)
             {
                 logger.LogInformation("No sub categories found for parent category: {ParentCategoryId}", parentCategoryId);
@@ -429,7 +428,7 @@ public class CategoryRepository(
             }
             
             var cacheKey = $"Category_Path_{categoryId}";
-            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            var cached = await CacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
             if (cached != null)
             {
                 logger.LogInformation("Category path fetched from cache: {CategoryId}", categoryId);
@@ -440,10 +439,10 @@ public class CategoryRepository(
             var query = qf.Category
                 .Where(CategoryFields.CategoryId == categoryId)
                 .OrderBy(CategoryFields.Name.Ascending());
-            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
+            var entities = await Adapter.FetchQueryAsync(query, cancellationToken);
             if (entities.Count == 0) return Result<List<Category>>.Success(new List<Category>());
             
-            var result = mapper.Map<List<Category>>(entities);
+            var result = Mapper.Map<List<Category>>(entities);
             if (result.Count == 0)
             {
                 logger.LogInformation("No category path found for category: {CategoryId}", categoryId);
@@ -464,7 +463,7 @@ public class CategoryRepository(
         try
         {
             var cacheKey = "Category_Tree";
-            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            var cached = await CacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
             if (cached != null)
             {
                 logger.LogInformation("Category tree fetched from cache");
@@ -484,15 +483,15 @@ public class CategoryRepository(
                 .OrderBy(CategoryFields.Name.Ascending());
 
             var entities = new EntityCollection<CategoryEntity>();
-            await adapter.FetchQueryAsync(query, entities, cancellationToken);
+            await Adapter.FetchQueryAsync(query, entities, cancellationToken);
             
-            var result = mapper.Map<List<Category>>(entities);
+            var result = Mapper.Map<List<Category>>(entities);
             if (result.Count == 0)
             {
                 logger.LogInformation("No category tree found");
                 return Result<List<Category>>.Success(new List<Category>());
             }
-            await cacheService.SetAsync(cacheKey, result, TimeSpan.FromHours(1), cancellationToken);
+            await CacheService.SetAsync(cacheKey, result, TimeSpan.FromHours(1), cancellationToken);
             logger.LogInformation("Category tree fetched");
             return Result<List<Category>>.Success(result);
         }
@@ -513,7 +512,7 @@ public class CategoryRepository(
                 return Result<bool>.Failure("Invalid category ID.");
             }
             var cacheKey = $"Categories_{categoryId}";
-            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            var cached = await CacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
             if (cached != null && cached.Count > 0)
             {
                 logger.LogInformation("Category has sub categories (from cache): {CategoryId}", categoryId);
@@ -524,7 +523,7 @@ public class CategoryRepository(
             var query = qf.Category
                 .Where(CategoryFields.ParentCategoryId == categoryId);
                 
-            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
+            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
             if (entity == null) return Result<bool>.Success(false);
             
             logger.LogInformation("Category has sub categories: {CategoryId}", categoryId);
@@ -547,7 +546,7 @@ public class CategoryRepository(
                 return Result<bool>.Failure("Invalid category ID.");
             }
             var cacheKey = $"Categories_{categoryId}";
-            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            var cached = await CacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
             if (cached != null && cached.Count > 0)
             {
                 logger.LogInformation("Category is root category (from cache): {CategoryId}", categoryId);
@@ -558,7 +557,7 @@ public class CategoryRepository(
             var query = qf.Category
                 .Where(CategoryFields.CategoryId == categoryId);
                 
-            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
+            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
             if (entity == null) return Result<bool>.Success(false);
             
             logger.LogInformation("Category is root category: {CategoryId}", categoryId);
@@ -581,7 +580,7 @@ public class CategoryRepository(
                 return Result<bool>.Failure("Invalid category name.");
             }
             var cacheKey = $"Category_Name_{name}";
-            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            var cached = await CacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
             if (cached != null && cached.Count > 0)
             {
                 logger.LogInformation("Category exists (from cache): {Name}", name);
@@ -591,7 +590,7 @@ public class CategoryRepository(
             var qf = new QueryFactory();
             var query = qf.Category
                 .Where(CategoryFields.Name == name);
-            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
+            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
             if (entity == null) return Result<bool>.Success(false);
             logger.LogInformation("Category exists: {Name}", name);
             return Result<bool>.Success(true);
@@ -613,7 +612,7 @@ public class CategoryRepository(
                 return Result<bool>.Failure("Invalid category ID.");
             }
             var cacheKey = $"Category_{categoryId}";
-            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            var cached = await CacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
             if (cached != null && cached.Count > 0)
             {
                 logger.LogInformation("Category exists (from cache): {CategoryId}", categoryId);
@@ -624,7 +623,7 @@ public class CategoryRepository(
             var query = qf.Category
                 .Where(CategoryFields.CategoryId == categoryId);
             
-            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
+            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
             if (entity == null) return Result<bool>.Success(false);
             logger.LogInformation("Category exists: {CategoryId}", categoryId);
             return Result<bool>.Success(true);
@@ -653,7 +652,7 @@ public class CategoryRepository(
             }
             
             var cachedById = $"Category_{categoryId}";
-            var cachedId = await cacheService.GetAsync<Category>(cachedById, cancellationToken);
+            var cachedId = await CacheService.GetAsync<Category>(cachedById, cancellationToken);
             if (cachedId != null)
             {
                 logger.LogInformation("Category exists (from cache): {Name}, {CategoryId}", name, categoryId);
@@ -661,7 +660,7 @@ public class CategoryRepository(
             }
             
             var cachedByName = $"Category_Name_{name}";
-            var cachedName = await cacheService.GetAsync<Category>(cachedByName, cancellationToken);
+            var cachedName = await CacheService.GetAsync<Category>(cachedByName, cancellationToken);
             if (cachedName != null)
             {
                 logger.LogInformation("Category exists (from cache): {Name}, {CategoryId}", name, categoryId);
@@ -673,7 +672,7 @@ public class CategoryRepository(
                 .Where(CategoryFields.CategoryId == categoryId | CategoryFields.Name == name)
                 .Limit(2);
             var entities = new EntityCollection<CategoryEntity>();
-            await adapter.FetchQueryAsync(query, entities, cancellationToken);
+            await Adapter.FetchQueryAsync(query, entities, cancellationToken);
 
             var hasName = entities.Any(e => e.Name == name);
             var hasId = entities.Any(e => e.CategoryId == categoryId);
@@ -692,7 +691,7 @@ public class CategoryRepository(
         try
         {
             var cacheKey = "Active_Categories";
-            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            var cached = await CacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
             if (cached != null)
             {
                 logger.LogInformation("Active categories fetched from cache");
@@ -704,15 +703,15 @@ public class CategoryRepository(
                 .Where(CategoryFields.Status == 1)
                 .OrderBy(CategoryFields.Name.Ascending());
             
-            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
-            var result = mapper.Map<List<Category>>(entities);
+            var entities = await Adapter.FetchQueryAsync(query, cancellationToken);
+            var result = Mapper.Map<List<Category>>(entities);
             if (result.Count == 0)
             {
                 logger.LogInformation("No active categories found");
                 return Result<List<Category>>.Success(new List<Category>());
             }
             
-            await cacheService.SetAsync(cacheKey, result, TimeSpan.FromHours(1), cancellationToken);
+            await CacheService.SetAsync(cacheKey, result, TimeSpan.FromHours(1), cancellationToken);
             logger.LogInformation("Active categories fetched");
             return Result<List<Category>>.Success(result);       
         }
@@ -734,7 +733,7 @@ public class CategoryRepository(
             }
             
             var cacheKey = $"Categories_Name_{searchTerm}";
-            var cached = await cacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            var cached = await CacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
             if (cached != null)
             {
                 logger.LogInformation("Categories searched by name (from cache): {SearchTerm}", searchTerm);
@@ -746,15 +745,15 @@ public class CategoryRepository(
                 .Where(CategoryFields.Name.Contains(searchTerm))
                 .OrderBy(CategoryFields.Name.Ascending());
             
-            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
-            var result = mapper.Map<List<Category>>(entities);
+            var entities = await Adapter.FetchQueryAsync(query, cancellationToken);
+            var result = Mapper.Map<List<Category>>(entities);
             if (result.Count == 0)
             {
                 logger.LogInformation("No categories found by name: {SearchTerm}", searchTerm);
                 return Result<List<Category>>.Success(new List<Category>());
             }
             
-            await cacheService.SetAsync(cacheKey, result, TimeSpan.FromHours(1), cancellationToken);
+            await CacheService.SetAsync(cacheKey, result, TimeSpan.FromHours(1), cancellationToken);
             logger.LogInformation("Categories searched by name: {SearchTerm}", searchTerm);
             return Result<List<Category>>.Success(result);       
         }
@@ -779,7 +778,7 @@ public class CategoryRepository(
             var query = qf.Category
                 .Where(CategoryFields.CategoryId == categoryId);
 
-            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
+            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
             if (entity != null)
             {
                 logger.LogInformation("Category is active and in use: {CategoryId}", categoryId);
@@ -810,7 +809,7 @@ public class CategoryRepository(
                 .Where(ProductFields.CategoryId == categoryId)
                 .Select(() => Functions.CountRow());
 
-            var count = await adapter.FetchScalarAsync<int>(query, cancellationToken);
+            var count = await Adapter.FetchScalarAsync<int>(query, cancellationToken);
             logger.LogInformation("Product count fetched for category: {CategoryId}, Count: {Count}", categoryId, count);
             return Result<int>.Success(count);
         }

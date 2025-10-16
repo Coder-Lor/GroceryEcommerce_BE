@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using AutoMapper;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
@@ -6,7 +5,6 @@ using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.DatabaseSpecific;
 using GroceryEcommerce.Domain.Entities.Catalog;
 using GroceryEcommerce.EntityClasses;
-using GroceryEcommerce.FactoryClasses;
 using GroceryEcommerce.HelperClasses;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Common;
 using Microsoft.Extensions.Logging;
@@ -39,23 +37,23 @@ public class ProductRepository(
     {
         return new List<SearchableField>
         {
-            new SearchableField("Name", typeof(string), true, true, true),
-            new SearchableField("Description", typeof(string), true, false, true),
-            new SearchableField("Slug", typeof(string), true, true, true),
-            new SearchableField("MetaTitle", typeof(string), true, false, true),
-            new SearchableField("Status", typeof(short), false, true, true),
-            new SearchableField("CreatedAt", typeof(DateTime), false, true, true),
-            new SearchableField("DisplayOrder", typeof(int), false, true, true),
-            new SearchableField("Price", typeof(decimal), true, true, true),
-            new SearchableField("Stock", typeof(int), true, true, true),
-            new SearchableField("Sku", typeof(string), true, true, true),
-            new SearchableField("CategoryId", typeof(Guid), true, true, true),
-            new SearchableField("BrandId", typeof(Guid), true, true, true),
-            new SearchableField("IsFeatured", typeof(bool), false, true, true)
+            new SearchableField("Name", typeof(string)),
+            new SearchableField("Description", typeof(string)),
+            new SearchableField("Slug", typeof(string)),
+            new SearchableField("MetaTitle", typeof(string)),
+            new SearchableField("Status", typeof(short)),
+            new SearchableField("CreatedAt", typeof(DateTime)),
+            new SearchableField("DisplayOrder", typeof(int)),
+            new SearchableField("Price", typeof(decimal)),
+            new SearchableField("Stock", typeof(int)),
+            new SearchableField("Sku", typeof(string)),
+            new SearchableField("CategoryId", typeof(Guid)),
+            new SearchableField("BrandId", typeof(Guid)),
+            new SearchableField("IsFeatured", typeof(bool))
         };
     }
 
-    public override string? GetDefaultSortField()
+    public override string GetDefaultSortField()
     {
         return "Name";   
     }
@@ -182,47 +180,47 @@ public class ProductRepository(
     }
 
 
-    public Task<Result<Product?>> GetByIdAsync(Guid productId, CancellationToken cancellationToken = default)
+    public async Task<Result<Product?>> GetByIdAsync(Guid productId, CancellationToken cancellationToken = default)
     {
         if (productId == Guid.Empty)
         {
             logger.LogWarning("Product id is required");
-            return Task.FromResult(Result<Product?>.Failure("Invalid product ID."));
+            return Result<Product?>.Failure("Invalid product ID.");   
         }
-        return GetSingleAsync(ProductFields.ProductId, productId, "Product", TimeSpan.FromHours(1), cancellationToken);
+        return await GetSingleAsync(ProductFields.ProductId, productId, "Product", TimeSpan.FromHours(1), cancellationToken);
     }
 
-    public Task<Result<Product?>> GetBySkuAsync(string sku, CancellationToken cancellationToken = default)
+    public async Task<Result<Product?>> GetBySkuAsync(string sku, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(sku))
         {
             logger.LogWarning("Product sku is required");
-            return Task.FromResult(Result<Product?>.Failure("Invalid product SKU."));
+            return Result<Product?>.Failure("Invalid product SKU.");  
         }
-        return GetSingleAsync(ProductFields.Sku, sku, "Product_Sku", TimeSpan.FromHours(1), cancellationToken);
+        return await GetSingleAsync(ProductFields.Sku, sku, "Product_Sku", TimeSpan.FromHours(1), cancellationToken);
     }
 
-    public Task<Result<Product?>> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)
+    public async Task<Result<Product?>> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(slug))
         {
             logger.LogWarning("Product slug is required");
-            return Task.FromResult(Result<Product?>.Failure("Invalid product slug."));
+            return Result<Product?>.Failure("Invalid product slug."); 
         }
-        return GetSingleAsync(ProductFields.Slug, slug, "Product_Slug", TimeSpan.FromHours(1), cancellationToken);
+        return await GetSingleAsync(ProductFields.Slug, slug, "Product_Slug", TimeSpan.FromHours(1), cancellationToken);
     }
 
     public async Task<Result<Product>> CreateAsync(Product product, CancellationToken cancellationToken = default)
     {
         try
         {   
-            var entity = mapper.Map<ProductEntity>(product);
+            var entity = Mapper.Map<ProductEntity>(product);
             entity.IsNew = true;
             
-            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
+            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved)
             {
-                await cacheService.RemoveAsync("All_Products", cancellationToken);
+                await CacheService.RemoveAsync("All_Products", cancellationToken);
                 logger.LogInformation("Product created: {Name}", product.Name);
                 return Result<Product>.Success(product);
             }
@@ -240,13 +238,13 @@ public class ProductRepository(
     {
         try
         {
-            var entity = mapper.Map<ProductEntity>(product);
+            var entity = Mapper.Map<ProductEntity>(product);
             entity.IsNew = false;
             
-            var updated = await adapter.SaveEntityAsync(entity, cancellationToken);
+            var updated = await Adapter.SaveEntityAsync(entity, cancellationToken);
             if (updated)
             {
-                await cacheService.RemoveAsync("All_Products", cancellationToken);
+                await CacheService.RemoveAsync("All_Products", cancellationToken);
                 logger.LogInformation("Product updated: {Name}", product.Name);
                 return Result<bool>.Success(true);
             }
@@ -271,7 +269,7 @@ public class ProductRepository(
             }
             
             var entity = new ProductEntity(productId);
-            var deleted = await adapter.DeleteEntityAsync(entity, cancellationToken);
+            var deleted = await Adapter.DeleteEntityAsync(entity, cancellationToken);
 
             if (!deleted)
             {
@@ -288,24 +286,24 @@ public class ProductRepository(
         }
     }
 
-    public Task<Result<bool>> ExistsAsync(string sku, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> ExistsAsync(string sku, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(sku))
         {
             logger.LogWarning("Product sku is required");
-            return Task.FromResult(Result<bool>.Failure("Invalid product SKU."));
+            return Result<bool>.Failure("Invalid product SKU."); 
         }
-        return ExistsByCountAsync(ProductFields.Sku, sku, cancellationToken);
+        return await ExistsByCountAsync(ProductFields.Sku, sku, cancellationToken);
     }
 
-    public Task<Result<bool>> ExistsAsync(Guid productId, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> ExistsAsync(Guid productId, CancellationToken cancellationToken = default)
     {
         if (productId == Guid.Empty)
         {
             logger.LogWarning("Product id is required");
-            return Task.FromResult(Result<bool>.Failure("Invalid product ID."));
+            return Result<bool>.Failure("Invalid product ID.");
         }
-        return ExistsByCountAsync(ProductFields.ProductId, productId, cancellationToken);
+        return await ExistsByCountAsync(ProductFields.ProductId, productId, cancellationToken);
     }
 
     public async Task<Result<PagedResult<Product>>> GetByCategoryIdAsync(PagedRequest request, Guid categoryId, CancellationToken cancellationToken = default)
@@ -331,7 +329,7 @@ public class ProductRepository(
         => GetPagedConfiguredAsync(
             request, 
             r => r.WithRangeFilter("Price", minPrice, maxPrice), 
-            GetDefaultSortField() ?? "Name", SortDirection.Ascending, cancellationToken
+            GetDefaultSortField(), SortDirection.Ascending, cancellationToken
         );
 
     public async Task<Result<bool>> UpdateStockAsync(Guid productId, int quantity, CancellationToken cancellationToken = default)
@@ -347,7 +345,7 @@ public class ProductRepository(
             var entity = new ProductEntity(productId);
             entity.StockQuantity = quantity;
             
-            var updated = await adapter.SaveEntityAsync(entity, cancellationToken);
+            var updated = await Adapter.SaveEntityAsync(entity, cancellationToken);
             if (updated)
             {
                 logger.LogInformation("Stock updated for product: {ProductId}", productId);
@@ -378,7 +376,7 @@ public class ProductRepository(
                 Status = status
             };
 
-            var updated = await adapter.SaveEntityAsync(entity, cancellationToken);
+            var updated = await Adapter.SaveEntityAsync(entity, cancellationToken);
             if (updated)
             {
                 logger.LogInformation("Status updated for product: {ProductId}", productId);

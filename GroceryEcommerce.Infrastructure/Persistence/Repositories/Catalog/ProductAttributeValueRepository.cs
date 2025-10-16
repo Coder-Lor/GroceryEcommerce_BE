@@ -7,6 +7,7 @@ using GroceryEcommerce.Domain.Entities.Catalog;
 using GroceryEcommerce.EntityClasses;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Common;
 using Microsoft.Extensions.Logging;
+using SD.LLBLGen.Pro.ORMSupportClasses;
 using SD.LLBLGen.Pro.QuerySpec;
 
 namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
@@ -33,12 +34,12 @@ public class ProductAttributeValueRepository(
         throw new NotImplementedException();
     }
 
-    protected override EntityQuery<ProductAttributeValueEntity> ApplySearch(EntityQuery<ProductAttributeValueEntity> query, string searchTerm)
+    protected override IReadOnlyDictionary<string, EntityField2> GetFieldMap()
     {
         throw new NotImplementedException();
     }
 
-    protected override EntityQuery<ProductAttributeValueEntity> ApplyFilter(EntityQuery<ProductAttributeValueEntity> query, FilterCriteria filter)
+    protected override EntityQuery<ProductAttributeValueEntity> ApplySearch(EntityQuery<ProductAttributeValueEntity> query, string searchTerm)
     {
         throw new NotImplementedException();
     }
@@ -63,12 +64,12 @@ public class ProductAttributeValueRepository(
         throw new NotImplementedException();
     }
 
-    public Task<Result<List<ProductAttributeValue>>> GetByProductIdAsync(Guid productId, CancellationToken cancellationToken = default)
+    public Task<Result<PagedResult<ProductAttributeValue>>> GetByProductIdAsync(PagedRequest request, Guid productId, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task<Result<List<ProductAttributeValue>>> GetByAttributeIdAsync(Guid attributeId, CancellationToken cancellationToken = default)
+    public Task<Result<PagedResult<ProductAttributeValue>>> GetByAttributeIdAsync(PagedRequest request, Guid attributeId, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
@@ -108,7 +109,7 @@ public class ProductAttributeValueRepository(
         throw new NotImplementedException();
     }
 
-    public Task<Result<List<ProductAttributeValue>>> GetByValueAsync(string value, CancellationToken cancellationToken = default)
+    public Task<Result<PagedResult<ProductAttributeValue>>> GetByValueAsync(PagedRequest request, string value, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

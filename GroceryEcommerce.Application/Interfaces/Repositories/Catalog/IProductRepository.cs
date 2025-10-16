@@ -1,5 +1,4 @@
 using GroceryEcommerce.Application.Common;
-using GroceryEcommerce.Application.Interfaces.Repositories.Common;
 using GroceryEcommerce.Domain.Entities.Catalog;
 
 namespace GroceryEcommerce.Application.Interfaces.Repositories.Catalog;

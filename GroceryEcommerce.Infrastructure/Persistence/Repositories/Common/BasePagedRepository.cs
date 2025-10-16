@@ -95,7 +95,10 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
         try
         {
             var qf = new QueryFactory();
-            var countQuery = qf.Create<TEntity>().Where(field == value).Select(() => Functions.CountRow());
+            var countQuery = qf.Create<TEntity>()
+                .Where(field == value)
+                .Limit(1)
+                .Select(() => Functions.CountRow());
             var count = await Adapter.FetchScalarAsync<int>(countQuery, cancellationToken);
             Logger.LogInformation("Exists check for {EntityName} by {Field}: {Value} -> {Exists}", 
                 typeof(TDomainEntity).Name, field.Name, value, count > 0);
@@ -106,6 +109,32 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
             Logger.LogError(ex, "Error checking if {EntityName} exists by {Field}: {Value}", 
                 typeof(TDomainEntity).Name, field.Name, value);
             return Result<bool>.Failure($"An error occurred while checking if {typeof(TDomainEntity).Name} exists.");
+        }
+    }
+
+    protected async Task<Result<int>> CountByFieldAsync<TValue>(
+        EntityField2 field,
+        TValue value,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var qf = new QueryFactory();
+            var query = qf.Create<TEntity>()
+                .Where(field == value)
+                .Select(() => Functions.CountRow());
+            
+            var count = await Adapter.FetchScalarAsync<int>(query, cancellationToken);
+            Logger.LogInformation("Count for {EntityName} by {Field}: {Value} -> {Count}", 
+                typeof(TDomainEntity).Name, field.Name, value, count);
+            
+            return Result<int>.Success(count);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error counting {EntityName} by {Field}: {Value}", 
+                typeof(TDomainEntity).Name, field.Name, value);
+            return Result<int>.Failure($"An error occurred while counting {typeof(TDomainEntity).Name}.");
         }
     }
 
@@ -217,7 +246,6 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
     }
     // Abstract methods - Infrastructure layer sẽ implement
     protected abstract IReadOnlyDictionary<string, EntityField2> GetFieldMap();
-    // protected abstract Dictionary<string, EntityField2> GetFieldMap();
     protected abstract EntityQuery<TEntity> ApplySearch(EntityQuery<TEntity> query, string searchTerm);
     protected abstract EntityQuery<TEntity> ApplySorting(EntityQuery<TEntity> query, string? sortBy, SortDirection sortDirection);
     protected abstract EntityQuery<TEntity> ApplyDefaultSorting(EntityQuery<TEntity> query);

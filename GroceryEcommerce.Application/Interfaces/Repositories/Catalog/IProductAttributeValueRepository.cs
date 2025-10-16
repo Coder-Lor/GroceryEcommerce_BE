@@ -7,8 +7,8 @@ public interface IProductAttributeValueRepository
 {
     // Basic CRUD operations
     Task<Result<ProductAttributeValue?>> GetByIdAsync(Guid valueId, CancellationToken cancellationToken = default);
-    Task<Result<List<ProductAttributeValue>>> GetByProductIdAsync(Guid productId, CancellationToken cancellationToken = default);
-    Task<Result<List<ProductAttributeValue>>> GetByAttributeIdAsync(Guid attributeId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<ProductAttributeValue>>> GetByProductIdAsync(PagedRequest request, Guid productId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<ProductAttributeValue>>> GetByAttributeIdAsync(PagedRequest request, Guid attributeId, CancellationToken cancellationToken = default);
     Task<Result<ProductAttributeValue>> CreateAsync(ProductAttributeValue value, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateAsync(ProductAttributeValue value, CancellationToken cancellationToken = default);
     Task<Result<bool>> DeleteAsync(Guid valueId, CancellationToken cancellationToken = default);
@@ -18,5 +18,5 @@ public interface IProductAttributeValueRepository
     Task<Result<ProductAttributeValue?>> GetByProductAndAttributeAsync(Guid productId, Guid attributeId, CancellationToken cancellationToken = default);
     Task<Result<bool>> DeleteByProductAsync(Guid productId, CancellationToken cancellationToken = default);
     Task<Result<bool>> DeleteByAttributeAsync(Guid attributeId, CancellationToken cancellationToken = default);
-    Task<Result<List<ProductAttributeValue>>> GetByValueAsync(string value, CancellationToken cancellationToken = default);
-}
+    Task<Result<PagedResult<ProductAttributeValue>>> GetByValueAsync(PagedRequest request, string value, CancellationToken cancellationToken = default);
+}   
