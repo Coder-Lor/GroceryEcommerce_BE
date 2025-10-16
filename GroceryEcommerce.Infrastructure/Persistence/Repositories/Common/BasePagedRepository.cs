@@ -25,6 +25,7 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
     protected readonly ICacheService CacheService = cacheService;
     protected readonly ILogger Logger = logger;
 
+
     public abstract IReadOnlyList<SearchableField> GetSearchableFields();
     public abstract string? GetDefaultSortField();
     public abstract IReadOnlyList<FieldMapping> GetFieldMappings();
@@ -190,9 +191,34 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
         }
     }
 
+    protected virtual EntityQuery<TEntity> ApplyFilter(EntityQuery<TEntity> query, FilterCriteria filter)
+    {
+        var fieldMap = GetFieldMap();
+        if (!fieldMap.TryGetValue(filter.FieldName, out var field)) return query;
+        
+        return filter.Operator switch
+        {
+            FilterOperator.Equals => query.Where(field == filter.Value),
+            FilterOperator.NotEquals => query.Where(field != filter.Value),
+            FilterOperator.Contains => query.Where(field.Contains(filter.Value.ToString())),
+            FilterOperator.NotContains => query.Where(!field.Contains(filter.Value.ToString())),
+            FilterOperator.GreaterThan => query.Where(field > Convert.ToDecimal(filter.Value)),
+            FilterOperator.LessThan => query.Where(field < Convert.ToDecimal(filter.Value)),
+            FilterOperator.GreaterThanOrEqual => query.Where(field >= Convert.ToDecimal(filter.Value)),
+            FilterOperator.LessThanOrEqual => query.Where(field <= Convert.ToDecimal(filter.Value)),
+            FilterOperator.In => query.Where(field.In(filter.Value.ToString())),
+            FilterOperator.NotIn => query.Where(field.NotIn(filter.Value.ToString())),
+            FilterOperator.StartsWith => query.Where(field.StartsWith(filter.Value.ToString())),
+            FilterOperator.EndsWith => query.Where(field.EndsWith(filter.Value.ToString())),
+            FilterOperator.IsNull => query.Where(field.IsNull()),
+            FilterOperator.IsNotNull => query.Where(field.IsNotNull()),
+            _ => query
+        };
+    }
     // Abstract methods - Infrastructure layer sẽ implement
+    protected abstract IReadOnlyDictionary<string, EntityField2> GetFieldMap();
+    // protected abstract Dictionary<string, EntityField2> GetFieldMap();
     protected abstract EntityQuery<TEntity> ApplySearch(EntityQuery<TEntity> query, string searchTerm);
-    protected abstract EntityQuery<TEntity> ApplyFilter(EntityQuery<TEntity> query, FilterCriteria filter);
     protected abstract EntityQuery<TEntity> ApplySorting(EntityQuery<TEntity> query, string? sortBy, SortDirection sortDirection);
     protected abstract EntityQuery<TEntity> ApplyDefaultSorting(EntityQuery<TEntity> query);
     protected abstract Task<IList<TEntity>> FetchEntitiesAsync(EntityQuery<TEntity> query, CancellationToken cancellationToken);

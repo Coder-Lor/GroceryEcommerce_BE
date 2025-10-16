@@ -55,6 +55,19 @@ public class CategoryRepository(
         };
     }
 
+    protected override IReadOnlyDictionary<string, EntityField2> GetFieldMap()
+    {
+        return new Dictionary<string, EntityField2>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "Name", CategoryFields.Name },
+            { "Description", CategoryFields.Description },
+            { "Slug", CategoryFields.Slug },
+            { "Status", CategoryFields.Status },
+            { "CreatedAt", CategoryFields.CreatedAt },
+            { "DisplayOrder", CategoryFields.DisplayOrder }
+        };
+    }
+
     protected override EntityQuery<CategoryEntity> ApplySearch(EntityQuery<CategoryEntity> query, string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
@@ -66,39 +79,7 @@ public class CategoryRepository(
             CategoryFields.Description.Contains(searchTerm)
         );
     }
-
-    protected override EntityQuery<CategoryEntity> ApplyFilter(EntityQuery<CategoryEntity> query, FilterCriteria filter)
-    {
-        return filter.Operator switch
-        {
-            FilterOperator.Equals when filter.FieldName.Equals("name", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(CategoryFields.Name == filter.Value.ToString()),
-            
-            FilterOperator.Contains when filter.FieldName.Equals("name", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(CategoryFields.Name.Contains(filter.Value.ToString())),
-            
-            FilterOperator.Equals when filter.FieldName.Equals("slug", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(CategoryFields.Slug == filter.Value.ToString()),
-            
-            FilterOperator.Contains when filter.FieldName.Equals("slug", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(CategoryFields.Slug.Contains(filter.Value.ToString())),
-            
-            FilterOperator.Equals when filter.FieldName.Equals("status", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(CategoryFields.Status == Convert.ToInt16(filter.Value)),
-            
-            FilterOperator.GreaterThan when filter.FieldName.Equals("createdat", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(CategoryFields.CreatedAt > Convert.ToDateTime(filter.Value)),
-            
-            FilterOperator.LessThan when filter.FieldName.Equals("createdat", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(CategoryFields.CreatedAt < Convert.ToDateTime(filter.Value)),
-            
-            FilterOperator.In when filter.FieldName.Equals("status", StringComparison.OrdinalIgnoreCase) =>
-                query.Where(CategoryFields.Status.In(filter.Value)),
-            
-            _ => query
-        };
-    }
-
+    
     protected override EntityQuery<CategoryEntity> ApplySorting(EntityQuery<CategoryEntity> query, string? sortBy, SortDirection sortDirection)
     {
         var sortField = GetSortField(sortBy);

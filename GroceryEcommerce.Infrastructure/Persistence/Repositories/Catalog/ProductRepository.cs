@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using AutoMapper;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
@@ -33,22 +34,6 @@ public class ProductRepository(
             _ => null
         };
     }
-    
-    private static readonly Dictionary<string, EntityField2> FieldMap = new(StringComparer.OrdinalIgnoreCase)
-    {
-        ["name"] = ProductFields.Name,
-        ["slug"] = ProductFields.Slug,
-        ["status"] = ProductFields.Status,
-        ["createdat"] = ProductFields.CreatedAt,
-        ["updatedat"] = ProductFields.UpdatedAt,
-        ["sku"] = ProductFields.Sku,
-        ["price"] = ProductFields.Price,
-        ["stock"] = ProductFields.StockQuantity,
-        ["categoryid"] = ProductFields.CategoryId,
-        ["brandid"] = ProductFields.BrandId,
-        ["isfeatured"] = ProductFields.IsFeatured
-    };
-    
     
     public override IReadOnlyList<SearchableField> GetSearchableFields()
     {
@@ -142,6 +127,24 @@ public class ProductRepository(
         };
     }
 
+    protected override IReadOnlyDictionary<string, EntityField2> GetFieldMap()
+    {
+        return new Dictionary<string, EntityField2>()
+        {
+            ["name"] = ProductFields.Name,
+            ["slug"] = ProductFields.Slug,
+            ["status"] = ProductFields.Status,
+            ["createdat"] = ProductFields.CreatedAt,
+            ["updatedat"] = ProductFields.UpdatedAt,
+            ["sku"] = ProductFields.Sku,
+            ["price"] = ProductFields.Price,
+            ["stock"] = ProductFields.StockQuantity,
+            ["categoryid"] = ProductFields.CategoryId,
+            ["brandid"] = ProductFields.BrandId,
+            ["isfeatured"] = ProductFields.IsFeatured
+        };
+    }
+
     protected override EntityQuery<ProductEntity> ApplySearch(EntityQuery<ProductEntity> query, string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
@@ -153,30 +156,7 @@ public class ProductRepository(
             ProductFields.Slug.Contains(searchTerm)
         );
     }
-
-    protected override EntityQuery<ProductEntity> ApplyFilter(EntityQuery<ProductEntity> query, FilterCriteria filter)
-    {
-        if (!FieldMap.TryGetValue(filter.FieldName, out var field)) return query;
-        return filter.Operator switch
-        {
-            FilterOperator.Equals => query.Where(field == filter.Value),
-            FilterOperator.NotEquals => query.Where(field != filter.Value),
-            FilterOperator.Contains => query.Where(field.Contains(filter.Value.ToString())),
-            FilterOperator.NotContains => query.Where(!field.Contains(filter.Value.ToString())),
-            FilterOperator.GreaterThan => query.Where(field > Convert.ToDecimal(filter.Value)),
-            FilterOperator.LessThan => query.Where(field < Convert.ToDecimal(filter.Value)),
-            FilterOperator.GreaterThanOrEqual => query.Where(field >= Convert.ToDecimal(filter.Value)),
-            FilterOperator.LessThanOrEqual => query.Where(field <= Convert.ToDecimal(filter.Value)),
-            FilterOperator.In => query.Where(field.In(filter.Value.ToString())),
-            FilterOperator.NotIn => query.Where(field.NotIn(filter.Value.ToString())),
-            FilterOperator.StartsWith => query.Where(field.StartsWith(filter.Value.ToString())),
-            FilterOperator.EndsWith => query.Where(field.EndsWith(filter.Value.ToString())),
-            FilterOperator.IsNull => query.Where(field.IsNull()),
-            FilterOperator.IsNotNull => query.Where(field.IsNotNull()),
-            _ => query
-        };
-    }
-
+    
     protected override EntityQuery<ProductEntity> ApplySorting(EntityQuery<ProductEntity> query, string? sortBy, SortDirection sortDirection)
     {
         if (string.IsNullOrWhiteSpace(sortBy)) return query;
