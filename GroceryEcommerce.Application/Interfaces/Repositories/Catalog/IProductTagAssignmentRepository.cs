@@ -7,8 +7,8 @@ public interface IProductTagAssignmentRepository
 {
     // Basic CRUD operations
     Task<Result<ProductTagAssignment?>> GetByIdAsync(Guid productId, Guid tagId, CancellationToken cancellationToken = default);
-    Task<Result<List<ProductTagAssignment>>> GetByProductIdAsync(Guid productId, CancellationToken cancellationToken = default);
-    Task<Result<List<ProductTagAssignment>>> GetByTagIdAsync(Guid tagId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<ProductTagAssignment>>> GetByProductIdAsync(PagedRequest request, Guid productId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<ProductTagAssignment>>> GetByTagIdAsync(PagedRequest request, Guid tagId, CancellationToken cancellationToken = default);
     Task<Result<ProductTagAssignment>> CreateAsync(ProductTagAssignment assignment, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateAsync(ProductTagAssignment assignment, CancellationToken cancellationToken = default);
     Task<Result<bool>> DeleteAsync(Guid productId, Guid tagId, CancellationToken cancellationToken = default);
@@ -18,6 +18,6 @@ public interface IProductTagAssignmentRepository
     Task<Result<bool>> AssignTagToProductAsync(Guid productId, Guid tagId, CancellationToken cancellationToken = default);
     Task<Result<bool>> RemoveTagFromProductAsync(Guid productId, Guid tagId, CancellationToken cancellationToken = default);
     Task<Result<bool>> RemoveAllTagsFromProductAsync(Guid productId, CancellationToken cancellationToken = default);
-    Task<Result<List<Guid>>> GetProductIdsByTagAsync(Guid tagId, CancellationToken cancellationToken = default);
-    Task<Result<List<Guid>>> GetTagIdsByProductAsync(Guid productId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<Guid>>> GetProductIdsByTagAsync(PagedRequest request, Guid tagId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<Guid>>> GetTagIdsByProductAsync(PagedRequest request, Guid productId, CancellationToken cancellationToken = default);
 }

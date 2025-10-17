@@ -30,7 +30,7 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
     public abstract string? GetDefaultSortField();
     public abstract IReadOnlyList<FieldMapping> GetFieldMappings();
 
-    protected Task<Result<PagedResult<TDomainEntity>>> GetPagedConfiguredAsync(
+    protected async Task<Result<PagedResult<TDomainEntity>>> GetPagedConfiguredAsync(
         PagedRequest request,
         Action<PagedRequest> configure,
         string? defaultSortField = null,
@@ -42,7 +42,7 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
         {
             request.WithSorting(defaultSortField, defaultSortDirection);
         }
-        return GetPagedAsync(request, cancellationToken);
+        return await GetPagedAsync(request, cancellationToken);
     }
 
     protected async Task<Result<TDomainEntity?>> GetSingleAsync<TValue>(

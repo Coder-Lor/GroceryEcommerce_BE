@@ -268,19 +268,56 @@ public class ProductImageRepository(
         }
     }
 
-    public Task<Result<bool>> RemovePrimaryImageAsync(Guid productId, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> RemovePrimaryImageAsync(Guid productId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        if (productId == Guid.Empty)
+        {
+            logger.LogWarning("Product id is required");           
+            return Result<bool>.Failure("Invalid product ID.");       
+        }
+        try {
+            var template = new ProductImageEntity { IsPrimary = false };
+            template.Fields["IsPrimary"].IsChanged = true;
+
+            var affectedRows = await Adapter.UpdateEntitiesDirectlyAsync(
+                template,
+                new RelationPredicateBucket(ProductImageFields.ProductId == productId),
+                cancellationToken           
+            );
+            
+            if (affectedRows > 0) {
+                await CacheService.RemoveAsync("All_ProductImages", cancellationToken);
+                await CacheService.RemoveAsync($"ProductImages_ByProduct_{productId}", cancellationToken);
+                logger.LogInformation("Primary image removed for product: {ProductId}", productId);
+                return Result<bool>.Success(true);
+            }
+            logger.LogWarning("No primary image found for product: {ProductId}", productId);
+            return Result<bool>.Success(false);           
+        }
+        catch (Exception ex) {
+            logger.LogError(ex, "Error removing primary image: {ProductId}", productId);
+            return Result<bool>.Failure("An error occurred while removing the primary image.");
+        }
     }
 
-    public Task<Result<PagedResult<ProductImage>>> GetImagesByTypeAsync(PagedRequest request, Guid productId, short imageType,
+    public async Task<Result<PagedResult<ProductImage>>> GetImagesByTypeAsync(PagedRequest request, Guid productId, short imageType,
         CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
+        => await GetPagedConfiguredAsync(
+            request, 
+            r => r.WithFilter("ProductId", productId, FilterOperator.Equals)
+            .WithFilter("ImageType", imageType, FilterOperator.Equals),
+            "ImageId", 
+            SortDirection.Ascending, 
+            cancellationToken
+        );
 
-    public Task<Result<int>> GetImageCountByProductAsync(Guid productId, CancellationToken cancellationToken = default)
+    public async Task<Result<int>> GetImageCountByProductAsync(Guid productId, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        if (productId == Guid.Empty)
+        {
+            logger.LogWarning("Product id is required");           
+            return Result<int>.Failure("Invalid product ID.");       
+        }
+        return await CountByFieldAsync(ProductImageFields.ProductId, productId, cancellationToken);
     }
 }
