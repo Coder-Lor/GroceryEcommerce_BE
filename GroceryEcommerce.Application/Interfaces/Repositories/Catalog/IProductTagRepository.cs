@@ -18,7 +18,7 @@ public interface IProductTagRepository
     // Tag management operations
     Task<Result<bool>> ExistsAsync(string name, CancellationToken cancellationToken = default);
     Task<Result<bool>> ExistsAsync(Guid tagId, CancellationToken cancellationToken = default);
-    Task<Result<List<ProductTag>>> SearchByNameAsync(string searchTerm, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<ProductTag>>> SearchByNameAsync(PagedRequest request, string searchTerm, CancellationToken cancellationToken = default);
     Task<Result<bool>> IsTagInUseAsync(Guid tagId, CancellationToken cancellationToken = default);
     Task<Result<int>> GetProductCountByTagAsync(Guid tagId, CancellationToken cancellationToken = default);
 }
