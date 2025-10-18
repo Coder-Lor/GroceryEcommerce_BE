@@ -122,7 +122,6 @@ internal class Program
         {
             app.MapOpenApi();
             app.MapScalarApiReference();
-            app.UseSwaggerUI();
         }
 
         app.UseHttpsRedirection();
