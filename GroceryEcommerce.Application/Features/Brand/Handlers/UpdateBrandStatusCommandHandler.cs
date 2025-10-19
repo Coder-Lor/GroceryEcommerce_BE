@@ -1,4 +1,3 @@
-using AutoMapper;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
 using GroceryEcommerce.Application.Interfaces.Services;
@@ -8,7 +7,6 @@ using Microsoft.Extensions.Logging;
 namespace GroceryEcommerce.Application.Features.Brand.Handlers;
 
 public class UpdateBrandStatusCommandHandler(
-    IMapper mapper,
     IBrandRepository repository,
     ICurrentUserService currentUserService,
     ILogger<UpdateBrandStatusCommandHandler> logger

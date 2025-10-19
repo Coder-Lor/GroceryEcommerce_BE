@@ -16,31 +16,27 @@ public class CreateBrandCommandHandler(
     ILogger<CreateBrandCommandHandler> logger
 ): IRequestHandler<CreateBrandCommand, Result<CreateBrandResponse>>
 {
-    private readonly IMapper _mapper = mapper;
-    private readonly IBrandRepository _brandRepository = brandRepository;
-    private readonly ICurrentUserService _currentUserService = currentUserService;
-    private readonly ILogger<CreateBrandCommandHandler> _logger = logger;
 
   public async Task<Result<CreateBrandResponse>> Handle(CreateBrandCommand request, CancellationToken cancellationToken)
   {
-        _logger.LogInformation("Starting brand creation for {Name}", request.Name);
+        logger.LogInformation("Starting brand creation for {Name}", request.Name);
         // Lấy thông tin user hiện tại
-        var currentUserId = _currentUserService.GetCurrentUserId();
-        var currentUserEmail = _currentUserService.GetCurrentUserEmail();
+        var currentUserId = currentUserService.GetCurrentUserId();
+        var currentUserEmail = currentUserService.GetCurrentUserEmail();
         
         if (currentUserId is null)
         {
-            _logger.LogWarning("Could not retrieve current user ID");
+            logger.LogWarning("Could not retrieve current user ID");
             return Result<CreateBrandResponse>.Failure("Unable to identify current user");
         }
 
-        _logger.LogInformation("Creating brand for user: {UserId} ({Email})", currentUserId, currentUserEmail);
+        logger.LogInformation("Creating brand for user: {UserId} ({Email})", currentUserId, currentUserEmail);
 
         // Kiểm tra tên brand đã tồn tại chưa
-        var existingBrand = await _brandRepository.GetByNameAsync(request.Name, cancellationToken);
+        var existingBrand = await brandRepository.GetByNameAsync(request.Name, cancellationToken);
         if (existingBrand is { IsSuccess: true, Data: not null })
         {
-            _logger.LogWarning("Brand with name '{Name}' already exists", request.Name);
+            logger.LogWarning("Brand with name '{Name}' already exists", request.Name);
             return Result<CreateBrandResponse>.Failure("Brand with this name already exists");
         }
 
@@ -48,7 +44,7 @@ public class CreateBrandCommandHandler(
         var slug = request.Slug ?? GenerateSlug(request.Name);
         
         // Kiểm tra slug đã tồn tại chưa
-        var existingSlug = await _brandRepository.GetBySlugAsync(slug, cancellationToken);
+        var existingSlug = await brandRepository.GetBySlugAsync(slug, cancellationToken);
         if (existingSlug.IsSuccess && existingSlug.Data is not null)
         {
             slug = $"{slug}-{DateTime.UtcNow:yyyyMMddHHmmss}";
@@ -68,18 +64,18 @@ public class CreateBrandCommandHandler(
         };
 
         // Tạo brand trong database
-        var createResult = await _brandRepository.CreateAsync(brand, cancellationToken);
+        var createResult = await brandRepository.CreateAsync(brand, cancellationToken);
         if (!createResult.IsSuccess)
         {
-            _logger.LogError("Failed to create brand: {Name}", request.Name);
+            logger.LogError("Failed to create brand: {Name}", request.Name);
             return Result<CreateBrandResponse>.Failure("Failed to create brand");
         }
 
         // Lưu thay đổi
-        _logger.LogInformation("Brand created successfully: {BrandId} by user: {UserId}", brand.BrandId, currentUserId);
+        logger.LogInformation("Brand created successfully: {BrandId} by user: {UserId}", brand.BrandId, currentUserId);
 
         // Map từ Entity sang Response
-        var response = _mapper.Map<CreateBrandResponse>(brand);
+        var response = mapper.Map<CreateBrandResponse>(brand);
         return Result<CreateBrandResponse>.Success(response);
     }
 

@@ -11,17 +11,14 @@ public class GetProductCountByBrandHandler(
     ILogger<GetProductCountByBrandHandler> logger
 ) : IRequestHandler<GetProductCountByBrandQuery, Result<int>>
 {
-    private readonly IBrandRepository _repository = repository;
-    private readonly ILogger<GetProductCountByBrandHandler> _logger = logger;
-
     public async Task<Result<int>> Handle(GetProductCountByBrandQuery request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Handling GetProductCountByBrandQuery for brand: {BrandId}", request.BrandId);
+        logger.LogInformation("Handling GetProductCountByBrandQuery for brand: {BrandId}", request.BrandId);
 
-        var productCountResult = await _repository.GetProductCountByBrandAsync(request.BrandId, cancellationToken);
+        var productCountResult = await repository.GetProductCountByBrandAsync(request.BrandId, cancellationToken);
         if (!productCountResult.IsSuccess)
         {
-            _logger.LogWarning("Product count not found for brand: {BrandId}", request.BrandId);
+            logger.LogWarning("Product count not found for brand: {BrandId}", request.BrandId);
             return Result<int>.Failure("Product count not found");
         }
 

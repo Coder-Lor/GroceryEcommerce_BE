@@ -14,22 +14,18 @@ public class GetBrandByNameHandler(
     ILogger<GetBrandByNameHandler> logger
 ) : IRequestHandler<GetBrandByNameQuery, Result<GetBrandByNameResponse>>
 {
-    private readonly IMapper _mapper = mapper;
-    private readonly IBrandRepository _repository = repository;
-    private readonly ILogger<GetBrandByNameHandler> _logger = logger;
-
     public async Task<Result<GetBrandByNameResponse>> Handle(GetBrandByNameQuery request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Handling GetBrandByNameQuery for brand: {Name}", request.Name);
+        logger.LogInformation("Handling GetBrandByNameQuery for brand: {Name}", request.Name);
 
-        var brandResult = await _repository.GetByNameAsync(request.Name, cancellationToken);
+        var brandResult = await repository.GetByNameAsync(request.Name, cancellationToken);
         if (!brandResult.IsSuccess || brandResult.Data is null)
         {
-            _logger.LogWarning("Brand not found: {Name}", request.Name);
+            logger.LogWarning("Brand not found: {Name}", request.Name);
             return Result<GetBrandByNameResponse>.Failure("Brand not found");
         }
 
-        var response = _mapper.Map<GetBrandByNameResponse>(brandResult.Data);
+        var response = mapper.Map<GetBrandByNameResponse>(brandResult.Data);
         return Result<GetBrandByNameResponse>.Success(response);
     }
 }

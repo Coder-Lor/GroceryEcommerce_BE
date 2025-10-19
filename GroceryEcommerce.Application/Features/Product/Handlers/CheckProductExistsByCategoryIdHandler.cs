@@ -23,7 +23,7 @@ public class CheckProductExistsByCategoryIdHandler(
         pagedRequest.WithFilter("CategoryId", request.CategoryId);
 
         var result = await repository.GetByCategoryIdAsync(pagedRequest, request.CategoryId, cancellationToken);
-        var exists = result.IsSuccess && result.Data.Items.Any();
+        var exists = result.IsSuccess && result.Data?.Items.Any() == true;
 
         logger.LogInformation("Products exist for category {CategoryId}: {Exists}", request.CategoryId, exists);
         return Result<bool>.Success(exists);

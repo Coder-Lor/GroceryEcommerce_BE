@@ -14,10 +14,6 @@ public class GetBrandByIdHandler(
     ILogger<GetBrandByIdHandler> logger
 ) : IRequestHandler<GetBrandByIdQuery, Result<GetBrandByIdResponse>>
 {
-    private readonly IMapper _mapper = mapper;
-    private readonly IBrandRepository _repository = repository;
-    private readonly ILogger<GetBrandByIdHandler> _logger = logger;
-
     public async Task<Result<GetBrandByIdResponse>> Handle(GetBrandByIdQuery request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Handling GetBrandByIdQuery for brand: {BrandId}", request.BrandId);
@@ -29,7 +25,7 @@ public class GetBrandByIdHandler(
             return Result<GetBrandByIdResponse>.Failure("Brand not found");
         }
 
-        var response = _mapper.Map<GetBrandByIdResponse>(brandResult.Data);
+        var response = mapper.Map<GetBrandByIdResponse>(brandResult.Data);
         return Result<GetBrandByIdResponse>.Success(response);
     }
 }
