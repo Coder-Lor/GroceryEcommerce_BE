@@ -16,7 +16,7 @@ public class CheckProductExistsByIdHandler(
         logger.LogInformation("Checking if product exists with ID: {ProductId}", request.ProductId);
 
         var result = await repository.GetByIdAsync(request.ProductId, cancellationToken);
-        var exists = result.IsSuccess && result.Data != null;
+        var exists = result is { IsSuccess: true, Data: not null };
 
         logger.LogInformation("Product with ID {ProductId} exists: {Exists}", request.ProductId, exists);
         return Result<bool>.Success(exists);
