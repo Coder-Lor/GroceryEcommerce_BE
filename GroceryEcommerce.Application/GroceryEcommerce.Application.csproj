@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Features\Authentication\Queries\" />
-    <Folder Include="Features\Brand\Queries\" />
+    <Folder Include="Features\Product\" />
   </ItemGroup>
 
 </Project>
