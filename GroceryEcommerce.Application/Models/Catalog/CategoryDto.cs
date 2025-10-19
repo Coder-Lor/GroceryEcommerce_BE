@@ -32,6 +32,9 @@ public record GetCategoryByNameResponse : CategoryBaseResponse;
 public record GetCategoryTreeResponse : CategoryBaseResponse;
 public record GetCategoryPathResponse : CategoryBaseResponse;
 public record GetRootCategoriesResponse : CategoryBaseResponse;
+public record GetCategoryBySlugResponse : CategoryBaseResponse;
+public record GetSubCategoriesResponse : CategoryBaseResponse;
+public record SearchCategoriesByNameResponse : CategoryBaseResponse;
 
 // public class CategoryDto
 // {
