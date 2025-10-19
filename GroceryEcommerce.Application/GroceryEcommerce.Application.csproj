@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Features\Authentication\Queries\" />
+    <Folder Include="Features\Brand\Queries\" />
   </ItemGroup>
 
 </Project>

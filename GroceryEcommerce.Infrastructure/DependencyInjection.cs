@@ -81,8 +81,10 @@ public static class DependencyInjection
 
         // Register existing services
         services.AddMemoryCache();
+        services.AddHttpContextAccessor();
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IJwtTokenGeneratorService, JwtTokenGeneratorService>();
         services.AddScoped<IPasswordHashService, PasswordHashService>();
         services.AddScoped<ITokenService, TokenService>();
