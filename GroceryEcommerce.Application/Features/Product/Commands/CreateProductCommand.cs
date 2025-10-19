@@ -24,8 +24,8 @@ public record CreateProductCommand(
     bool IsDigital = false,
     string? MetaTitle = null,
     string? MetaDescription = null,
-    List<CreateProductImageRequest> Images = null,
-    List<CreateProductVariantRequest> Variants = null,
-    List<CreateProductAttributeValueRequest> Attributes = null,
-    List<Guid> TagIds = null
+    List<CreateProductImageRequest>? Images = null,
+    List<CreateProductVariantRequest>? Variants = null,
+    List<CreateProductAttributeValueRequest>? Attributes = null,
+    List<Guid>? TagIds = null
 ) : IRequest<Result<CreateProductResponse>>;
