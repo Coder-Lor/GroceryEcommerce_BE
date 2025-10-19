@@ -28,6 +28,7 @@ public class CreateProductVariantRequest
     public decimal? Weight { get; set; }
     public string? Dimensions { get; set; }
     public short Status { get; set; } = 1;
+    public string? ImageUrl { get; set; }
     public List<CreateProductAttributeValueRequest> Attributes { get; set; } = new();
 }
 
