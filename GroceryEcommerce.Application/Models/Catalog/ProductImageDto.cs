@@ -1,6 +1,6 @@
 namespace GroceryEcommerce.Application.Models.Catalog;
 
-public class ProductImageDto
+public record ProductImageDto
 {
     public Guid ProductImageId { get; set; }
     public Guid ProductId { get; set; }
@@ -10,6 +10,10 @@ public class ProductImageDto
     public bool IsPrimary { get; set; }
     public DateTime CreatedAt { get; set; }
 }
+
+public record CreateProductImageResponse : ProductImageDto;
+
+public record UpdateProductImageResponse : ProductImageDto;
 
 public class CreateProductImageRequest
 {

@@ -22,6 +22,14 @@
 
   <ItemGroup>
     <Folder Include="Features\Authentication\Queries\" />
+    <Folder Include="Features\ProductQuestion\Commands\" />
+    <Folder Include="Features\ProductQuestion\Queries\" />
+    <Folder Include="Features\ProductTagAssignment\Commands\" />
+    <Folder Include="Features\ProductTagAssignment\Queries\" />
+    <Folder Include="Features\ProductTag\Commands\" />
+    <Folder Include="Features\ProductTag\Queries\" />
+    <Folder Include="Features\ProductVariant\Commands\" />
+    <Folder Include="Features\ProductVariant\Queries\" />
     <Folder Include="Features\Product\" />
   </ItemGroup>
 

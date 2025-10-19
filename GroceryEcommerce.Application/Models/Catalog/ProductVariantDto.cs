@@ -1,6 +1,6 @@
 namespace GroceryEcommerce.Application.Models.Catalog;
 
-public class ProductVariantDto
+public record ProductVariantDto
 {
     public Guid ProductVariantId { get; set; }
     public Guid ProductId { get; set; }
@@ -9,6 +9,7 @@ public class ProductVariantDto
     public decimal Price { get; set; }
     public decimal? DiscountPrice { get; set; }
     public int StockQuantity { get; set; }
+    public int MinStockLevel { get; set; }
     public decimal? Weight { get; set; }
     public string? Dimensions { get; set; }
     public short Status { get; set; }
@@ -25,6 +26,7 @@ public class CreateProductVariantRequest
     public decimal Price { get; set; }
     public decimal? DiscountPrice { get; set; }
     public int StockQuantity { get; set; }
+    public int MinStockLevel { get; set; }
     public decimal? Weight { get; set; }
     public string? Dimensions { get; set; }
     public short Status { get; set; } = 1;
@@ -39,7 +41,12 @@ public class UpdateProductVariantRequest
     public decimal Price { get; set; }
     public decimal? DiscountPrice { get; set; }
     public int StockQuantity { get; set; }
+    public int MinStockLevel { get; set; }
     public decimal? Weight { get; set; }
     public string? Dimensions { get; set; }
     public short Status { get; set; }
 }
+
+public record CreateProductVariantResponse : ProductVariantDto;
+
+public record UpdateProductVariantResponse : ProductVariantDto;

@@ -1,6 +1,6 @@
 namespace GroceryEcommerce.Application.Models.Catalog;
 
-public class ProductTagDto
+public record ProductTagDto
 {
     public Guid ProductTagId { get; set; }
     public required string Name { get; set; }
@@ -15,6 +15,7 @@ public class ProductTagDto
 public class CreateProductTagRequest
 {
     public required string Name { get; set; }
+    public string? Slug { get; set; }
     public string? Description { get; set; }
     public string? Color { get; set; }
 }
@@ -22,6 +23,11 @@ public class CreateProductTagRequest
 public class UpdateProductTagRequest
 {
     public required string Name { get; set; }
+    public string? Slug { get; set; }
     public string? Description { get; set; }
     public string? Color { get; set; }
 }
+
+public record CreateProductTagResponse : ProductTagDto;
+
+public record UpdateProductTagResponse : ProductTagDto;

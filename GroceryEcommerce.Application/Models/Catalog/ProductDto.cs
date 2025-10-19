@@ -66,59 +66,54 @@ public record GetLowStockProductsResponse : ProductBaseResponse;
 public record SearchProductsResponse : ProductBaseResponse;
 public record GetProductsPagingResponse : ProductBaseResponse;
 
-// public record GetProductsByRatingRangeResponse : ProductBaseResponse;
-// public record GetProductsByStockQuantityRangeResponse : ProductBaseResponse;
-// public record GetProductsByCreatedAtRangeResponse : ProductBaseResponse;
-// public record GetProductsByUpdatedAtRangeResponse : ProductBaseResponse;
+// Add alias and request DTOs expected by ICatalogService and mappings
+public record ProductDto : ProductBaseResponse;
 
+public class CreateProductRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string? Slug { get; set; }
+    public string Sku { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string? ShortDescription { get; set; }
+    public decimal Price { get; set; }
+    public decimal? DiscountPrice { get; set; }
+    public decimal? Cost { get; set; }
+    public int StockQuantity { get; set; }
+    public int MinStockLevel { get; set; }
+    public decimal? Weight { get; set; }
+    public string? Dimensions { get; set; }
+    public Guid CategoryId { get; set; }
+    public Guid? BrandId { get; set; }
+    public short Status { get; set; } = 1;
+    public bool IsFeatured { get; set; }
+    public bool IsDigital { get; set; }
+    public string? MetaTitle { get; set; }
+    public string? MetaDescription { get; set; }
+    public List<CreateProductImageRequest> Images { get; set; } = new();
+    public List<CreateProductVariantRequest> Variants { get; set; } = new();
+    public List<Guid> TagIds { get; set; } = new();
+}
 
-// public class CreateProductRequest
-// {
-//     public string Name { get; set; } = string.Empty;
-//     public string? Slug { get; set; }
-//     public string Sku { get; set; } = string.Empty;
-//     public string Description { get; set; } = string.Empty;
-//     public string? ShortDescription { get; set; }
-//     public decimal Price { get; set; }
-//     public decimal? DiscountPrice { get; set; }
-//     public decimal? Cost { get; set; }
-//     public int StockQuantity { get; set; }
-//     public int MinStockLevel { get; set; }
-//     public decimal? Weight { get; set; }
-//     public string? Dimensions { get; set; }
-//     public Guid CategoryId { get; set; }
-//     public Guid? BrandId { get; set; }
-//     public short Status { get; set; } = 1;
-//     public bool IsFeatured { get; set; }
-//     public bool IsDigital { get; set; }
-//     public string? MetaTitle { get; set; }
-//     public string? MetaDescription { get; set; }
-//     public List<CreateProductImageRequest> Images { get; set; } = new();
-//     public List<CreateProductVariantRequest> Variants { get; set; } = new();
-//     public List<Guid> TagIds { get; set; } = new();
-// }
-
-// public class UpdateProductRequest
-// {
-//     public string Name { get; set; } = string.Empty;
-//     public string? Slug { get; set; }
-//     public string Sku { get; set; } = string.Empty;
-//     public string Description { get; set; } = string.Empty;
-//     public string? ShortDescription { get; set; }
-//     public decimal Price { get; set; }
-//     public decimal? DiscountPrice { get; set; }
-//     public decimal? Cost { get; set; }
-//     public int StockQuantity { get; set; }
-//     public int MinStockLevel { get; set; }
-//     public decimal? Weight { get; set; }
-//     public string? Dimensions { get; set; }
-//     public Guid CategoryId { get; set; }
-//     public Guid? BrandId { get; set; }
-//     public short Status { get; set; }
-//     public bool IsFeatured { get; set; }
-//     public bool IsDigital { get; set; }
-//     public string? MetaTitle { get; set; }
-//     public string? MetaDescription { get; set; }
-// }
-
-
+public class UpdateProductRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string? Slug { get; set; }
+    public string Sku { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string? ShortDescription { get; set; }
+    public decimal Price { get; set; }
+    public decimal? DiscountPrice { get; set; }
+    public decimal? Cost { get; set; }
+    public int StockQuantity { get; set; }
+    public int MinStockLevel { get; set; }
+    public decimal? Weight { get; set; }
+    public string? Dimensions { get; set; }
+    public Guid CategoryId { get; set; }
+    public Guid? BrandId { get; set; }
+    public short Status { get; set; }
+    public bool IsFeatured { get; set; }
+    public bool IsDigital { get; set; }
+    public string? MetaTitle { get; set; }
+    public string? MetaDescription { get; set; }
+}
