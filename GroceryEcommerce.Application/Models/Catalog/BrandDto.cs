@@ -1,6 +1,6 @@
 namespace GroceryEcommerce.Application.Models.Catalog;
 
-// create instance dto for brand by query command respone
+// create instance dto for brand by query command response
 
 public record BrandBaseResponse
 {
@@ -15,7 +15,7 @@ public record BrandBaseResponse
     public DateTime? UpdatedAt { get; set; }
 }
 
-// for command respone
+// for command response
 
 public record CreateBrandResponse : BrandBaseResponse;
 public record UpdateBrandResponse : BrandBaseResponse;
