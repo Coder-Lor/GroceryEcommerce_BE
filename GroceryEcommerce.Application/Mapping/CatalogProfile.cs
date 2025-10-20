@@ -22,14 +22,8 @@ public class CatalogProfile : Profile
 
         // Brand mappings
         CreateMap<Brand, BrandDto>()
-            .ForMember(dest => dest.ProductCount, opt => opt.MapFrom(src => src.Products.Count));
-
-        CreateMap<CreateBrandRequest, Brand>()
-            .ForMember(dest => dest.BrandId, opt => opt.MapFrom(src => Guid.NewGuid()))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
-
-        CreateMap<UpdateBrandRequest, Brand>()
-            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+            .ForMember(dest => dest.ProductCount, opt => opt.MapFrom(src => src.Products.Count))
+            .IncludeAllDerived();
 
         // Product mappings
         CreateMap<Product, ProductDto>()

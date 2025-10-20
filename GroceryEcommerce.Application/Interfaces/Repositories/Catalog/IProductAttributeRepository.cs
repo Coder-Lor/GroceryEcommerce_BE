@@ -1,7 +1,7 @@
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Domain.Entities.Catalog;
 
-namespace GroceryEcommerce.Application.Interfaces.Repositories;
+namespace GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
 
 public interface IProductAttributeRepository
 {
@@ -17,7 +17,7 @@ public interface IProductAttributeRepository
     // Attribute management operations
     Task<Result<bool>> ExistsAsync(string name, CancellationToken cancellationToken = default);
     Task<Result<bool>> ExistsAsync(Guid attributeId, CancellationToken cancellationToken = default);
-    Task<Result<List<ProductAttribute>>> GetRequiredAttributesAsync(CancellationToken cancellationToken = default);
-    Task<Result<List<ProductAttribute>>> GetByTypeAsync(short attributeType, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<ProductAttribute>>> GetRequiredAttributesAsync(PagedRequest request, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<ProductAttribute>>> GetByTypeAsync(PagedRequest request, short attributeType, CancellationToken cancellationToken = default);
     Task<Result<bool>> IsAttributeInUseAsync(Guid attributeId, CancellationToken cancellationToken = default);
 }

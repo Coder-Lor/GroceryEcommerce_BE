@@ -19,8 +19,6 @@ public interface ICatalogService
     Task<Result<List<BrandDto>>> GetBrandsAsync(CancellationToken cancellationToken = default);
     Task<Result<BrandDto?>> GetBrandByIdAsync(Guid brandId, CancellationToken cancellationToken = default);
     Task<Result<BrandDto?>> GetBrandBySlugAsync(string slug, CancellationToken cancellationToken = default);
-    Task<Result<BrandDto>> CreateBrandAsync(CreateBrandRequest request, CancellationToken cancellationToken = default);
-    Task<Result<bool>> UpdateBrandAsync(Guid brandId, UpdateBrandRequest request, CancellationToken cancellationToken = default);
     Task<Result<bool>> DeleteBrandAsync(Guid brandId, CancellationToken cancellationToken = default);
 
     // Product services

@@ -2,7 +2,7 @@ using GroceryEcommerce.Application.Models.Reviews;
 
 namespace GroceryEcommerce.Application.Models.Catalog;
 
-public class ProductDto
+public record ProductBaseResponse
 {
     public Guid ProductId { get; set; }
     public string Name { get; set; } = string.Empty;
@@ -36,12 +36,38 @@ public class ProductDto
     public int ReviewCount { get; set; }
 }
 
-public class ProductDetailDto : ProductDto
+public record ProductDetailDto : ProductBaseResponse
 {
     public List<ProductAttributeValueDto> Attributes { get; set; } = new();
     public List<ProductQuestionDto> Questions { get; set; } = new();
     public List<ProductReviewDto> Reviews { get; set; } = new();
 }
+
+
+// product command response 
+
+public record CreateProductResponse : ProductBaseResponse;
+public record UpdateProductResponse : ProductBaseResponse;
+public record UpdateProductStockResponse : ProductBaseResponse;
+public record UpdateProductStatusResponse : ProductBaseResponse;
+public record DeleteProductResponse : ProductBaseResponse;
+
+// product query response 
+
+public record GetProductByIdResponse : ProductBaseResponse;
+public record GetProductBySkuResponse : ProductBaseResponse;
+public record GetProductBySlugResponse : ProductBaseResponse;
+public record GetProductsByCategoryResponse : ProductBaseResponse;
+public record GetProductsByBrandResponse : ProductBaseResponse;
+public record GetProductsByPriceRangeResponse : ProductBaseResponse;
+public record GetFeaturedProductsResponse : ProductBaseResponse;
+public record GetActiveProductsResponse : ProductBaseResponse;
+public record GetLowStockProductsResponse : ProductBaseResponse;
+public record SearchProductsResponse : ProductBaseResponse;
+public record GetProductsPagingResponse : ProductBaseResponse;
+
+// Add alias and request DTOs expected by ICatalogService and mappings
+public record ProductDto : ProductBaseResponse;
 
 public class CreateProductRequest
 {

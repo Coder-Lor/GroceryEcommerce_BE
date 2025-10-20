@@ -1,0 +1,42 @@
+namespace GroceryEcommerce.Application.Common;
+
+public class FieldMapping
+{
+    public string FieldName { get; set; } = string.Empty;
+    public Type FieldType { get; set; } = typeof(string);
+    public bool IsSearchable { get; set; } = true;
+    public bool IsSortable { get; set; } = true;
+    public bool IsFilterable { get; set; } = true;
+}
+
+public class FilterCriteria
+{
+    public string FieldName { get; set; } = string.Empty;
+    public object Value { get; set; } = null!;
+    public FilterOperator Operator { get; set; } = FilterOperator.Equals;
+
+    public FilterCriteria(string fieldName, object value, FilterOperator op = FilterOperator.Equals)
+    {
+        FieldName = fieldName ?? throw new ArgumentNullException(nameof(fieldName));
+        Value = value ?? throw new ArgumentNullException(nameof(value));
+        Operator = op;
+    }
+}
+
+public enum FilterOperator
+{
+    Equals,
+    NotEquals,
+    Contains,
+    NotContains,
+    StartsWith,
+    EndsWith,
+    GreaterThan,
+    GreaterThanOrEqual,
+    LessThan,
+    LessThanOrEqual,
+    In,
+    NotIn,
+    IsNull,
+    IsNotNull
+}

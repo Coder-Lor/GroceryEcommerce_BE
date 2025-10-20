@@ -1,6 +1,6 @@
 namespace GroceryEcommerce.Application.Models.Catalog;
 
-public class ProductQuestionDto
+public record ProductQuestionDto
 {
     public Guid ProductQuestionId { get; set; }
     public Guid ProductId { get; set; }
@@ -20,7 +20,9 @@ public class ProductQuestionDto
 public class CreateProductQuestionRequest
 {
     public Guid ProductId { get; set; }
+    public Guid UserId { get; set; }
     public string Question { get; set; } = string.Empty;
+    public short Status { get; set; }
 }
 
 public class UpdateProductQuestionRequest
@@ -28,3 +30,7 @@ public class UpdateProductQuestionRequest
     public string Question { get; set; } = string.Empty;
     public short Status { get; set; }
 }
+
+public record CreateProductQuestionResponse : ProductQuestionDto;
+
+public record UpdateProductQuestionResponse : ProductQuestionDto;

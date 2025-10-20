@@ -9,4 +9,6 @@ public interface IPagedRepository<TEntity>
         CancellationToken cancellationToken = default);
 
     IReadOnlyList<SearchableField> GetSearchableFields();
+    string? GetDefaultSortField();
+    IReadOnlyList<FieldMapping> GetFieldMappings();
 }

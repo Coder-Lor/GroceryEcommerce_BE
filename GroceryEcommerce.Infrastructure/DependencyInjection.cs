@@ -2,11 +2,13 @@
 using GroceryEcommerce.Application.Interfaces.Repositories;
 using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
 using GroceryEcommerce.Application.Interfaces.Repositories.Cart;
+using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
 using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.DatabaseSpecific;
 using GroceryEcommerce.Infrastructure.Mapping;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth;
+using GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
 using GroceryEcommerce.Infrastructure.Services;
 using GroceryEcommerce.Infrastructure.Settings;
 using Microsoft.Extensions.Configuration;
@@ -31,8 +33,9 @@ public static class DependencyInjection
         {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
             var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
             var logger = provider.GetRequiredService<ILogger<UserRepository>>();
-            return new UserRepository(adapter, mapper, logger);
+            return new UserRepository(adapter, mapper, cacheService, logger);
         });
 
         services.AddScoped<IAuthenticationRepository>(provider =>
@@ -61,27 +64,107 @@ public static class DependencyInjection
             var cacheService = provider.GetRequiredService<ICacheService>();
             return new CartRepository(adapter, mapper, unitOfWorkService, cacheService, logger);
         });
-        
-        // services.AddScoped<ICatalogRepository, CatalogRepository>();
-        // services.AddScoped<ISalesRepository, SalesRepository>();
-        // services.AddScoped<IInventoryRepository, InventoryRepository>();
-        // services.AddScoped<IMarketingRepository, MarketingRepository>();
-        // services.AddScoped<IReviewsRepository, ReviewsRepository>();
-        // services.AddScoped<ISystemRepository, SystemRepository>();
 
-        // Register Services (Interfaces only - implementations will be created later)
-        // services.AddScoped<ICatalogService, CatalogService>();
-        // services.AddScoped<ICartService, CartService>();
-        // services.AddScoped<ISalesService, SalesService>();
-        // services.AddScoped<IInventoryService, InventoryService>();
-        // services.AddScoped<IMarketingService, MarketingService>();
-        // services.AddScoped<IReviewsService, ReviewsService>();
-        // services.AddScoped<ISystemService, SystemService>();
+        // catalog repositories
+        
+        services.AddScoped<ICategoryRepository>(provider =>
+        {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var logger = provider.GetRequiredService<ILogger<CategoryRepository>>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            return new CategoryRepository(adapter, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IBrandRepository>(provider =>
+        {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var logger = provider.GetRequiredService<ILogger<BrandRepository>>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            return new BrandRepository(adapter, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IProductRepository>(provider =>
+        {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var logger = provider.GetRequiredService<ILogger<ProductRepository>>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            return new ProductRepository(adapter, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IProductAttributeRepository>(provider =>
+        {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var logger = provider.GetRequiredService<ILogger<ProductAttributeRepository>>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            return new ProductAttributeRepository(adapter, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IProductAttributeValueRepository>(provider =>
+        {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var logger = provider.GetRequiredService<ILogger<ProductAttributeValueRepository>>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            return new ProductAttributeValueRepository(adapter, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IProductImageRepository>(provider =>
+        {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var logger = provider.GetRequiredService<ILogger<ProductImageRepository>>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            return new ProductImageRepository(adapter, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IProductQuestionRepository>(provider =>
+        {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var logger = provider.GetRequiredService<ILogger<ProductQuestionRepository>>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            return new ProductQuestionRepository(adapter, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IProductTagRepository>(provider =>
+        {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var logger = provider.GetRequiredService<ILogger<ProductTagRepository>>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            return new ProductTagRepository(adapter, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IProductTagAssignmentRepository>(provider =>
+        {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var logger = provider.GetRequiredService<ILogger<ProductTagAssignmentRepository>>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            return new ProductTagAssignmentRepository(adapter, mapper, cacheService, logger);
+        });
+
+
+        services.AddScoped<IProductVariantRepository, ProductVariantRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var logger = provider.GetRequiredService<ILogger<ProductVariantRepository>>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            return new ProductVariantRepository(adapter, mapper, cacheService, logger);
+        });
+
+        
 
         // Register existing services
         services.AddMemoryCache();
+        services.AddHttpContextAccessor();
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IJwtTokenGeneratorService, JwtTokenGeneratorService>();
         services.AddScoped<IPasswordHashService, PasswordHashService>();
         services.AddScoped<ITokenService, TokenService>();

@@ -18,8 +18,8 @@ public interface IBrandRepository
     // Brand management operations
     Task<Result<bool>> ExistsAsync(string name, CancellationToken cancellationToken = default);
     Task<Result<bool>> ExistsAsync(Guid brandId, CancellationToken cancellationToken = default);
-    Task<Result<List<Brand>>> GetActiveBrandsAsync(CancellationToken cancellationToken = default);
-    Task<Result<List<Brand>>> SearchByNameAsync(string searchTerm, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<Brand>>> GetActiveBrandsAsync(PagedRequest pagedRequest ,CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<Brand>>> SearchByNameAsync(PagedRequest pagedRequest ,string searchTerm, CancellationToken cancellationToken = default);
     Task<Result<bool>> IsBrandInUseAsync(Guid brandId, CancellationToken cancellationToken = default);
     Task<Result<int>> GetProductCountByBrandAsync(Guid brandId, CancellationToken cancellationToken = default);
 }
