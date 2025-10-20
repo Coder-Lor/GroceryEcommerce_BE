@@ -1,7 +1,7 @@
 namespace GroceryEcommerce.Application.Models.Catalog;
 
 
-public record  CategoryBaseResponse {
+public record  CategoryDto {
     public Guid CategoryId { get; set; }
     public string Name { get; set; } = string.Empty;
     public string? Slug { get; set; }
@@ -15,29 +15,28 @@ public record  CategoryBaseResponse {
     public string? MetaDescription { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
-    public List<CategoryBaseResponse> SubCategories { get; set; } = new();
+    public List<CategoryDto> SubCategories { get; set; } = new();
     public int ProductCount { get; set; }
 }
 
-public record CreateCategoryResponse : CategoryBaseResponse;
-public record UpdateCategoryResponse : CategoryBaseResponse;
-public record DeleteCategoryResponse : CategoryBaseResponse;
-public record GetCategoryByIdResponse : CategoryBaseResponse;
-public record GetCategoriesResponse : CategoryBaseResponse;
-public record GetCategoriesByParentIdResponse : CategoryBaseResponse;
-public record GetCategoriesByStatusResponse : CategoryBaseResponse;
-public record GetCategoriesBySearchResponse : CategoryBaseResponse;
-public record GetActiveCategoriesResponse : CategoryBaseResponse;
-public record GetCategoryByNameResponse : CategoryBaseResponse;
-public record GetCategoryTreeResponse : CategoryBaseResponse;
-public record GetCategoryPathResponse : CategoryBaseResponse;
-public record GetRootCategoriesResponse : CategoryBaseResponse;
-public record GetCategoryBySlugResponse : CategoryBaseResponse;
-public record GetSubCategoriesResponse : CategoryBaseResponse;
-public record SearchCategoriesByNameResponse : CategoryBaseResponse;
+public record CreateCategoryResponse : CategoryDto;
+public record UpdateCategoryResponse : CategoryDto;
+public record DeleteCategoryResponse : CategoryDto;
+public record GetCategoryByIdResponse : CategoryDto;
+public record GetCategoriesResponse : CategoryDto;
+public record GetCategoriesByParentIdResponse : CategoryDto;
+public record GetCategoriesByStatusResponse : CategoryDto;
+public record GetCategoriesBySearchResponse : CategoryDto;
+public record GetActiveCategoriesResponse : CategoryDto;
+public record GetCategoryByNameResponse : CategoryDto;
+public record GetCategoryTreeResponse : CategoryDto;
+public record GetCategoryPathResponse : CategoryDto;
+public record GetRootCategoriesResponse : CategoryDto;
+public record GetCategoryBySlugResponse : CategoryDto;
+public record GetSubCategoriesResponse : CategoryDto;
+public record SearchCategoriesByNameResponse : CategoryDto;
 
 // Add lightweight aliases and request DTOs expected by older code (ICatalogService and mapping)
-public record CategoryDto : CategoryBaseResponse;
 
 public class CreateCategoryRequest
 {
