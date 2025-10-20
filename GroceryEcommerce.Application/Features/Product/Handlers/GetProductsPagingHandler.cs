@@ -12,50 +12,20 @@ public class GetProductsPagingHandler(
     IMapper mapper,
     IProductRepository repository,
     ILogger<GetProductsPagingHandler> logger
-) : IRequestHandler<GetProductsPagingQuery, Result<GetProductsPagingResponse>>
+) : IRequestHandler<GetProductsPagingQuery, Result<PagedResult<ProductBaseResponse>>>
 {
-    public async Task<Result<GetProductsPagingResponse>> Handle(GetProductsPagingQuery request, CancellationToken cancellationToken)
+    public async Task<Result<PagedResult<ProductBaseResponse>>> Handle(GetProductsPagingQuery request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Handling GetProductsPagingQuery - Page: {Page}, PageSize: {PageSize}", request.Page, request.PageSize);
+        logger.LogInformation("Handling GetProductsPagingQuery - Page: {Page}, PageSize: {PageSize}", request.Request.Page, request.Request.PageSize);
 
-        var pagedRequest = new PagedRequest
-        {
-            Page = request.Page,
-            PageSize = request.PageSize,
-            SortBy = request.SortBy,
-            SortDirection = request.SortDirection == "Desc" ? SortDirection.Descending : SortDirection.Ascending
-        };
 
-        // Add filters
-        if (request.Status.HasValue)
+        var result = await repository.SearchProductsAsync(request.Request, request.Request.Search ?? string.Empty, cancellationToken);
+        if (!result.IsSuccess || result.Data is null)
         {
-            pagedRequest.WithFilter("Status", request.Status.Value);
+            return Result<PagedResult<ProductBaseResponse>>.Failure(result.ErrorMessage ?? "Failed to get paged products.");
         }
 
-        if (request.CategoryId.HasValue)
-        {
-            pagedRequest.WithFilter("CategoryId", request.CategoryId.Value);
-        }
-
-        if (request.BrandId.HasValue)
-        {
-            pagedRequest.WithFilter("BrandId", request.BrandId.Value);
-        }
-
-        if (request.IsFeatured.HasValue)
-        {
-            pagedRequest.WithFilter("IsFeatured", request.IsFeatured.Value);
-        }
-
-        var result = await repository.SearchProductsAsync(pagedRequest, request.SearchTerm ?? string.Empty, cancellationToken);
-        if (!result.IsSuccess)
-        {
-            logger.LogError("Failed to get paged products");
-            return Result<GetProductsPagingResponse>.Failure(result.ErrorMessage ?? "Failed to get paged products.");
-        }
-
-        var response = mapper.Map<GetProductsPagingResponse>(result.Data);
-        logger.LogInformation("Retrieved {Count} products for page {Page}", result.Data?.TotalCount ?? 0, request.Page);
-        return Result<GetProductsPagingResponse>.Success(response);
+        var response = mapper.Map<PagedResult<ProductBaseResponse>>(result.Data);
+        return Result<PagedResult<ProductBaseResponse>>.Success(response);
     }
 }
