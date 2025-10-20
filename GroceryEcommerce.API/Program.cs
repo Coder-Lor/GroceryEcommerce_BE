@@ -21,6 +21,7 @@ internal class Program
 // Add services to the container.
         builder.Services.AddControllers();
         builder.Services.AddOpenApi();
+        //builder.Services.AddOpenApiDocument();
 
         // Đăng ký DbProviderFactory với .NET
         DbProviderFactories.RegisterFactory("Npgsql", NpgsqlFactory.Instance);
@@ -120,7 +121,8 @@ internal class Program
 
         if (app.Environment.IsDevelopment())
         {
-            app.MapOpenApi();
+            app.UseOpenApi();
+            //app.UseSwaggerUi();
             app.MapScalarApiReference();
         }
 
