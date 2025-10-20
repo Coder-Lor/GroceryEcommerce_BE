@@ -2,6 +2,7 @@ using AutoMapper;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Features.Category.Commands;
 using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
+using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Application.Models.Catalog;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -9,8 +10,9 @@ using Microsoft.Extensions.Logging;
 namespace GroceryEcommerce.Application.Features.Category.Handlers;
 
 public class CreateCategoryCommandHandler(
-    ICategoryRepository categoryRepository,
     IMapper mapper,
+    ICategoryRepository categoryRepository,
+    ICurrentUserService currentUserService,
     ILogger<CreateCategoryCommandHandler> logger
 ) : IRequestHandler<CreateCategoryCommand, Result<CreateCategoryResponse>>
 {
@@ -39,7 +41,8 @@ public class CreateCategoryCommandHandler(
                 ParentCategoryId = request.ParentCategoryId,
                 Status = request.Status,
                 DisplayOrder = request.DisplayOrder,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = currentUserService.GetCurrentUserId() ?? Guid.Parse("2e6d6589-8790-46be-8c73-b582618ccada")
             };
 
             // Save to repository

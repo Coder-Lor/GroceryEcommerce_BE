@@ -36,7 +36,7 @@ public record ProductBaseResponse
     public int ReviewCount { get; set; }
 }
 
-public record ProductDetailDto : ProductBaseResponse
+public record ProductDetailDto : ProductDto
 {
     public List<ProductAttributeValueDto> Attributes { get; set; } = new();
     public List<ProductQuestionDto> Questions { get; set; } = new();
