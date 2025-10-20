@@ -5,50 +5,68 @@ using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
 using GroceryEcommerce.Application.Models.Catalog;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace GroceryEcommerce.Application.Features.Category.Handlers;
 
-public class GetCategoriesPagingHandler(
-    ICategoryRepository categoryRepository,
-    IMapper mapper,
-    ILogger<GetCategoriesPagingHandler> logger
-) : IRequestHandler<GetCategoriesPagingQuery, Result<PagedResult<CategoryBaseResponse>>>
+public class GetCategoriesPagingHandler : IRequestHandler<GetCategoriesPagingQuery, Result<PagedResult<CategoryDto>>>
 {
-    public async Task<Result<PagedResult<CategoryBaseResponse>>> Handle(GetCategoriesPagingQuery request, CancellationToken cancellationToken)
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly IMapper _mapper;
+    private readonly ILogger<GetCategoriesPagingHandler> _logger;
+
+    public GetCategoriesPagingHandler(
+        ICategoryRepository categoryRepository,
+        IMapper mapper,
+        ILogger<GetCategoriesPagingHandler> logger)
+    {
+        _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    public async Task<Result<PagedResult<CategoryDto>>> Handle(GetCategoriesPagingQuery request, CancellationToken cancellationToken)
     {
         try
         {
-            logger.LogInformation("Getting categories paged: Page={Page}, PageSize={PageSize}", request.Page, request.PageSize);
+            var req = request.Request ?? new PagedRequest();
+
+            _logger.LogInformation("Getting categories paged: Page={Page}, PageSize={PageSize}", req.Page, req.PageSize);
 
             var pagedRequest = new PagedRequest
             {
-                Page = request.Page,
-                PageSize = request.PageSize,
-                Search = request.SearchTerm,
-                SortBy = request.SortBy,
-                SortDirection = request.SortDirection == "Desc" ? SortDirection.Descending : SortDirection.Ascending
+                Page = req.Page,
+                PageSize = req.PageSize,
+                Search = req.Search,
+                SortBy = req.SortBy,
+                SortDirection = req.SortDirection
             };
 
-            if (request.Status.HasValue)
-                pagedRequest.WithFilter("Status", request.Status.Value);
-
-            if (request.ParentCategoryId.HasValue)
-                pagedRequest.WithFilter("ParentCategoryId", request.ParentCategoryId.Value);
-
-            var result = await categoryRepository.GetPagedAsync(pagedRequest, cancellationToken);
-            if (!result.IsSuccess)
+            if (req.Filters != null)
             {
-                logger.LogError("Failed to get paged categories");
-                return Result<PagedResult<CategoryBaseResponse>>.Failure(result.ErrorMessage ?? "Failed to get categories.");
+                foreach (var f in req.Filters)
+                {
+                    pagedRequest.AddFilter(f.FieldName, f.Value, f.Operator);
+                }
             }
 
-            var mapped = mapper.Map<PagedResult<CategoryBaseResponse>>(result.Data);
-            return Result<PagedResult<CategoryBaseResponse>>.Success(mapped);
+
+            var result = await _categoryRepository.GetPagedAsync(pagedRequest, cancellationToken);
+            if (!result.IsSuccess)
+            {
+                _logger.LogError("Failed to get paged categories");
+                return Result<PagedResult<CategoryDto>>.Failure(result.ErrorMessage ?? "Failed to get categories.");
+            }
+
+            var mapped = _mapper.Map<PagedResult<CategoryDto>>(result.Data);
+            return Result<PagedResult<CategoryDto>>.Success(mapped);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error getting paged categories");
-            return Result<PagedResult<CategoryBaseResponse>>.Failure("An error occurred while retrieving categories.");
+            _logger.LogError(ex, "Error getting paged categories");
+            return Result<PagedResult<CategoryDto>>.Failure("An error occurred while retrieving categories.");
         }
     }
 }

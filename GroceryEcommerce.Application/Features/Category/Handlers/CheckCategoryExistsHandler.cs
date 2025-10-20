@@ -9,9 +9,9 @@ namespace GroceryEcommerce.Application.Features.Category.Handlers;
 public class CheckCategoryExistsHandler(
     ICategoryRepository categoryRepository,
     ILogger<CheckCategoryExistsHandler> logger
-) : IRequestHandler<CheckCategoryExistsQuery, Result<bool>>
+) : IRequestHandler<CheckCategoryExistsByNameQuery, Result<bool>>
 {
-    public async Task<Result<bool>> Handle(CheckCategoryExistsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(CheckCategoryExistsByNameQuery request, CancellationToken cancellationToken)
     {
         try
         {
