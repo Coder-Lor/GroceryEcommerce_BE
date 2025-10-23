@@ -173,6 +173,7 @@ public static class DependencyInjection
         services.AddMemoryCache();
         services.AddHttpContextAccessor();
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+        services.AddScoped<IAzureBlobStorageService, AzureBlobStorageService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IJwtTokenGeneratorService, JwtTokenGeneratorService>();

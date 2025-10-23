@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace GroceryEcommerce.Application.Features.Product.Handlers;
 
-public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Result<CreateProductResponse>>
+public class CreateProductWithFilesCommandHandler : IRequestHandler<CreateProductWithFilesCommand, Result<CreateProductResponse>>
 {
     private readonly IProductRepository _productRepository;
     private readonly IProductImageRepository _productImageRepository;
@@ -19,9 +19,9 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
     private readonly IProductTagAssignmentRepository _productTagAssignmentRepository;
     private readonly IAzureBlobStorageService _blobStorageService;
     private readonly IMapper _mapper;
-    private readonly ILogger<CreateProductCommandHandler> _logger;
+    private readonly ILogger<CreateProductWithFilesCommandHandler> _logger;
 
-    public CreateProductCommandHandler(
+    public CreateProductWithFilesCommandHandler(
         IProductRepository productRepository,
         IProductImageRepository productImageRepository,
         IProductVariantRepository productVariantRepository,
@@ -29,7 +29,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
         IProductTagAssignmentRepository productTagAssignmentRepository,
         IAzureBlobStorageService blobStorageService,
         IMapper mapper,
-        ILogger<CreateProductCommandHandler> logger)
+        ILogger<CreateProductWithFilesCommandHandler> logger)
     {
         _productRepository = productRepository;
         _productImageRepository = productImageRepository;
@@ -41,11 +41,11 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
         _logger = logger;
     }
 
-    public async Task<Result<CreateProductResponse>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+    public async Task<Result<CreateProductResponse>> Handle(CreateProductWithFilesCommand request, CancellationToken cancellationToken)
     {
         try
         {
-            _logger.LogInformation("Creating product: {Name}", request.Name);
+            _logger.LogInformation("Creating product with files: {Name}", request.Name);
 
             // Check if product with same SKU already exists
             var existingProduct = await _productRepository.GetBySkuAsync(request.Sku, cancellationToken);
@@ -91,44 +91,47 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
 
             var createdProduct = productResult.Data;
 
-            // Upload và tạo product images
-            if (request.Images != null && request.Images.Any())
+            // Upload và tạo product images từ files
+            if (request.ImageFiles != null && request.ImageFiles.Any())
             {
-                foreach (var imageRequest in request.Images)
+                for (int i = 0; i < request.ImageFiles.Count; i++)
                 {
                     try
                     {
-                        // Upload image to Azure Blob Storage
-                        string imageUrl;
-                        if (!string.IsNullOrEmpty(imageRequest.ImageUrl))
+                        var file = request.ImageFiles[i];
+                        if (file.Length == 0) continue;
+
+                        // Validate file type
+                        var allowedTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/webp" };
+                        if (!allowedTypes.Contains(file.ContentType))
                         {
-                            // Nếu đã có URL (đã upload trước đó), sử dụng URL đó
-                            imageUrl = imageRequest.ImageUrl;
-                        }
-                        else if (imageRequest.ImageFile != null)
-                        {
-                            // Upload file mới
-                            using var stream = imageRequest.ImageFile.OpenReadStream();
-                            imageUrl = await _blobStorageService.UploadImageAsync(
-                                stream, 
-                                imageRequest.ImageFile.FileName, 
-                                imageRequest.ImageFile.ContentType, 
-                                cancellationToken);
-                        }
-                        else
-                        {
-                            _logger.LogWarning("No image URL or file provided for product image");
+                            _logger.LogWarning("Invalid file type for {FileName}", file.FileName);
                             continue;
                         }
+
+                        // Validate file size (5MB max)
+                        if (file.Length > 5 * 1024 * 1024)
+                        {
+                            _logger.LogWarning("File too large for {FileName}", file.FileName);
+                            continue;
+                        }
+
+                        // Upload file to Azure Blob Storage
+                        using var stream = file.OpenReadStream();
+                        var imageUrl = await _blobStorageService.UploadImageAsync(
+                            stream, 
+                            file.FileName, 
+                            file.ContentType, 
+                            cancellationToken);
 
                         var image = new Domain.Entities.Catalog.ProductImage
                         {
                             ImageId = Guid.NewGuid(),
-                            ProductId = createdProduct.ProductId,
+                            ProductId = createdProduct!.ProductId,
                             ImageUrl = imageUrl,
-                            AltText = imageRequest.AltText,
-                            IsPrimary = imageRequest.IsPrimary,
-                            DisplayOrder = imageRequest.DisplayOrder,
+                            AltText = request.ImageAltTexts?.ElementAtOrDefault(i) ?? $"Product image {i + 1}",
+                            IsPrimary = request.ImageIsPrimary?.ElementAtOrDefault(i) ?? (i == 0),
+                            DisplayOrder = request.ImageDisplayOrders?.ElementAtOrDefault(i) ?? i,
                             CreatedAt = DateTime.UtcNow
                         };
 
@@ -140,7 +143,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Error processing product image");
+                        _logger.LogError(ex, "Error processing product image {Index}", i);
                     }
                 }
             }
@@ -153,7 +156,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
                     var variant = new Domain.Entities.Catalog.ProductVariant
                     {
                         VariantId = Guid.NewGuid(),
-                        ProductId = createdProduct.ProductId,
+                        ProductId = createdProduct!.ProductId,
                         Name = variantRequest.Name,
                         Sku = variantRequest.Sku,
                         Price = variantRequest.Price,
@@ -181,7 +184,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
                     var attributeValue = new Domain.Entities.Catalog.ProductAttributeValue
                     {
                         ValueId = Guid.NewGuid(),
-                        ProductId = createdProduct.ProductId,
+                        ProductId = createdProduct!.ProductId,
                         AttributeId = attributeRequest.ProductAttributeId,
                         Value = attributeRequest.Value,
                         CreatedAt = DateTime.UtcNow
