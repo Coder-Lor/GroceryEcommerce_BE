@@ -29,7 +29,11 @@ public record GetCategoriesByStatusResponse : CategoryDto;
 public record GetCategoriesBySearchResponse : CategoryDto;
 public record GetActiveCategoriesResponse : CategoryDto;
 public record GetCategoryByNameResponse : CategoryDto;
-public record GetCategoryTreeResponse : CategoryDto;
+
+public record GetCategoryTreeResponse
+{
+    public List<CategoryDto> Categories { get; set; } = new();
+}
 public record GetCategoryPathResponse : CategoryDto;
 public record GetRootCategoriesResponse : CategoryDto;
 public record GetCategoryBySlugResponse : CategoryDto;

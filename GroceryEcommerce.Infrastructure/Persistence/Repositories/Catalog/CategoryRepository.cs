@@ -462,36 +462,39 @@ public class CategoryRepository(
     {
         try
         {
-            var cacheKey = "Category_Tree";
-            var cached = await CacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
-            if (cached != null)
-            {
-                logger.LogInformation("Category tree fetched from cache");
-                return Result<List<Category>>.Success(cached);
-            }
+            // var cacheKey = "Category_Tree";
+            // var cached = await CacheService.GetAsync<List<Category>>(cacheKey, cancellationToken);
+            // if (cached != null)
+            // {
+            //     logger.LogInformation("Category tree fetched from cache");
+            //     return Result<List<Category>>.Success(cached);
+            // }
+            
+            var level1 = (IPrefetchPathElement2)CategoryEntity.PrefetchPathCategories;
+            level1.Sorter = new SortExpression(CategoryFields.Name.Ascending());
+            
+            var level2 = (IPrefetchPathElement2)level1.SubPath.Add(CategoryEntity.PrefetchPathCategories);
+            level2.Sorter = new SortExpression(CategoryFields.Name.Ascending());
+            
+            var level3 = (IPrefetchPathElement2)level2.SubPath.Add(CategoryEntity.PrefetchPathCategories);
+            level3.Sorter = new SortExpression(CategoryFields.Name.Ascending());
             
             var qf = new QueryFactory();
-            
-            var query = qf.Category
-                .WithPath(
-                    CategoryEntity.PrefetchPathCategories
-                    .WithSubPath(
-                        CategoryEntity.PrefetchPathCategories
-                            .WithSubPath(CategoryEntity.PrefetchPathCategories)
-                    )
-                )
-                .OrderBy(CategoryFields.Name.Ascending());
 
+            var query = qf.Category
+                .Where(CategoryFields.ParentCategoryId.IsNull())
+                .WithPath(level1)
+                .OrderBy(CategoryFields.Name.Ascending());
+            
             var entities = new EntityCollection<CategoryEntity>();
             await Adapter.FetchQueryAsync(query, entities, cancellationToken);
-            
             var result = Mapper.Map<List<Category>>(entities);
             if (result.Count == 0)
             {
                 logger.LogInformation("No category tree found");
                 return Result<List<Category>>.Success(new List<Category>());
             }
-            await CacheService.SetAsync(cacheKey, result, TimeSpan.FromHours(1), cancellationToken);
+            // await CacheService.SetAsync(cacheKey, result, TimeSpan.FromHours(1), cancellationToken);
             logger.LogInformation("Category tree fetched");
             return Result<List<Category>>.Success(result);
         }
