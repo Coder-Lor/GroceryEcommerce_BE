@@ -52,12 +52,6 @@ public class CatalogProfile : Profile
                     : null))
             .ForMember(dest => dest.ReviewCount, opt => opt.MapFrom(src => src.Reviews != null ? src.Reviews.Count : 0));
 
-        //CreateMap<Product, ProductDetailDto>()
-        //    .IncludeBase<Product, ProductDto>()
-        //    .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.ProductAttributeValues))
-        //    .ForMember(dest => dest.Questions, opt => opt.MapFrom(src => src.ProductQuestions))
-        //    .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews));
-
         CreateMap<Product, ProductDetailDto>()
             .IncludeBase<Product, ProductDto>()
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.ProductAttributeValues ?? new List<ProductAttributeValue>()))

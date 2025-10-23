@@ -29,6 +29,12 @@ internal class Program
             options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50MB
         });
 
+        // Configure form options for file upload
+        builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+        {
+            options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50MB
+        });
+
         // Đăng ký DbProviderFactory với .NET
         DbProviderFactories.RegisterFactory("Npgsql", NpgsqlFactory.Instance);
 
