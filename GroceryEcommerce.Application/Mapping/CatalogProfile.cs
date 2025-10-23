@@ -43,11 +43,14 @@ public class CatalogProfile : Profile
             .ForMember(dest => dest.AverageRating, opt => opt.MapFrom(src => src.Reviews.Any() ? (decimal?)src.Reviews.Average(r => r.Rating) : null))
             .ForMember(dest => dest.ReviewCount, opt => opt.MapFrom(src => src.Reviews.Count));
 
+        //CreateMap<Product, ProductDetailDto>()
+        //    .IncludeBase<Product, ProductDto>()
+        //    .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.ProductAttributeValues))
+        //    .ForMember(dest => dest.Questions, opt => opt.MapFrom(src => src.ProductQuestions))
+        //    .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews));
+
         CreateMap<Product, ProductDetailDto>()
-            .IncludeBase<Product, ProductDto>()
-            .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.ProductAttributeValues))
-            .ForMember(dest => dest.Questions, opt => opt.MapFrom(src => src.ProductQuestions))
-            .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews));
+            .IncludeAllDerived();
 
         CreateMap<CreateProductRequest, Product>()
             .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => Guid.NewGuid()))
