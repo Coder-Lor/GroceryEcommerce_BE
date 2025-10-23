@@ -22,6 +22,12 @@ internal class Program
         builder.Services.AddControllers();
         builder.Services.AddOpenApi();
 
+        // Configure form options for file upload
+        builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+        {
+            options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50MB
+        });
+
         // Đăng ký DbProviderFactory với .NET
         DbProviderFactories.RegisterFactory("Npgsql", NpgsqlFactory.Instance);
 

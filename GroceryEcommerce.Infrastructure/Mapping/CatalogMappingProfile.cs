@@ -1,6 +1,7 @@
 using AutoMapper;
 using GroceryEcommerce.Domain.Entities.Catalog;
 using GroceryEcommerce.EntityClasses;
+using GroceryEcommerce.HelperClasses;
 
 namespace GroceryEcommerce.Infrastructure.Mapping;
 
@@ -40,19 +41,22 @@ public class CatalogMappingProfile : Profile
             .ForMember(dest => dest.StockMovements, opt => opt.Ignore());
 
         // Category mapping - AutoMapper tự động map các thuộc tính có tên giống nhau
-        CreateMap<Category, CategoryEntity>()
-            .ForMember(dest => dest.Category, opt => opt.Ignore())
-            .ForMember(dest => dest.Categories, opt => opt.Ignore())
-            .ForMember(dest => dest.Products, opt => opt.Ignore())
-            .ForMember(dest => dest.User, opt => opt.Ignore())
-            .ForMember(dest => dest.User1, opt => opt.Ignore());
-
         CreateMap<CategoryEntity, Category>()
-            .ForMember(dest => dest.ParentCategory, opt => opt.Ignore())
-            .ForMember(dest => dest.SubCategories, opt => opt.Ignore())
-            .ForMember(dest => dest.Products, opt => opt.Ignore())
-            .ForMember(dest => dest.CreatedByUser, opt => opt.Ignore())
-            .ForMember(dest => dest.UpdatedByUser, opt => opt.Ignore());
+            .ForMember(d => d.ParentCategory,  o => o.Ignore())
+            .ForMember(d => d.SubCategories,   o => o.MapFrom(s => s.Categories ?? null))
+            .ForMember(d => d.Products,        o => o.Ignore())
+            .ForMember(d => d.CreatedByUser,   o => o.Ignore())
+            .ForMember(d => d.UpdatedByUser,   o => o.Ignore())
+            // .MaxDepth(3)  // ➜ Tạm bỏ để test, hoặc tăng lên 10 nếu cây sâu
+            .PreserveReferences();
+
+        CreateMap<Category, CategoryEntity>()
+            .ForMember(d => d.Category,   o => o.Ignore())    // tránh vòng (cha)
+            .ForMember(d => d.Categories, o => o.MapFrom(s => s.SubCategories ?? new List<Category>()))
+            .ForMember(d => d.Products,   o => o.Ignore())
+            .ForMember(d => d.User,       o => o.Ignore())
+            .ForMember(d => d.User1,      o => o.Ignore())
+            .PreserveReferences();
 
         // Brand mapping - AutoMapper tự động map các thuộc tính có tên giống nhau
         CreateMap<Brand, BrandEntity>()
