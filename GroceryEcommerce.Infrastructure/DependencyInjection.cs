@@ -157,6 +157,16 @@ public static class DependencyInjection
             return new ProductVariantRepository(adapter, mapper, cacheService, logger);
         });
 
+        services.AddScoped<ICartRepository, CartRepository>(provider =>
+        {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var logger = provider.GetRequiredService<ILogger<CartRepository>>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            return new CartRepository(adapter, mapper, unitOfWorkService,  cacheService, logger);
+        });
+
         
 
         // Register existing services

@@ -10,8 +10,13 @@ public class CatalogProfile : Profile
     {
         // Category mappings
         CreateMap<Category, CategoryDto>()
-            .ForMember(dest => dest.ParentCategoryName, opt => opt.MapFrom(src => src.ParentCategory != null ? src.ParentCategory.Name : null))
-            .ForMember(dest => dest.ProductCount, opt => opt.MapFrom(src => src.Products.Count));
+            .ForMember(dest => dest.ParentCategoryName,
+                opt => opt.MapFrom(src => src.ParentCategory != null ? src.ParentCategory.Name : null))
+            .ForMember(dest => dest.ProductCount, opt => opt.Ignore())
+            .AfterMap((src, dest) =>
+            {
+                dest.ProductCount = src.Products != null ? src.Products.Count : 0;
+            });
 
         CreateMap<CreateCategoryRequest, Category>()
             .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => Guid.NewGuid()))
