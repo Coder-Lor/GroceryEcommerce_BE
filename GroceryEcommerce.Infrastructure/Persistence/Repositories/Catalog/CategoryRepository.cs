@@ -114,7 +114,6 @@ public class CategoryRepository(
         };
     }
     
-    
     public async Task<Result<Category?>> GetByIdAsync(Guid categoryId, CancellationToken cancellationToken = default)
     {
         try

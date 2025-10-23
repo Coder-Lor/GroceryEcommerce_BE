@@ -11,7 +11,7 @@ public interface ICategoryRepository
     Task<Result<Category?>> GetByNameAsync(string name, CancellationToken cancellationToken = default);
     Task<Result<Category?>> GetBySlugAsync(string slug, CancellationToken cancellationToken = default);
     Task<Result<List<Category>>> GetAllAsync(CancellationToken cancellationToken = default);
-    new Task<Result<PagedResult<Category>>> GetPagedAsync(PagedRequest request, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<Category>>> GetPagedAsync(PagedRequest request, CancellationToken cancellationToken = default);
     Task<Result<Category>> CreateAsync(Category category, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateAsync(Category category, CancellationToken cancellationToken = default);
     Task<Result<bool>> DeleteAsync(Guid categoryId, CancellationToken cancellationToken = default);
