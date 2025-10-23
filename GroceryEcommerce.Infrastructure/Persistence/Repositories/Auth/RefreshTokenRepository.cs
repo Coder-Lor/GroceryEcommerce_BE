@@ -1,6 +1,7 @@
 using AutoMapper;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
+using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.DatabaseSpecific;
 using GroceryEcommerce.Domain.Entities.Auth;
 using GroceryEcommerce.EntityClasses;
@@ -12,6 +13,7 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth;
 
 public class RefreshTokenRepository(
     DataAccessAdapter adapter,
+    IUnitOfWorkService unitOfWorkService,
     IMapper mapper,
     ILogger<RefreshTokenRepository> logger
 ) : IRefreshTokenRepository

@@ -16,11 +16,12 @@ using SD.LLBLGen.Pro.QuerySpec.Adapter;
 namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
 
 public class ProductTagRepository(
-    DataAccessAdapter adapter,
+    DataAccessAdapter scopedAdapter,
+    IUnitOfWorkService unitOfWorkService,
     IMapper mapper,
     ICacheService cacheService,
     ILogger<ProductTagRepository> logger
-) : BasePagedRepository<ProductTagEntity, ProductTag>(adapter, mapper, cacheService, logger), IProductTagRepository
+) : BasePagedRepository<ProductTagEntity, ProductTag>(scopedAdapter, unitOfWorkService, mapper, cacheService, logger), IProductTagRepository
 {
 
     private EntityField2? GetSortField(string? sortBy)
@@ -88,10 +89,10 @@ public class ProductTagRepository(
         return query.OrderBy(ProductTagFields.Name.Ascending());
     }
 
-    protected override async Task<IList<ProductTagEntity>> FetchEntitiesAsync(EntityQuery<ProductTagEntity> query, CancellationToken cancellationToken)
+    protected override async Task<IList<ProductTagEntity>> FetchEntitiesAsync(EntityQuery<ProductTagEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
     {
         var entities = new EntityCollection<ProductTagEntity>();
-        await Adapter.FetchQueryAsync(query, entities, cancellationToken);
+        await adapter.FetchQueryAsync(query, entities, cancellationToken);
         return entities;
     }
 
@@ -135,7 +136,8 @@ public class ProductTagRepository(
         try {
             var entity = Mapper.Map<ProductTagEntity>(tag);
             entity.IsNew = true;
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter();
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved) {
                 await CacheService.RemoveAsync("All_ProductTags", cancellationToken);
                 await CacheService.RemoveAsync($"ProductTag_{entity.TagId}", cancellationToken);
@@ -157,7 +159,8 @@ public class ProductTagRepository(
     {
         try {
             
-            var entity = await Adapter.FetchFirstAsync(
+            var adapter = GetAdapter();
+            var entity = await adapter.FetchFirstAsync(
                 new QueryFactory().ProductTag.Where(ProductTagFields.TagId == tag.TagId),
                 cancellationToken
             );
@@ -168,7 +171,7 @@ public class ProductTagRepository(
             }
             Mapper.Map(tag, entity);
             entity.IsNew = false;
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved) {
                 await CacheService.RemoveAsync("All_ProductTags", cancellationToken);
                 await CacheService.RemoveAsync($"ProductTag_{entity.TagId}", cancellationToken);
@@ -193,7 +196,8 @@ public class ProductTagRepository(
                 logger.LogWarning("Tag id is required");
                 return Result<bool>.Failure("Invalid tag ID.");
             }
-            var entity = await Adapter.FetchFirstAsync(
+            var adapter = GetAdapter();
+            var entity = await adapter.FetchFirstAsync(
                 new QueryFactory().ProductTag.Where(ProductTagFields.TagId == tagId),
                 cancellationToken
             );
@@ -202,12 +206,10 @@ public class ProductTagRepository(
                 logger.LogWarning("Tag not found: {TagId}", tagId);
                 return Result<bool>.Failure("Tag not found.");
             }
-            var deleted = await Adapter.DeleteEntityAsync(entity, cancellationToken);
+            var deleted = await adapter.DeleteEntityAsync(entity, cancellationToken);
             if (deleted) {
                 await CacheService.RemoveAsync("All_ProductTags", cancellationToken);
-                await CacheService.RemoveAsync($"ProductTag_{entity.TagId}", cancellationToken);
-                await CacheService.RemoveAsync($"ProductTags_ByName_{entity.Name}", cancellationToken);
-                await CacheService.RemoveAsync($"ProductTags_BySlug_{entity.Slug}", cancellationToken);
+                await CacheService.RemoveAsync($"ProductTag_{tagId}", cancellationToken);
                 logger.LogInformation("Tag deleted: {TagId}", tagId);
                 return Result<bool>.Success(true);
             }

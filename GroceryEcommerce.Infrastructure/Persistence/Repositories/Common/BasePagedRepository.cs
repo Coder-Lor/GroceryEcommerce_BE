@@ -12,7 +12,8 @@ using SD.LLBLGen.Pro.ORMSupportClasses;
 namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Common;
 
 public abstract class BasePagedRepository<TEntity, TDomainEntity>(
-    DataAccessAdapter adapter,
+    DataAccessAdapter scopedAdapter,
+    IUnitOfWorkService unitOfWorkService,
     IMapper mapper,
     ICacheService cacheService,
     ILogger logger)
@@ -20,10 +21,24 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
     where TEntity : EntityBase2
     where TDomainEntity : class
 {
-    protected readonly DataAccessAdapter Adapter = adapter;
+    protected readonly DataAccessAdapter ScopedAdapter = scopedAdapter;
+    protected readonly IUnitOfWorkService UnitOfWorkService = unitOfWorkService;
     protected readonly IMapper Mapper = mapper;
     protected readonly ICacheService CacheService = cacheService;
     protected readonly ILogger Logger = logger;
+
+    // Method để lấy adapter phù hợp
+    protected DataAccessAdapter GetAdapter()
+    {
+        // Nếu có active transaction, dùng adapter của transaction
+        if (UnitOfWorkService.HasActiveTransaction)
+        {
+            return UnitOfWorkService.GetAdapter();
+        }
+        
+        // Nếu không, dùng scoped adapter
+        return ScopedAdapter;
+    }
 
 
     public abstract IReadOnlyList<SearchableField> GetSearchableFields();
@@ -63,9 +78,10 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
                 return Result<TDomainEntity?>.Success(cached);
             }
 
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var qf = new QueryFactory();
             var query = qf.Create<TEntity>().Where(field == value);
-            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (entity == null)
             {
                 Logger.LogWarning("{EntityName} not found by {Field}: {Value}", 
@@ -94,12 +110,13 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
     {
         try
         {
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var qf = new QueryFactory();
             var countQuery = qf.Create<TEntity>()
                 .Where(field == value)
                 .Limit(1)
                 .Select(() => Functions.CountRow());
-            var count = await Adapter.FetchScalarAsync<int>(countQuery, cancellationToken);
+            var count = await adapter.FetchScalarAsync<int>(countQuery, cancellationToken);
             Logger.LogInformation("Exists check for {EntityName} by {Field}: {Value} -> {Exists}", 
                 typeof(TDomainEntity).Name, field.Name, value, count > 0);
             return Result<bool>.Success(count > 0);
@@ -119,12 +136,13 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
     {
         try
         {
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var qf = new QueryFactory();
             var query = qf.Create<TEntity>()
                 .Where(field == value)
                 .Select(() => Functions.CountRow());
             
-            var count = await Adapter.FetchScalarAsync<int>(query, cancellationToken);
+            var count = await adapter.FetchScalarAsync<int>(query, cancellationToken);
             Logger.LogInformation("Count for {EntityName} by {Field}: {Value} -> {Count}", 
                 typeof(TDomainEntity).Name, field.Name, value, count);
             
@@ -191,7 +209,8 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
             }
 
             // Get total count
-            var totalCount = await Adapter.FetchScalarAsync<int>(
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var totalCount = await adapter.FetchScalarAsync<int>(
                 query.Select(() => Functions.CountRow()),
                 cancellationToken
             );
@@ -200,7 +219,7 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
             query = query.Page(request.Page, request.PageSize);
 
             // Fetch data
-            var entities = await FetchEntitiesAsync(query, cancellationToken);
+            var entities = await FetchEntitiesAsync(query, adapter, cancellationToken);
             var domainEntities = Mapper.Map<List<TDomainEntity>>(entities);
 
             var result = new PagedResult<TDomainEntity>(domainEntities, totalCount, request.Page, request.PageSize);
@@ -249,5 +268,5 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
     protected abstract EntityQuery<TEntity> ApplySearch(EntityQuery<TEntity> query, string searchTerm);
     protected abstract EntityQuery<TEntity> ApplySorting(EntityQuery<TEntity> query, string? sortBy, SortDirection sortDirection);
     protected abstract EntityQuery<TEntity> ApplyDefaultSorting(EntityQuery<TEntity> query);
-    protected abstract Task<IList<TEntity>> FetchEntitiesAsync(EntityQuery<TEntity> query, CancellationToken cancellationToken);
+    protected abstract Task<IList<TEntity>> FetchEntitiesAsync(EntityQuery<TEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken);
 }

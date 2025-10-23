@@ -16,11 +16,12 @@ using SD.LLBLGen.Pro.QuerySpec.Adapter;
 namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
 
 public class ProductTagAssignmentRepository(
-    DataAccessAdapter adapter,
+    DataAccessAdapter scopedAdapter,
+    IUnitOfWorkService unitOfWorkService,
     IMapper mapper,
     ICacheService cacheService,
     ILogger<ProductTagAssignmentRepository> logger
-) : BasePagedRepository<ProductTagAssignmentEntity, ProductTagAssignment>(adapter, mapper, cacheService, logger), IProductTagAssignmentRepository
+) : BasePagedRepository<ProductTagAssignmentEntity, ProductTagAssignment>(scopedAdapter, unitOfWorkService, mapper, cacheService, logger), IProductTagAssignmentRepository
 {
     private EntityField2? GetSortField(string? sortBy)
     {
@@ -84,10 +85,10 @@ public class ProductTagAssignmentRepository(
         return query.OrderBy(ProductTagAssignmentFields.ProductId.Ascending());
     }
 
-    protected override async Task<IList<ProductTagAssignmentEntity>> FetchEntitiesAsync(EntityQuery<ProductTagAssignmentEntity> query, CancellationToken cancellationToken)
+    protected override async Task<IList<ProductTagAssignmentEntity>> FetchEntitiesAsync(EntityQuery<ProductTagAssignmentEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
     {
         var entities = new EntityCollection<ProductTagAssignmentEntity>();
-        await Adapter.FetchQueryAsync(query, entities, cancellationToken);
+        await adapter.FetchQueryAsync(query, entities, cancellationToken);
         return entities;
     }
 
@@ -111,7 +112,8 @@ public class ProductTagAssignmentRepository(
         try {
             var entity = Mapper.Map<ProductTagAssignmentEntity>(assignment);
             entity.IsNew = true;
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter();
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved) {
                 await CacheService.RemoveAsync($"ProductTagAssignment_{entity.ProductId}_{entity.TagId}", cancellationToken);
                 await CacheService.RemoveAsync($"ProductTagAssignments_ByProduct_{entity.ProductId}", cancellationToken);
@@ -133,7 +135,8 @@ public class ProductTagAssignmentRepository(
         try {
             var entity = Mapper.Map<ProductTagAssignmentEntity>(assignment);
             entity.IsNew = false;
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter();
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved) {
                 await CacheService.RemoveAsync($"ProductTagAssignment_{entity.ProductId}_{entity.TagId}", cancellationToken);
                 await CacheService.RemoveAsync($"ProductTagAssignments_ByProduct_{entity.ProductId}", cancellationToken);
@@ -165,7 +168,8 @@ public class ProductTagAssignmentRepository(
                     ProductTagAssignmentFields.TagId == tagId
                 );
 
-            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
+            var adapter = GetAdapter();
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
 
             if (entity is null) {
                 logger.LogWarning("Product tag assignment not found: {ProductId}, {TagId}", productId, tagId);
@@ -173,7 +177,7 @@ public class ProductTagAssignmentRepository(
             }
             
             
-            var deleted = await Adapter.DeleteEntityAsync(entity, cancellationToken);
+            var deleted = await adapter.DeleteEntityAsync(entity, cancellationToken);
             if (deleted) {
                 await CacheService.RemoveAsync($"ProductTagAssignment_{productId}_{tagId}", cancellationToken);
                 await CacheService.RemoveAsync($"ProductTagAssignments_ByProduct_{productId}", cancellationToken);
@@ -204,7 +208,8 @@ public class ProductTagAssignmentRepository(
         try {
             var entity = new ProductTagAssignmentEntity(productId, tagId);
             entity.IsNew = true;
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter();
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved) {
                 await CacheService.RemoveAsync($"ProductTagAssignment_{productId}_{tagId}", cancellationToken);
                 await CacheService.RemoveAsync($"ProductTagAssignments_ByProduct_{productId}", cancellationToken);
@@ -248,7 +253,8 @@ public class ProductTagAssignmentRepository(
                 .Where(ProductTagAssignmentFields.TagId == tagId)
                 .Select(Functions.CountRow());
 
-            var totalCount = await Adapter.FetchScalarAsync<int>(countQuery, cancellationToken);
+            var adapter = GetAdapter();
+            var totalCount = await adapter.FetchScalarAsync<int>(countQuery, cancellationToken);
             if (totalCount == 0)
             {
                 logger.LogInformation("No product tag assignments found for tag: {TagId}", tagId);
@@ -273,7 +279,7 @@ public class ProductTagAssignmentRepository(
 
             // Fetch as DynamicQuery to get only Guid values
             var entities = new EntityCollection<ProductTagAssignmentEntity>();
-            await Adapter.FetchQueryAsync(query, entities, cancellationToken);
+            await adapter.FetchQueryAsync(query, entities, cancellationToken);
 
             var productIds = entities.Select(e => e.ProductId).ToList();
 
@@ -316,7 +322,8 @@ public class ProductTagAssignmentRepository(
             }
 
             // Get total count
-            var totalCount = await Adapter.FetchScalarAsync<int>(
+            var adapter = GetAdapter();
+            var totalCount = await adapter.FetchScalarAsync<int>(
                 query.Select(() => Functions.CountRow()),
                 cancellationToken
             );
@@ -326,7 +333,7 @@ public class ProductTagAssignmentRepository(
                             
 
             var entities = new EntityCollection<ProductTagAssignmentEntity>();
-            await Adapter.FetchQueryAsync(query, entities, cancellationToken);
+            await adapter.FetchQueryAsync(query, entities, cancellationToken);
 
             var tagIds = entities.Select(e => e.TagId).ToList();
 

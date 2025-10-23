@@ -15,11 +15,12 @@ using SD.LLBLGen.Pro.QuerySpec.Adapter;
 namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
 
 public class ProductQuestionRepository(
-    DataAccessAdapter adapter,
+    DataAccessAdapter scopedAdapter,
+    IUnitOfWorkService unitOfWorkService,
     IMapper mapper,
     ICacheService cacheService,
     ILogger<ProductQuestionRepository> logger
-) : BasePagedRepository<ProductQuestionEntity, ProductQuestion>(adapter, mapper, cacheService, logger), IProductQuestionRepository
+) : BasePagedRepository<ProductQuestionEntity, ProductQuestion>(scopedAdapter, unitOfWorkService, mapper, cacheService, logger), IProductQuestionRepository
 {
 
     private EntityField2? GetSortField(string? sortBy)
@@ -114,10 +115,10 @@ public class ProductQuestionRepository(
         return query.OrderBy(ProductQuestionFields.QuestionId.Ascending());
     }
 
-    protected override async Task<IList<ProductQuestionEntity>> FetchEntitiesAsync(EntityQuery<ProductQuestionEntity> query, CancellationToken cancellationToken)
+    protected override async Task<IList<ProductQuestionEntity>> FetchEntitiesAsync(EntityQuery<ProductQuestionEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
     {
         var entities = new EntityCollection<ProductQuestionEntity>();
-        await Adapter.FetchQueryAsync(query, entities, cancellationToken);
+        await adapter.FetchQueryAsync(query, entities, cancellationToken);
         return entities;
     }
 
@@ -142,7 +143,8 @@ public class ProductQuestionRepository(
         try {
             var entity = Mapper.Map<ProductQuestionEntity>(question);
             entity.IsNew = true;
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter();
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved) {
                 await CacheService.RemoveAsync($"ProductQuestion_{entity.QuestionId}", cancellationToken);
                 await CacheService.RemoveAsync($"ProductQuestions_ByProduct_{entity.ProductId}", cancellationToken);
@@ -169,7 +171,8 @@ public class ProductQuestionRepository(
     {
         try {
             var entity = new ProductQuestionEntity(questionId);
-            var deleted = await Adapter.DeleteEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter();
+            var deleted = await adapter.DeleteEntityAsync(entity, cancellationToken);
             if (deleted) {
                 await CacheService.RemoveAsync($"ProductQuestion_{questionId}", cancellationToken);
                 await CacheService.RemoveAsync($"ProductQuestions_ByProduct_{questionId}", cancellationToken);
@@ -214,7 +217,8 @@ public class ProductQuestionRepository(
             entity.AnsweredBy = answeredBy;
             entity.Status = 2;
             entity.UpdatedAt = DateTime.UtcNow;
-            var updated = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter();
+            var updated = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (updated) {
                 await CacheService.RemoveAsync($"ProductQuestion_{questionId}", cancellationToken);
                 await CacheService.RemoveAsync($"ProductQuestions_ByProduct_{questionId}", cancellationToken);
