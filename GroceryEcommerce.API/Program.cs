@@ -21,6 +21,13 @@ internal class Program
 // Add services to the container.
         builder.Services.AddControllers();
         builder.Services.AddOpenApi();
+        builder.Services.AddOpenApiDocument();
+
+        // Configure form options for file upload
+        builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+        {
+            options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50MB
+        });
 
         // Configure form options for file upload
         builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
@@ -129,6 +136,7 @@ internal class Program
             app.MapOpenApi();
             app.UseOpenApi();
             app.MapScalarApiReference();
+            app.UseSwaggerUI();
         }
 
         app.UseHttpsRedirection();
