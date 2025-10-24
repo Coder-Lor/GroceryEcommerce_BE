@@ -15,11 +15,12 @@ using SD.LLBLGen.Pro.QuerySpec.Adapter;
 namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
 
 public class ProductRepository(
-    DataAccessAdapter adapter,
+    DataAccessAdapter scopedAdapter,
+    IUnitOfWorkService unitOfWorkService,
     IMapper mapper,
     ICacheService cacheService,
     ILogger<ProductRepository> logger
-    ): BasePagedRepository<ProductEntity, Product>(adapter, mapper, cacheService, logger), IProductRepository
+    ): BasePagedRepository<ProductEntity, Product>(scopedAdapter, unitOfWorkService, mapper, cacheService, logger), IProductRepository
 {
     private EntityField2? GetSortField(string? sortBy)
     {
@@ -172,10 +173,10 @@ public class ProductRepository(
         return query.OrderBy(ProductFields.Name.Ascending());   
     }
 
-    protected override async Task<IList<ProductEntity>> FetchEntitiesAsync(EntityQuery<ProductEntity> query, CancellationToken cancellationToken)
+    protected override async Task<IList<ProductEntity>> FetchEntitiesAsync(EntityQuery<ProductEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
     {
         var entities = new EntityCollection<ProductEntity>();
-        await Adapter.FetchQueryAsync(query, entities, cancellationToken);
+        await adapter.FetchQueryAsync(query, entities, cancellationToken);
         return entities;
     }
 
@@ -214,10 +215,11 @@ public class ProductRepository(
     {
         try
         {   
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var entity = Mapper.Map<ProductEntity>(product);
             entity.IsNew = true;
             
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved)
             {
                 await CacheService.RemoveAsync("All_Products", cancellationToken);
@@ -238,10 +240,11 @@ public class ProductRepository(
     {
         try
         {
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var entity = Mapper.Map<ProductEntity>(product);
             entity.IsNew = false;
             
-            var updated = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var updated = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (updated)
             {
                 await CacheService.RemoveAsync("All_Products", cancellationToken);
@@ -268,8 +271,9 @@ public class ProductRepository(
                 return Result<bool>.Failure("Invalid product ID.");
             }
             
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var entity = new ProductEntity(productId);
-            var deleted = await Adapter.DeleteEntityAsync(entity, cancellationToken);
+            var deleted = await adapter.DeleteEntityAsync(entity, cancellationToken);
 
             if (!deleted)
             {
@@ -342,10 +346,11 @@ public class ProductRepository(
                 return Result<bool>.Failure("Invalid product ID.");
             }
             
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var entity = new ProductEntity(productId);
             entity.StockQuantity = quantity;
             
-            var updated = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var updated = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (updated)
             {
                 logger.LogInformation("Stock updated for product: {ProductId}", productId);
@@ -371,12 +376,13 @@ public class ProductRepository(
                 return Result<bool>.Failure("Invalid product ID.");
             }
             
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var entity = new ProductEntity(productId)
             {
                 Status = status
             };
 
-            var updated = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var updated = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (updated)
             {
                 logger.LogInformation("Status updated for product: {ProductId}", productId);

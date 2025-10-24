@@ -16,11 +16,12 @@ using SD.LLBLGen.Pro.QuerySpec.Adapter;
 namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
 
 public class BrandRepository(
-    DataAccessAdapter adapter,
+    DataAccessAdapter scopedAdapter,
+    IUnitOfWorkService unitOfWorkService,
     IMapper mapper,
     ICacheService cacheService,
     ILogger<BrandRepository> logger
-    ) : BasePagedRepository<BrandEntity, Brand>(adapter, mapper, cacheService, logger), IBrandRepository
+    ) : BasePagedRepository<BrandEntity, Brand>(scopedAdapter, unitOfWorkService, mapper, cacheService, logger), IBrandRepository
 {
     private EntityField2? GetSortField(string? sortBy)
     {
@@ -155,10 +156,10 @@ public class BrandRepository(
         return query.OrderBy(BrandFields.Name.Ascending());   
     }
 
-    protected override async Task<IList<BrandEntity>> FetchEntitiesAsync(EntityQuery<BrandEntity> query, CancellationToken cancellationToken)
+    protected override async Task<IList<BrandEntity>> FetchEntitiesAsync(EntityQuery<BrandEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
     {
         var entities = new EntityCollection<BrandEntity>();
-        await Adapter.FetchQueryAsync(query, entities, cancellationToken);
+        await adapter.FetchQueryAsync(query, entities, cancellationToken);
         return entities;
     }
 
@@ -211,7 +212,8 @@ public class BrandRepository(
             
             var entities = new EntityCollection<BrandEntity>();
             
-            await Adapter.FetchQueryAsync(query,entities, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            await adapter.FetchQueryAsync(query,entities, cancellationToken);
             var brandList = Mapper.Map<List<Brand>>(entities);
 
             // Cache 15 phút
@@ -233,7 +235,8 @@ public class BrandRepository(
             var entity = Mapper.Map<BrandEntity>(brand);
             entity.IsNew = true;
 
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved)
             {
                 var cacheKeyPrefix = "Brand";
@@ -259,7 +262,8 @@ public class BrandRepository(
             var entity = Mapper.Map<BrandEntity>(brand);
             entity.IsNew = false;
 
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved)
             {
                 var cacheKeyPrefix = "Brand";
@@ -288,7 +292,8 @@ public class BrandRepository(
                 return Result<bool>.Failure("Invalid brand ID.");
             }
             var entity = new BrandEntity(brandId);
-            var deleted = await Adapter.DeleteEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var deleted = await adapter.DeleteEntityAsync(entity, cancellationToken);
             if (deleted)
             {
                 var cacheKeyPrefix = "Brand";

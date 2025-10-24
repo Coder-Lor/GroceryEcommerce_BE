@@ -16,11 +16,12 @@ using SD.LLBLGen.Pro.QuerySpec.Adapter;
 namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
 
 public class CategoryRepository(
-    DataAccessAdapter adapter,
+    DataAccessAdapter scopedAdapter,
+    IUnitOfWorkService unitOfWorkService,
     IMapper mapper,
     ICacheService cacheService,
     ILogger<CategoryRepository> logger)
-    : BasePagedRepository<CategoryEntity, Category>(adapter, mapper, cacheService, logger), ICategoryRepository
+    : BasePagedRepository<CategoryEntity, Category>(scopedAdapter, unitOfWorkService, mapper, cacheService, logger), ICategoryRepository
 {
     public override IReadOnlyList<SearchableField> GetSearchableFields()
     {
@@ -94,10 +95,10 @@ public class CategoryRepository(
         return query.OrderBy(CategoryFields.Name.Ascending());
     }
 
-    protected override async Task<IList<CategoryEntity>> FetchEntitiesAsync(EntityQuery<CategoryEntity> query, CancellationToken cancellationToken)
+    protected override async Task<IList<CategoryEntity>> FetchEntitiesAsync(EntityQuery<CategoryEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
     {
         var entities = new EntityCollection<CategoryEntity>();
-        await Adapter.FetchQueryAsync(query, entities, cancellationToken);
+        await adapter.FetchQueryAsync(query, entities, cancellationToken);
         return entities;
     }
 
@@ -135,7 +136,8 @@ public class CategoryRepository(
             var query = qf.Category
                 .Where(CategoryFields.CategoryId == categoryId);
             
-            var categoryEntity = await Adapter.FetchFirstAsync(query, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var categoryEntity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (categoryEntity == null)
             {
                 Logger.LogInformation("Category not found: {CategoryId}", categoryId);
@@ -175,7 +177,8 @@ public class CategoryRepository(
             var query = qf.Category
                 .Where(CategoryFields.Name == name);
             
-            var categoryEntity = await Adapter.FetchFirstAsync(query, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var categoryEntity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (categoryEntity == null)
             {
                 logger.LogInformation("Category not found: {Name}", name);
@@ -216,7 +219,8 @@ public class CategoryRepository(
             var query = qf.Category
                 .Where(CategoryFields.Slug == slug);
             
-            var categoryEntity = await Adapter.FetchFirstAsync(query, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var categoryEntity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (categoryEntity == null)
             {
                 logger.LogInformation("Category not found: {Slug}", slug);
@@ -250,7 +254,8 @@ public class CategoryRepository(
             var query = qf.Category
                 .OrderBy(CategoryFields.Name.Descending());
             
-            var categoryEntities = await Adapter.FetchQueryAsync(query, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var categoryEntities = await adapter.FetchQueryAsync(query, cancellationToken);
             var categories = Mapper.Map<List<Category>>(categoryEntities);
             await CacheService.SetAsync(cacheKey, categories, TimeSpan.FromHours(1), cancellationToken);
             logger.LogInformation("All categories fetched from database and cached.");
@@ -269,7 +274,8 @@ public class CategoryRepository(
         {
             var entity = Mapper.Map<CategoryEntity>(category);
             entity.IsNew = true;
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved)
             {
                 await CacheService.RemoveAsync("All_Categories", cancellationToken);
@@ -294,7 +300,8 @@ public class CategoryRepository(
         {
             var entity = Mapper.Map<CategoryEntity>(category);
             entity.IsNew = true;
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved)
             {
                 await CacheService.RemoveAsync("All_Categories", cancellationToken);
@@ -323,7 +330,8 @@ public class CategoryRepository(
                 return Result<bool>.Failure("Invalid category ID.");
             }
             var entity = new CategoryEntity(categoryId);
-            var deleted = await Adapter.DeleteEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var deleted = await adapter.DeleteEntityAsync(entity, cancellationToken);
             if (deleted)
             {
                 await CacheService.RemoveAsync("All_Categories", cancellationToken);
@@ -359,7 +367,8 @@ public class CategoryRepository(
                 .Where(CategoryFields.CategoryId == Guid.Empty)
                 .OrderBy(CategoryFields.Name.Ascending());
             
-            var entities = await Adapter.FetchQueryAsync(query, ct);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var entities = await adapter.FetchQueryAsync(query, ct);
             var result = Mapper.Map<List<Category>>(entities);
 
             await CacheService.SetAsync(cacheKey, result, TimeSpan.FromHours(1), ct);
@@ -395,7 +404,8 @@ public class CategoryRepository(
                 .Where(CategoryFields.ParentCategoryId == parentCategoryId)
                 .OrderBy(CategoryFields.Name.Ascending());
             
-            var entities = await Adapter.FetchQueryAsync(query, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
             if (entities.Count == 0) return Result<List<Category>>.Success(new List<Category>());
             
             var result = Mapper.Map<List<Category>>(entities);
@@ -438,7 +448,8 @@ public class CategoryRepository(
             var query = qf.Category
                 .Where(CategoryFields.CategoryId == categoryId)
                 .OrderBy(CategoryFields.Name.Ascending());
-            var entities = await Adapter.FetchQueryAsync(query, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
             if (entities.Count == 0) return Result<List<Category>>.Success(new List<Category>());
             
             var result = Mapper.Map<List<Category>>(entities);
@@ -486,7 +497,8 @@ public class CategoryRepository(
                 .OrderBy(CategoryFields.Name.Ascending());
             
             var entities = new EntityCollection<CategoryEntity>();
-            await Adapter.FetchQueryAsync(query, entities, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            await adapter.FetchQueryAsync(query, entities, cancellationToken);
             var result = Mapper.Map<List<Category>>(entities);
             if (result.Count == 0)
             {
@@ -525,7 +537,8 @@ public class CategoryRepository(
             var query = qf.Category
                 .Where(CategoryFields.ParentCategoryId == categoryId);
                 
-            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (entity == null) return Result<bool>.Success(false);
             
             logger.LogInformation("Category has sub categories: {CategoryId}", categoryId);
@@ -559,7 +572,8 @@ public class CategoryRepository(
             var query = qf.Category
                 .Where(CategoryFields.CategoryId == categoryId);
                 
-            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (entity == null) return Result<bool>.Success(false);
             
             logger.LogInformation("Category is root category: {CategoryId}", categoryId);
@@ -592,7 +606,8 @@ public class CategoryRepository(
             var qf = new QueryFactory();
             var query = qf.Category
                 .Where(CategoryFields.Name == name);
-            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (entity == null) return Result<bool>.Success(false);
             logger.LogInformation("Category exists: {Name}", name);
             return Result<bool>.Success(true);
@@ -625,7 +640,8 @@ public class CategoryRepository(
             var query = qf.Category
                 .Where(CategoryFields.CategoryId == categoryId);
             
-            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (entity == null) return Result<bool>.Success(false);
             logger.LogInformation("Category exists: {CategoryId}", categoryId);
             return Result<bool>.Success(true);
@@ -674,7 +690,8 @@ public class CategoryRepository(
                 .Where(CategoryFields.CategoryId == categoryId | CategoryFields.Name == name)
                 .Limit(2);
             var entities = new EntityCollection<CategoryEntity>();
-            await Adapter.FetchQueryAsync(query, entities, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            await adapter.FetchQueryAsync(query, entities, cancellationToken);
 
             var hasName = entities.Any(e => e.Name == name);
             var hasId = entities.Any(e => e.CategoryId == categoryId);
@@ -705,7 +722,8 @@ public class CategoryRepository(
                 .Where(CategoryFields.Status == 1)
                 .OrderBy(CategoryFields.Name.Ascending());
             
-            var entities = await Adapter.FetchQueryAsync(query, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
             var result = Mapper.Map<List<Category>>(entities);
             if (result.Count == 0)
             {
@@ -747,7 +765,8 @@ public class CategoryRepository(
                 .Where(CategoryFields.Name.Contains(searchTerm))
                 .OrderBy(CategoryFields.Name.Ascending());
             
-            var entities = await Adapter.FetchQueryAsync(query, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var entities = await adapter.FetchQueryAsync(query, cancellationToken);
             var result = Mapper.Map<List<Category>>(entities);
             if (result.Count == 0)
             {
@@ -780,7 +799,8 @@ public class CategoryRepository(
             var query = qf.Category
                 .Where(CategoryFields.CategoryId == categoryId);
 
-            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (entity != null)
             {
                 logger.LogInformation("Category is active and in use: {CategoryId}", categoryId);
@@ -811,7 +831,8 @@ public class CategoryRepository(
                 .Where(ProductFields.CategoryId == categoryId)
                 .Select(() => Functions.CountRow());
 
-            var count = await Adapter.FetchScalarAsync<int>(query, cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var count = await adapter.FetchScalarAsync<int>(query, cancellationToken);
             logger.LogInformation("Product count fetched for category: {CategoryId}, Count: {Count}", categoryId, count);
             return Result<int>.Success(count);
         }

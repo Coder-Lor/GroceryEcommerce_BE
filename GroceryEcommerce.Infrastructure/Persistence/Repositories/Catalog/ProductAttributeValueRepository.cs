@@ -16,11 +16,12 @@ using SD.LLBLGen.Pro.QuerySpec.Adapter;
 namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
 
 public class ProductAttributeValueRepository(
-    DataAccessAdapter adapter,
+    DataAccessAdapter scopedAdapter,
+    IUnitOfWorkService unitOfWorkService,
     IMapper mapper,
     ICacheService cacheService,
     ILogger<ProductAttributeValueRepository> logger
-) : BasePagedRepository<ProductAttributeValueEntity, ProductAttributeValue>(adapter, mapper, cacheService, logger), IProductAttributeValueRepository
+) : BasePagedRepository<ProductAttributeValueEntity, ProductAttributeValue>(scopedAdapter, unitOfWorkService, mapper, cacheService, logger), IProductAttributeValueRepository
 {
     public override IReadOnlyList<SearchableField> GetSearchableFields()
     {
@@ -99,10 +100,10 @@ public class ProductAttributeValueRepository(
         return query.OrderBy(ProductAttributeValueFields.ValueId.Ascending());
     }
 
-    protected override async Task<IList<ProductAttributeValueEntity>> FetchEntitiesAsync(EntityQuery<ProductAttributeValueEntity> query, CancellationToken cancellationToken)
+    protected override async Task<IList<ProductAttributeValueEntity>> FetchEntitiesAsync(EntityQuery<ProductAttributeValueEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
     {
         var entities = new EntityCollection<ProductAttributeValueEntity>();
-        await Adapter.FetchQueryAsync(query, entities, cancellationToken);
+        await scopedAdapter.FetchQueryAsync(query, entities, cancellationToken);
         return entities;
     }
 
@@ -126,7 +127,8 @@ public class ProductAttributeValueRepository(
         try {
             var entity = Mapper.Map<ProductAttributeValueEntity>(value);
             entity.IsNew = true;
-            var created = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter();
+            var created = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (created) {
                 await CacheService.RemoveAsync($"ProductAttributeValue_{value.ValueId}", cancellationToken);
                 await CacheService.RemoveAsync($"ProductAttributeValues_ByProduct_{value.ProductId}", cancellationToken);
@@ -150,7 +152,8 @@ public class ProductAttributeValueRepository(
         try {
             var entity = Mapper.Map<ProductAttributeValueEntity>(value);
             entity.IsNew = false;
-            var updated = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter();
+            var updated = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (updated) {
                 await CacheService.RemoveAsync($"ProductAttributeValue_{value.ValueId}", cancellationToken);
                 await CacheService.RemoveAsync($"ProductAttributeValues_ByProduct_{value.ProductId}", cancellationToken);
@@ -173,7 +176,8 @@ public class ProductAttributeValueRepository(
     {
         try {
             var entity = new ProductAttributeValueEntity(valueId);
-            var deleted = await Adapter.DeleteEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter();
+            var deleted = await adapter.DeleteEntityAsync(entity, cancellationToken);
             if (deleted) {
                 await CacheService.RemoveAsync($"ProductAttributeValue_{valueId}", cancellationToken);
                 await CacheService.RemoveAsync($"ProductAttributeValues_ByProduct_{valueId}", cancellationToken);
@@ -214,7 +218,8 @@ public class ProductAttributeValueRepository(
                     ProductAttributeValueFields.ProductId == productId & 
                     ProductAttributeValueFields.AttributeId == attributeId
                 );
-            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
+            var adapter = GetAdapter();
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (entity == null) {
                 logger.LogWarning("Product attribute value not found: {ProductId}, {AttributeId}", productId, attributeId);
                 return Result<ProductAttributeValue?>.Failure("Product attribute value not found.");
@@ -238,12 +243,13 @@ public class ProductAttributeValueRepository(
                     ProductAttributeValueFields.ProductId == productId
                 );
 
-            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
+            var adapter = GetAdapter();
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (entity == null) {
                 logger.LogWarning("Product attribute values not found by product: {ProductId}", productId);
                 return Result<bool>.Failure("Product attribute values not found.");
             }
-            var deleted = await Adapter.DeleteEntityAsync(entity, cancellationToken);
+            var deleted = await adapter.DeleteEntityAsync(entity, cancellationToken);
             if (deleted) {
                 logger.LogInformation("Product attribute values deleted by product: {ProductId}", productId);
                 return Result<bool>.Success(true);
@@ -265,12 +271,13 @@ public class ProductAttributeValueRepository(
                 ProductAttributeValue.Where(
                     ProductAttributeValueFields.AttributeId == attributeId
                 );
-            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
+            var adapter = GetAdapter();
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (entity == null) {
                 logger.LogWarning("Product attribute values not found by attribute: {AttributeId}", attributeId);
                 return Result<bool>.Failure("Product attribute values not found.");
             }
-            var deleted = await Adapter.DeleteEntityAsync(entity, cancellationToken);
+            var deleted = await adapter.DeleteEntityAsync(entity, cancellationToken);
             if (deleted) {
                 logger.LogInformation("Product attribute values deleted by attribute: {AttributeId}", attributeId);
                 return Result<bool>.Success(true);

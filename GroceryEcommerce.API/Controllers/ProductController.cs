@@ -11,6 +11,7 @@ namespace GroceryEcommerce.API.Controllers;
 public class ProductController(IMediator mediator) : ControllerBase
 {
     [HttpPost("create")]
+    [Consumes("multipart/form-data")] 
     public async Task<ActionResult<Result<CreateProductResponse>>> Create([FromForm] CreateProductWithFilesCommand command)
     {
         var result = await mediator.Send(command);
