@@ -142,6 +142,9 @@ public sealed class RegisterCommandHandler(
             var response = new RegisterResponse
             {
                 UserId = user.UserId.ToString(),
+                Username = user.Username,
+                Role = "User",
+                Email = user.Email,
                 Token = accessToken,
                 RefreshToken = refreshToken,
                 ExpiresAt = DateTime.UtcNow.AddMinutes(30)

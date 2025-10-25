@@ -13,6 +13,9 @@ public sealed record RegisterCommand : IRequest<Result<RegisterResponse>>
 public sealed record RegisterResponse
 {
     public string UserId { get; init; } = string.Empty;
+    public string Email { get; init; } = string.Empty;
+    public string Username { get; init; } = string.Empty;
+    public string Role { get; init; } = string.Empty;
     public string Token { get; init; } = string.Empty;
     public string RefreshToken { get; init; } = string.Empty;
     public DateTime ExpiresAt { get; init; }
