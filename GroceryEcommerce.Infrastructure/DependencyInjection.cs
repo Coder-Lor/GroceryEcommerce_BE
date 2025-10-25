@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using GroceryEcommerce.Application.Interfaces.Repositories;
 using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
 using GroceryEcommerce.Application.Interfaces.Repositories.Cart;
 using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
@@ -29,38 +28,49 @@ public static class DependencyInjection
             return (DataAccessAdapter)factory.CreateAdapter();
         });
         
+        // Register UnitOfWorkService trước khi các repositories sử dụng nó
+        services.AddScoped<IUnitOfWorkService>(provider =>
+        {
+            var factory = provider.GetRequiredService<IDataAccessAdapterFactory>();
+            return new UnitOfWorkService(factory);
+        });
+        
         services.AddScoped<IUserRepository>(provider =>
         {
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
             var mapper = provider.GetRequiredService<IMapper>();
             var cacheService = provider.GetRequiredService<ICacheService>();
             var logger = provider.GetRequiredService<ILogger<UserRepository>>();
-            return new UserRepository(adapter, mapper, cacheService, logger);
+            return new UserRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
         services.AddScoped<IAuthenticationRepository>(provider =>
         {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
             var passwordHashService = provider.GetRequiredService<IPasswordHashService>();
             var mapper = provider.GetRequiredService<IMapper>();
             var logger = provider.GetRequiredService<ILogger<AuthenticationRepository>>();
-            return new AuthenticationRepository(adapter, passwordHashService, mapper, logger);
+            return new AuthenticationRepository(adapter, unitOfWorkService, mapper, cacheService, passwordHashService, logger);
         });
         
         services.AddScoped<IRefreshTokenRepository>(provider =>
         {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
             var mapper = provider.GetRequiredService<IMapper>();
             var logger = provider.GetRequiredService<ILogger<RefreshTokenRepository>>();
-            return new RefreshTokenRepository(adapter, mapper, logger);
+            return new RefreshTokenRepository(adapter, unitOfWorkService, mapper, logger);
         });
         
         services.AddScoped<ICartRepository>(provider =>
         {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
             var mapper = provider.GetRequiredService<IMapper>();
             var logger = provider.GetRequiredService<ILogger<CartRepository>>();
-            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
             var cacheService = provider.GetRequiredService<ICacheService>();
             return new CartRepository(adapter, mapper, unitOfWorkService, cacheService, logger);
         });
@@ -70,91 +80,101 @@ public static class DependencyInjection
         services.AddScoped<ICategoryRepository>(provider =>
         {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
             var mapper = provider.GetRequiredService<IMapper>();
             var logger = provider.GetRequiredService<ILogger<CategoryRepository>>();
             var cacheService = provider.GetRequiredService<ICacheService>();
-            return new CategoryRepository(adapter, mapper, cacheService, logger);
+            return new CategoryRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
         services.AddScoped<IBrandRepository>(provider =>
         {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
             var mapper = provider.GetRequiredService<IMapper>();
             var logger = provider.GetRequiredService<ILogger<BrandRepository>>();
             var cacheService = provider.GetRequiredService<ICacheService>();
-            return new BrandRepository(adapter, mapper, cacheService, logger);
+            return new BrandRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
         services.AddScoped<IProductRepository>(provider =>
         {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
             var mapper = provider.GetRequiredService<IMapper>();
             var logger = provider.GetRequiredService<ILogger<ProductRepository>>();
             var cacheService = provider.GetRequiredService<ICacheService>();
-            return new ProductRepository(adapter, mapper, cacheService, logger);
+            return new ProductRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
         services.AddScoped<IProductAttributeRepository>(provider =>
         {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
             var mapper = provider.GetRequiredService<IMapper>();
             var logger = provider.GetRequiredService<ILogger<ProductAttributeRepository>>();
             var cacheService = provider.GetRequiredService<ICacheService>();
-            return new ProductAttributeRepository(adapter, mapper, cacheService, logger);
+            return new ProductAttributeRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
         services.AddScoped<IProductAttributeValueRepository>(provider =>
         {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
             var mapper = provider.GetRequiredService<IMapper>();
             var logger = provider.GetRequiredService<ILogger<ProductAttributeValueRepository>>();
             var cacheService = provider.GetRequiredService<ICacheService>();
-            return new ProductAttributeValueRepository(adapter, mapper, cacheService, logger);
+            return new ProductAttributeValueRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
         services.AddScoped<IProductImageRepository>(provider =>
         {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
             var mapper = provider.GetRequiredService<IMapper>();
             var logger = provider.GetRequiredService<ILogger<ProductImageRepository>>();
             var cacheService = provider.GetRequiredService<ICacheService>();
-            return new ProductImageRepository(adapter, mapper, cacheService, logger);
+            return new ProductImageRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
         services.AddScoped<IProductQuestionRepository>(provider =>
         {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
             var mapper = provider.GetRequiredService<IMapper>();
             var logger = provider.GetRequiredService<ILogger<ProductQuestionRepository>>();
             var cacheService = provider.GetRequiredService<ICacheService>();
-            return new ProductQuestionRepository(adapter, mapper, cacheService, logger);
+            return new ProductQuestionRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
         services.AddScoped<IProductTagRepository>(provider =>
         {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
             var mapper = provider.GetRequiredService<IMapper>();
             var logger = provider.GetRequiredService<ILogger<ProductTagRepository>>();
             var cacheService = provider.GetRequiredService<ICacheService>();
-            return new ProductTagRepository(adapter, mapper, cacheService, logger);
+            return new ProductTagRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
         services.AddScoped<IProductTagAssignmentRepository>(provider =>
         {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
             var mapper = provider.GetRequiredService<IMapper>();
             var logger = provider.GetRequiredService<ILogger<ProductTagAssignmentRepository>>();
             var cacheService = provider.GetRequiredService<ICacheService>();
-            return new ProductTagAssignmentRepository(adapter, mapper, cacheService, logger);
+            return new ProductTagAssignmentRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
 
         services.AddScoped<IProductVariantRepository, ProductVariantRepository>(provider => {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
             var mapper = provider.GetRequiredService<IMapper>();
             var logger = provider.GetRequiredService<ILogger<ProductVariantRepository>>();
             var cacheService = provider.GetRequiredService<ICacheService>();
-            return new ProductVariantRepository(adapter, mapper, cacheService, logger);
+            return new ProductVariantRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
         services.AddScoped<ICartRepository, CartRepository>(provider =>
@@ -179,11 +199,6 @@ public static class DependencyInjection
         services.AddScoped<IJwtTokenGeneratorService, JwtTokenGeneratorService>();
         services.AddScoped<IPasswordHashService, PasswordHashService>();
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<IUnitOfWorkService>(provider =>
-        {
-            var adapter = provider.GetRequiredService<DataAccessAdapter>();
-            return new UnitOfWorkService(adapter);
-        });
         services.AddSingleton<ICacheService, CacheService>();
 
         return services;

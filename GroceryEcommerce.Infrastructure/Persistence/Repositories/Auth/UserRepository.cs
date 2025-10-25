@@ -16,11 +16,12 @@ using SD.LLBLGen.Pro.QuerySpec.Adapter;
 namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
 {
     public class UserRepository(
-        DataAccessAdapter adapter,
+        DataAccessAdapter scopedAdapter,
+        IUnitOfWorkService unitOfWorkService,
         IMapper mapper,
         ICacheService cacheService,
         ILogger<UserRepository> logger
-    ) : BasePagedRepository<UserEntity,User>(adapter, mapper, cacheService, logger),IUserRepository
+    ) : BasePagedRepository<UserEntity,User>(scopedAdapter, unitOfWorkService, mapper, cacheService, logger),IUserRepository
     {
 
         public EntityField2? GetSortField(string? sortBy)
@@ -205,10 +206,10 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
             return query.OrderBy(UserFields.Username.Ascending());       
         }
 
-        protected override async Task<IList<UserEntity>> FetchEntitiesAsync(EntityQuery<UserEntity> query, CancellationToken cancellationToken)
+        protected override async Task<IList<UserEntity>> FetchEntitiesAsync(EntityQuery<UserEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
         {
             var entitties = new EntityCollection<UserEntity>();
-            await Adapter.FetchQueryAsync(query, entitties, cancellationToken);
+            await adapter.FetchQueryAsync(query, entitties, cancellationToken);
             return entitties;
         }
         
@@ -218,7 +219,7 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
                 var entity = Mapper.Map<UserEntity>(user);
                 entity.CreatedAt = DateTime.UtcNow;
 
-                var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+                var saved = await GetAdapter().SaveEntityAsync(entity, cancellationToken);
 
                 if (!saved) {
                     logger.LogError("Failed to add user: {Email}", user.Email);
@@ -237,7 +238,7 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
         public async Task<Result<bool>> DeleteAsync(User user, CancellationToken cancellationToken = default) {
             try {
                 var entity = new UserEntity(user.UserId);
-                var deleted = await Adapter.DeleteEntityAsync(entity, cancellationToken);
+                var deleted = await GetAdapter().DeleteEntityAsync(entity, cancellationToken);
 
                 if (!deleted) {
                     logger.LogWarning("Failed to delete user: {UserId}", user.UserId);
@@ -279,7 +280,7 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
                     .Where(UserFields.Email == email | UserFields.Username == username)
                     .Limit(2);
                 var entities = new EntityCollection<UserEntity>();
-                await Adapter.FetchQueryAsync(query, entities, cancellationToken);
+                await GetAdapter().FetchQueryAsync(query, entities, cancellationToken);
 
                 var emailExist = entities.Any(e => e.Email == email);
                 var usernameExist = entities.Any(e => e.Username == username);
@@ -301,7 +302,7 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
         public async Task<Result<User?>> GetByEmailAsync(string email, CancellationToken cancellationToken = default) {
             try {
 
-                var entity = await Adapter.FetchFirstAsync(
+                var entity = await GetAdapter().FetchFirstAsync(
                     new QueryFactory().User.Where(UserFields.Email == email),
                     cancellationToken
                 );
@@ -337,7 +338,7 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
                 var query = new QueryFactory().User
                     .Where(UserFields.Email == emailOrUsername | UserFields.Username == emailOrUsername);
         
-                var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
+                var entity = await GetAdapter().FetchFirstAsync(query, cancellationToken);
         
                 if (entity is null) {
                     logger.LogWarning("User not found by email or username: {EmailOrUsername}", emailOrUsername);
@@ -358,7 +359,7 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
             try {
                 var query = new QueryFactory().User.Where(UserFields.UserId == user.UserId);
 
-                var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
+                var entity = await GetAdapter().FetchFirstAsync(query, cancellationToken);
                 if (entity is null) {
                     logger.LogWarning("User not found for update: {UserId}", user.UserId);
                     return Result<bool>.Failure("User not found", "USER_UPDATE_001");
@@ -366,7 +367,7 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
 
                 entity.UpdatedAt = DateTime.UtcNow;
                 entity = Mapper.Map(user, entity);
-                var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+                var saved = await GetAdapter().SaveEntityAsync(entity, cancellationToken);
                 if (!saved) {
                     logger.LogError("Failed to update user: {UserId}", user.UserId);
                     return Result<bool>.Failure("Failed to update user", "USER_UPDATE_001");

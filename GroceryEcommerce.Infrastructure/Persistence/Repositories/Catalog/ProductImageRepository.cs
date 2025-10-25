@@ -16,11 +16,12 @@ using SD.LLBLGen.Pro.QuerySpec.Adapter;
 namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
 
 public class ProductImageRepository(
-    DataAccessAdapter adapter,
+    DataAccessAdapter scopedAdapter,
+    IUnitOfWorkService unitOfWorkService,
     IMapper mapper,
     ICacheService cacheService,
     ILogger<ProductImageRepository> logger
-) : BasePagedRepository<ProductImageEntity, ProductImage>(adapter, mapper, cacheService, logger), IProductImageRepository
+) : BasePagedRepository<ProductImageEntity, ProductImage>(scopedAdapter, unitOfWorkService, mapper, cacheService, logger), IProductImageRepository
 {
     private EntityField2? GetSortField(string? sortBy)
     {
@@ -109,10 +110,10 @@ public class ProductImageRepository(
         return query.OrderBy(ProductImageFields.DisplayOrder.Ascending());
     }
 
-    protected override async Task<IList<ProductImageEntity>> FetchEntitiesAsync(EntityQuery<ProductImageEntity> query, CancellationToken cancellationToken)
+    protected override async Task<IList<ProductImageEntity>> FetchEntitiesAsync(EntityQuery<ProductImageEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
     {
         var entities = new EntityCollection<ProductImageEntity>();
-        await Adapter.FetchQueryAsync(query, entities, cancellationToken);
+        await adapter.FetchQueryAsync(query, entities, cancellationToken);
         return entities;
     }
 
@@ -134,13 +135,16 @@ public class ProductImageRepository(
         try {
             var entity = Mapper.Map<ProductImageEntity>(image);
             entity.IsNew = true;
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter();
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved) {
                 await CacheService.RemoveAsync("All_ProductImages", cancellationToken);
                 await CacheService.RemoveAsync($"ProductImage_{image.ImageId}", cancellationToken);
                 await CacheService.RemoveAsync($"ProductImages_ByProduct_{image.ProductId}", cancellationToken);
                 logger.LogInformation("Product image created: {Image}", image);
-                return Result<ProductImage>.Success(Mapper.Map<ProductImage>(entity));
+            
+                // Trả về image gốc vì đã được save thành công
+                return Result<ProductImage>.Success(image);
             }
             logger.LogWarning("Product image not created: {ImageId}", image.ImageId);
             return Result<ProductImage>.Failure("Product image not created.");
@@ -156,7 +160,8 @@ public class ProductImageRepository(
         try {
             var entity = Mapper.Map<ProductImageEntity>(image);
             entity.IsNew = false;
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter();
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved) {
                 await CacheService.RemoveAsync("All_ProductImages", cancellationToken);
                 await CacheService.RemoveAsync($"ProductImage_{image.ImageId}", cancellationToken);
@@ -177,7 +182,8 @@ public class ProductImageRepository(
     {
         try {
             var entity = new ProductImageEntity(imageId);
-            var deleted = await Adapter.DeleteEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter();
+            var deleted = await adapter.DeleteEntityAsync(entity, cancellationToken);
             if (deleted) {
                 await CacheService.RemoveAsync("All_ProductImages", cancellationToken);
                 await CacheService.RemoveAsync($"ProductImage_{imageId}", cancellationToken);
@@ -227,7 +233,8 @@ public class ProductImageRepository(
             var query = new QueryFactory().ProductImage
                 .Where(ProductImageFields.ImageId == imageId);
             
-            var imageEntity = await Adapter.FetchFirstAsync(query, cancellationToken);
+            var adapter = GetAdapter();
+            var imageEntity = await adapter.FetchFirstAsync(query, cancellationToken);
 
             if (imageEntity == null)
             {
@@ -238,7 +245,7 @@ public class ProductImageRepository(
             var resetTemplate = new ProductImageEntity { IsPrimary = false };
             resetTemplate.Fields[nameof(ProductImageEntity.IsPrimary)].IsChanged = true;
 
-            await Adapter.UpdateEntitiesDirectlyAsync(
+            await adapter.UpdateEntitiesDirectlyAsync(
                 resetTemplate,
                 new RelationPredicateBucket(ProductImageFields.ProductId == imageEntity.ProductId),
                 cancellationToken
@@ -247,7 +254,7 @@ public class ProductImageRepository(
             var setPrimaryTemplate = new ProductImageEntity { IsPrimary = true };
             setPrimaryTemplate.Fields[nameof(ProductImageEntity.IsPrimary)].IsChanged = true;
         
-            await Adapter.UpdateEntitiesDirectlyAsync(
+            await adapter.UpdateEntitiesDirectlyAsync(
                 setPrimaryTemplate,
                 new RelationPredicateBucket(ProductImageFields.ImageId == imageId),
                 cancellationToken
@@ -279,7 +286,8 @@ public class ProductImageRepository(
             var template = new ProductImageEntity { IsPrimary = false };
             template.Fields["IsPrimary"].IsChanged = true;
 
-            var affectedRows = await Adapter.UpdateEntitiesDirectlyAsync(
+            var adapter = GetAdapter();
+            var affectedRows = await adapter.UpdateEntitiesDirectlyAsync(
                 template,
                 new RelationPredicateBucket(ProductImageFields.ProductId == productId),
                 cancellationToken           

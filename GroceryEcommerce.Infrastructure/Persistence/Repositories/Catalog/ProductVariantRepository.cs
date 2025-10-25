@@ -16,11 +16,12 @@ using SD.LLBLGen.Pro.QuerySpec.Adapter;
 namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
 
 public class ProductVariantRepository(
-    DataAccessAdapter adapter,
+    DataAccessAdapter scopedAdapter,
+    IUnitOfWorkService unitOfWorkService,
     IMapper mapper,
     ICacheService cacheService,
     ILogger<ProductVariantRepository> logger
-) : BasePagedRepository<ProductVariantEntity, ProductVariant>(adapter, mapper, cacheService, logger), IProductVariantRepository
+) : BasePagedRepository<ProductVariantEntity, ProductVariant>(scopedAdapter, unitOfWorkService, mapper, cacheService, logger), IProductVariantRepository
 {
 
     private EntityField2? GetSortField(string? sortBy)
@@ -127,10 +128,10 @@ public class ProductVariantRepository(
         return query.OrderBy(ProductVariantFields.VariantId.Ascending());
     }
 
-    protected override async Task<IList<ProductVariantEntity>> FetchEntitiesAsync(EntityQuery<ProductVariantEntity> query, CancellationToken cancellationToken)
+    protected override async Task<IList<ProductVariantEntity>> FetchEntitiesAsync(EntityQuery<ProductVariantEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
     {
         var entities = new EntityCollection<ProductVariantEntity>();
-        await Adapter.FetchQueryAsync(query, entities, cancellationToken);
+        await adapter.FetchQueryAsync(query, entities, cancellationToken);
         return entities;
     }
 
@@ -155,7 +156,8 @@ public class ProductVariantRepository(
         try {
             var entity = Mapper.Map<ProductVariantEntity>(variant);
             entity.IsNew = true;
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter();
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved) {
                 await CacheService.RemoveAsync("All_ProductVariants", cancellationToken);
                 await CacheService.RemoveAsync($"ProductVariant_{entity.VariantId}", cancellationToken);
@@ -176,7 +178,8 @@ public class ProductVariantRepository(
     public async Task<Result<bool>> UpdateAsync(ProductVariant variant, CancellationToken cancellationToken = default)
     {
         try {
-            var entity = await Adapter.FetchFirstAsync(
+            var adapter = GetAdapter();
+            var entity = await adapter.FetchFirstAsync(
                 new QueryFactory().ProductVariant.Where(ProductVariantFields.VariantId == variant.VariantId),
                 cancellationToken
             );
@@ -186,7 +189,7 @@ public class ProductVariantRepository(
             }
             entity = Mapper.Map(variant, entity);
             entity.IsNew = false;
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
 
             if (saved) {
                 await CacheService.RemoveAsync("All_ProductVariants", cancellationToken);
@@ -208,7 +211,8 @@ public class ProductVariantRepository(
     public async Task<Result<bool>> DeleteAsync(Guid variantId, CancellationToken cancellationToken = default)
     {
         try {
-            var entity = await Adapter.FetchFirstAsync(
+            var adapter = GetAdapter();
+            var entity = await adapter.FetchFirstAsync(
                 new QueryFactory().ProductVariant.Where(ProductVariantFields.VariantId == variantId),
                 cancellationToken
             );
@@ -216,7 +220,7 @@ public class ProductVariantRepository(
                 logger.LogWarning("Product variant not found for delete: {VariantId}", variantId);
                 return Result<bool>.Failure("Product variant not found.");
             }
-            var deleted = await Adapter.DeleteEntityAsync(entity, cancellationToken);
+            var deleted = await adapter.DeleteEntityAsync(entity, cancellationToken);
             if (deleted) {
                 await CacheService.RemoveAsync("All_ProductVariants", cancellationToken);
                 await CacheService.RemoveAsync($"ProductVariant_{variantId}", cancellationToken);
@@ -258,7 +262,8 @@ public class ProductVariantRepository(
     public async Task<Result<bool>> UpdateStockAsync(Guid variantId, int quantity, CancellationToken cancellationToken = default)
     {
         try {
-            var entity = await Adapter.FetchFirstAsync(
+            var adapter = GetAdapter();
+            var entity = await adapter.FetchFirstAsync(
                 new QueryFactory().ProductVariant.Where(ProductVariantFields.VariantId == variantId),
                 cancellationToken
             );
@@ -267,7 +272,7 @@ public class ProductVariantRepository(
                 return Result<bool>.Failure("Product variant not found.");
             }
             entity.StockQuantity = quantity;
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved) {
                 await CacheService.RemoveAsync("All_ProductVariants", cancellationToken);
                 await CacheService.RemoveAsync($"ProductVariant_{variantId}", cancellationToken);
@@ -292,7 +297,8 @@ public class ProductVariantRepository(
                 .Where(ProductVariantFields.ProductId == productId)
                 .Select(ProductVariantFields.StockQuantity.Sum());
             
-            var totalStock = await Adapter.FetchScalarAsync<int>(query, cancellationToken);
+            var adapter = GetAdapter();
+            var totalStock = await adapter.FetchScalarAsync<int>(query, cancellationToken);
             logger.LogInformation("Total stock fetched for product: {ProductId}, Total Stock: {TotalStock}", productId, totalStock);
             return Result<int>.Success(totalStock);
         }

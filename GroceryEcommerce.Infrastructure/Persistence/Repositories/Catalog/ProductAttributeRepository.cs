@@ -16,11 +16,12 @@ using SD.LLBLGen.Pro.QuerySpec.Adapter;
 namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
 
 public class ProductAttributeRepository(
-    DataAccessAdapter adapter,
+    DataAccessAdapter scopedAdapter,
+    IUnitOfWorkService unitOfWorkService,
     IMapper mapper,
     ICacheService cacheService,
     ILogger<ProductAttributeRepository> logger
-    ) : BasePagedRepository<ProductAttributeEntity, ProductAttribute>(adapter, mapper, cacheService, logger), IProductAttributeRepository
+    ) : BasePagedRepository<ProductAttributeEntity, ProductAttribute>(scopedAdapter, unitOfWorkService, mapper, cacheService, logger), IProductAttributeRepository
 {
     public override IReadOnlyList<SearchableField> GetSearchableFields()
     {
@@ -105,10 +106,10 @@ public class ProductAttributeRepository(
         return query.OrderBy(ProductAttributeFields.DisplayOrder.Ascending());   
     }
 
-    protected override async Task<IList<ProductAttributeEntity>> FetchEntitiesAsync(EntityQuery<ProductAttributeEntity> query, CancellationToken cancellationToken)
+    protected override async Task<IList<ProductAttributeEntity>> FetchEntitiesAsync(EntityQuery<ProductAttributeEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
     {
         var entities = new EntityCollection<ProductAttributeEntity>();
-        await Adapter.FetchQueryAsync(query, entities, cancellationToken);
+        await adapter.FetchQueryAsync(query, entities, cancellationToken);
         return entities;
     }
 
@@ -139,8 +140,9 @@ public class ProductAttributeRepository(
                 logger.LogInformation("Attributes fetched from cache");
                 return Result<List<ProductAttribute>>.Success(cachedAttributes);
             }
+            var adapter = GetAdapter();
             var query = @"SELECT * FROM catalog.product_attributes ORDER BY display_order ASC;";
-            var entities = await Adapter.FetchQueryAsync<ProductAttributeEntity>(query, cancellationToken);
+            var entities = await adapter.FetchQueryAsync<ProductAttributeEntity>(query, cancellationToken);
 
             var attributes = Mapper.Map<List<ProductAttribute>>(entities);
             await CacheService.SetAsync(cacheKey, attributes, TimeSpan.FromHours(1), cancellationToken);
@@ -159,7 +161,8 @@ public class ProductAttributeRepository(
         try {
             var entity = Mapper.Map<ProductAttributeEntity>(attribute);
             entity.IsNew = true;
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter();
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved) {
                 await CacheService.RemoveAsync("All_ProductAttributes", cancellationToken);
                 await CacheService.RemoveAsync($"Attribute_{attribute.AttributeId}", cancellationToken);
@@ -181,14 +184,15 @@ public class ProductAttributeRepository(
         {
             var qf = new QueryFactory();
             var query = qf.ProductAttribute.Where(ProductAttributeFields.AttributeId == attribute.AttributeId);
-            var entity = await Adapter.FetchFirstAsync(query, cancellationToken);
+            var adapter = GetAdapter();
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (entity is null) {
                 logger.LogWarning("Attribute not found for update: {AttributeId}", attribute.AttributeId);
                 return Result<bool>.Failure("Attribute not found.");
             }
             entity = Mapper.Map(attribute, entity);
             entity.IsNew = false;
-            var saved = await Adapter.SaveEntityAsync(entity, cancellationToken);
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved) {
                 await CacheService.RemoveAsync("All_ProductAttributes", cancellationToken);
                 await CacheService.RemoveAsync($"Attribute_{attribute.AttributeId}", cancellationToken);
@@ -208,7 +212,8 @@ public class ProductAttributeRepository(
     {
         try {
             var entity = new ProductAttributeEntity(attributeId);
-            var deleted = await Adapter.DeleteEntityAsync(entity, cancellationToken);
+            var adapter = GetAdapter();
+            var deleted = await adapter.DeleteEntityAsync(entity, cancellationToken);
             if (deleted) {
                 await CacheService.RemoveAsync("All_ProductAttributes", cancellationToken);
                 await CacheService.RemoveAsync($"Attribute_{attributeId}", cancellationToken);

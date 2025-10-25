@@ -5,19 +5,113 @@ using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.DatabaseSpecific;
 using GroceryEcommerce.Domain.Entities.Auth;
 using GroceryEcommerce.EntityClasses;
+using GroceryEcommerce.FactoryClasses;
 using GroceryEcommerce.HelperClasses;
+using GroceryEcommerce.Infrastructure.Persistence.Repositories.Common;
 using Microsoft.Extensions.Logging;
 using SD.LLBLGen.Pro.ORMSupportClasses;
+using SD.LLBLGen.Pro.QuerySpec;
+using SD.LLBLGen.Pro.QuerySpec.Adapter;
 
 namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth;
 
 public class AuthenticationRepository(
-    DataAccessAdapter adapter,
-    IPasswordHashService passwordHashService,
+    DataAccessAdapter scopedAdapter,
+    IUnitOfWorkService unitOfWorkService,
     IMapper mapper,
+    ICacheService cacheService,
+    IPasswordHashService passwordHashService,
     ILogger<AuthenticationRepository> logger
-) : IAuthenticationRepository
+) : BasePagedRepository<UserEntity, User>(scopedAdapter, unitOfWorkService, mapper, cacheService, logger), IAuthenticationRepository
 {
+    public override IReadOnlyList<SearchableField> GetSearchableFields()
+    {
+        return new List<SearchableField>
+        {
+            new SearchableField("Email", typeof(string)),
+            new SearchableField("Username", typeof(string)),
+            new SearchableField("Status", typeof(short)),
+            new SearchableField("CreatedAt", typeof(DateTime)),
+            new SearchableField("LastLoginAt", typeof(DateTime))
+        };
+    }
+
+    public override string GetDefaultSortField()
+    {
+        return "Email";
+    }
+
+    public override IReadOnlyList<FieldMapping> GetFieldMappings()
+    {
+        return new List<FieldMapping>
+        {
+            new FieldMapping { FieldName = "Email", FieldType = typeof(string), IsSearchable = true, IsSortable = true, IsFilterable = true },
+            new FieldMapping { FieldName = "Username", FieldType = typeof(string), IsSearchable = true, IsSortable = true, IsFilterable = true },
+            new FieldMapping { FieldName = "Status", FieldType = typeof(short), IsSearchable = false, IsSortable = true, IsFilterable = true },
+            new FieldMapping { FieldName = "CreatedAt", FieldType = typeof(DateTime), IsSearchable = false, IsSortable = true, IsFilterable = true },
+            new FieldMapping { FieldName = "LastLoginAt", FieldType = typeof(DateTime), IsSearchable = false, IsSortable = true, IsFilterable = true }
+        };
+    }
+
+    protected override IReadOnlyDictionary<string, EntityField2> GetFieldMap()
+    {
+        return new Dictionary<string, EntityField2>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "Email", UserFields.Email },
+            { "Username", UserFields.Username },
+            { "Status", UserFields.Status },
+            { "CreatedAt", UserFields.CreatedAt },
+            { "LastLoginAt", UserFields.LastLoginAt }
+        };
+    }
+
+    protected override EntityQuery<UserEntity> ApplySearch(EntityQuery<UserEntity> query, string searchTerm)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm)) return query;
+        searchTerm = searchTerm.Trim().ToLower();
+        
+        return query.Where(
+            UserFields.Email.Contains(searchTerm) |
+            UserFields.Username.Contains(searchTerm)
+        );
+    }
+    
+    protected override EntityQuery<UserEntity> ApplySorting(EntityQuery<UserEntity> query, string? sortBy, SortDirection sortDirection)
+    {
+        if (string.IsNullOrWhiteSpace(sortBy)) return query;
+        
+        var sortField = GetSortField(sortBy);
+        if (sortField is null) return query;
+        
+        return sortDirection == SortDirection.Descending
+            ? query.OrderBy(sortField.Descending())
+            : query.OrderBy(sortField.Ascending());
+    }
+
+    protected override EntityQuery<UserEntity> ApplyDefaultSorting(EntityQuery<UserEntity> query)
+    {
+        return query.OrderBy(UserFields.Email.Ascending());
+    }
+
+    protected override async Task<IList<UserEntity>> FetchEntitiesAsync(EntityQuery<UserEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
+    {
+        var entities = new EntityCollection<UserEntity>();
+        await adapter.FetchQueryAsync(query, entities, cancellationToken);
+        return entities;
+    }
+
+    private EntityField2? GetSortField(string? sortBy)
+    {
+        return sortBy?.ToLower() switch
+        {
+            "email" => UserFields.Email,
+            "username" => UserFields.Username,
+            "status" => UserFields.Status,
+            "createdat" => UserFields.CreatedAt,
+            "lastloginat" => UserFields.LastLoginAt,
+            _ => UserFields.Email
+        };
+    }
     public async Task<Result<User?>> ValidateUserCredentialsAsync(string emailOrUsername, string password,
         CancellationToken cancellationToken = default)
     {
@@ -29,9 +123,12 @@ public class AuthenticationRepository(
             );
             bucket.PredicateExpression.AddWithOr(UserFields.Username == emailOrUsername);
 
-            var userResult = await Task.Run(() => adapter.FetchNewEntity<UserEntity>(bucket), cancellationToken);
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var query = new QueryFactory().User
+                .Where(UserFields.Email == emailOrUsername | UserFields.Username == emailOrUsername);
+            var userResult = await adapter.FetchFirstAsync<UserEntity>(query, cancellationToken);
 
-            if (userResult == null) {
+            if (userResult is null) {
                 logger.LogWarning("User not found {EmailOrUsername}", emailOrUsername);
                 return Result<User?>.Failure("Invalid credentials", "AUTH_001");
             }
@@ -46,7 +143,7 @@ public class AuthenticationRepository(
                 return Result<User?>.Failure("Account is inactive or banned", "AUTH_003");
             }
 
-            var user = mapper.Map<User>(userResult);
+            var user = Mapper.Map<User>(userResult);
             return Result<User?>.Success(user);
         }
         catch (Exception ex)
@@ -70,6 +167,7 @@ public class AuthenticationRepository(
                 Revoked = false,
             };
 
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
 
             if(!saved) {
@@ -81,7 +179,7 @@ public class AuthenticationRepository(
             return Result<bool>.Success(saved);
         }
         catch (Exception ex) {
-            logger.LogError("Error creating refresh token user: {UserId}", userId);
+            logger.LogError(ex, "Error creating refresh token user: {UserId}", userId);
             return Result<bool>.Failure("An Error occurred while creating refresh token", "TOKEN_ERROR");
         }
     }
@@ -89,14 +187,15 @@ public class AuthenticationRepository(
     public async Task<Result<bool>> SaveRefreshTokenAsync(RefreshToken refreshTokens, CancellationToken cancellationToken = default)
     {
         try {
-            var entity = mapper.Map<RefreshTokenEntity>(refreshTokens);
+            var entity = Mapper.Map<RefreshTokenEntity>(refreshTokens);
 
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
 
             if(!saved) {
                 logger.LogError("Failed to save refresh token for user: {UserId}", refreshTokens.UserId);
-                return Result<bool>.Failure("Refresh token saved refresh token", "TOKEN_002")
-;           }
+                return Result<bool>.Failure("Failed to save refresh token", "TOKEN_002");
+            }
 
             logger.LogInformation("Refresh token saved for user: {UserId}", refreshTokens.UserId);
             return Result<bool>.Success(saved);
@@ -120,6 +219,7 @@ public class AuthenticationRepository(
 
             bucket.PredicateExpression.Add(filter);
 
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var entity = await Task.Run(() => adapter.FetchNewEntity<RefreshTokenEntity>(bucket), cancellationToken);
             
             if(entity != null) {
@@ -128,10 +228,10 @@ public class AuthenticationRepository(
                 var updated = await adapter.SaveEntityAsync(entity, cancellationToken);
 
                 if(!updated) {
-                    logger.LogError($"Failed to update refresh token for user: {userId}");
+                    logger.LogError("Failed to update refresh token for user: {UserId}", userId);
                     return Result<bool>.Failure("Failed to update refresh token", "TOKEN_003");
                 }
-                logger.LogInformation($"Refresh token updated for user: {userId}");
+                logger.LogInformation("Refresh token updated for user: {UserId}", userId);
                 return Result<bool>.Success(updated);
             }
             else {
@@ -155,16 +255,17 @@ public class AuthenticationRepository(
 
             bucket.PredicateExpression.Add(filter);
 
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var entity = await Task.Run(() => adapter.FetchNewEntity<RefreshTokenEntity>(bucket));
 
             if (entity == null) {
-                logger.LogWarning($"No valid refresh token found for user: {userId}");
+                logger.LogWarning("No valid refresh token found for user: {UserId}", userId);
                 return Result<string?>.Success(null);
             }
             return Result<string?>.Success(entity.RefreshToken);
         }
         catch (Exception ex) {
-            logger.LogWarning(ex, $"Error getting refresh token for user: {userId}");
+            logger.LogWarning(ex, "Error getting refresh token for user: {UserId}", userId);
             return Result<string?>.Failure("An error occurred while retrieving refresh token");
         }
     }
@@ -181,6 +282,7 @@ public class AuthenticationRepository(
 
             bucket.PredicateExpression.Add(filter);
 
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var entity = await Task.Run(() => adapter.FetchNewEntity<RefreshTokenEntity>(bucket));
 
             if (entity == null) {
@@ -208,6 +310,7 @@ public class AuthenticationRepository(
 
             bucket.PredicateExpression.Add(filter);
 
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var entity = await Task.Run(() => adapter.FetchNewEntity<RefreshTokenEntity>(bucket));
 
             if (entity == null) {
@@ -234,21 +337,22 @@ public class AuthenticationRepository(
     public async Task<Result<bool>> UpdateLastLoginAsync(Guid userId, DateTime lastLogin, CancellationToken cancellationToken = default)
     {
         try {
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var entity = new UserEntity(userId);
             var fetched = await Task.Run(() => adapter.FetchEntity(entity), cancellationToken);
 
             if (!fetched) {
-                logger.LogWarning($"failed to fetch user by id : {userId}");
+                logger.LogWarning("Failed to fetch user by id: {UserId}", userId);
                 return Result<bool>.Success(false);
             }
             entity.LastLoginAt = lastLogin;
             var saved =  await adapter.SaveEntityAsync(entity, cancellationToken);
 
             if (!saved) {
-                logger.LogWarning($"failed to update last login for user id: {userId}");
+                logger.LogWarning("Failed to update last login for user id: {UserId}", userId);
                 return Result<bool>.Success(false);
             }
-            logger.LogInformation($"Update last login for user id: {userId}");
+            logger.LogInformation("Update last login for user id: {UserId}", userId);
             return Result<bool>.Success(true);
         }
         catch (Exception ex) {
@@ -267,6 +371,7 @@ public class AuthenticationRepository(
             filter.AddWithOr(UserFields.Username == emailOrUsername);
             bucket.PredicateExpression.Add(filter);
 
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var userEntity = await Task.Run(() => adapter.FetchNewEntity<UserEntity>(bucket), cancellationToken);
 
             if (userEntity == null) {
@@ -304,6 +409,7 @@ public class AuthenticationRepository(
             filter.AddWithOr(UserFields.Username == emailOrUsername);
             bucket.PredicateExpression.Add(filter);
 
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var userEntity = await Task.Run(() => adapter.FetchNewEntity<UserEntity>(bucket), cancellationToken);
 
             if (userEntity == null)
@@ -333,6 +439,7 @@ public class AuthenticationRepository(
             filter.AddWithOr(UserFields.Username == emailOrUsername);
             bucket.PredicateExpression.Add(filter);
 
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var userEntity = await Task.Run(() => adapter.FetchNewEntity<UserEntity>(bucket), cancellationToken);
 
             if (userEntity == null) {
@@ -375,6 +482,7 @@ public class AuthenticationRepository(
                 PrefetchPathToUse = prefetchPath
             };
 
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             await adapter.FetchEntityCollectionAsync(queryParameter, cancellationToken);
 
             var roleNames = userRoleAssignment

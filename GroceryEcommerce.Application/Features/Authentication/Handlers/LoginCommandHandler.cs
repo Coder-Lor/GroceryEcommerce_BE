@@ -76,6 +76,8 @@ public sealed class
         var response = new LoginResponse
         {
             UserId = user.UserId.ToString(),
+            Username = user.Username,
+            Role = userRoles.Data.FirstOrDefault() ?? "User",
             Email = user.Email,
             Token = accessToken,
             RefreshToken = refreshToken,

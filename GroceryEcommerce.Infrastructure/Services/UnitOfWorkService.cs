@@ -1,20 +1,37 @@
 using System.Data;
 using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.DatabaseSpecific;
-using SD.LLBLGen.Pro.ORMSupportClasses;
 
 namespace GroceryEcommerce.Infrastructure.Services;
 
-public class UnitOfWorkService(DataAccessAdapter adapter) : IUnitOfWorkService
+public class UnitOfWorkService : IUnitOfWorkService
 {
-    private int _txDepth = 0;
+    private readonly IDataAccessAdapterFactory _adapterFactory;
+    private DataAccessAdapter? _transactionAdapter;
+    private int _txDepth;
+    
+    public UnitOfWorkService(IDataAccessAdapterFactory adapterFactory)
+    {
+        _adapterFactory = adapterFactory;
+    }
+    
     public bool HasActiveTransaction => _txDepth > 0;
+    
+    public DataAccessAdapter GetAdapter()
+    {
+        if (_transactionAdapter == null)
+        {
+            throw new InvalidOperationException("No active transaction. Call BeginTransactionAsync first.");
+        }
+        return _transactionAdapter;
+    }
 
     public async Task BeginTransactionAsync(CancellationToken ct = default)
     {
         if (_txDepth == 0)
         {
-            await adapter.StartTransactionAsync(IsolationLevel.ReadCommitted, "UnitOfWork", ct);
+            _transactionAdapter = (DataAccessAdapter)_adapterFactory.CreateAdapter();
+            await _transactionAdapter.StartTransactionAsync(IsolationLevel.ReadCommitted, "UnitOfWork", ct);
         }
         _txDepth++;
     }
@@ -25,7 +42,9 @@ public class UnitOfWorkService(DataAccessAdapter adapter) : IUnitOfWorkService
         _txDepth--;
         if (_txDepth == 0)
         {
-            await adapter.CommitAsync(ct);
+            await _transactionAdapter!.CommitAsync(ct);
+            _transactionAdapter.Dispose();
+            _transactionAdapter = null;
         }
     }
 
@@ -36,7 +55,9 @@ public class UnitOfWorkService(DataAccessAdapter adapter) : IUnitOfWorkService
     {
         if (_txDepth > 0)
         {
-            adapter.Rollback();
+            _transactionAdapter?.Rollback();
+            _transactionAdapter?.Dispose();
+            _transactionAdapter = null;
             _txDepth = 0;
         }
         return Task.CompletedTask;
@@ -57,11 +78,14 @@ public class UnitOfWorkService(DataAccessAdapter adapter) : IUnitOfWorkService
         }
     }
 
-    public void Dispose() => adapter.Dispose();
+    public void Dispose()
+    {
+        _transactionAdapter?.Dispose();
+    }
 
     public ValueTask DisposeAsync()
     {
-        adapter.Dispose();
+        _transactionAdapter?.Dispose();
         return ValueTask.CompletedTask;
     }
 }

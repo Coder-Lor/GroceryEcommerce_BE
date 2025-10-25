@@ -4,4 +4,4 @@ using MediatR;
 
 namespace GroceryEcommerce.Application.Features.Category.Queries;
 
-public record GetCategoryTreeQuery : IRequest<Result<GetCategoryTreeResponse>>;
+public record GetCategoryTreeQuery : IRequest<Result<List<CategoryDto>>>;
