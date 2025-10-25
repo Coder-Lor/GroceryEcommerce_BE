@@ -128,6 +128,13 @@ internal class Program
                     .AllowCredentials();
             });
         });
+        
+        // PORT 
+        var urls = builder.Configuration["Urls"];
+        if (!string.IsNullOrEmpty(urls))
+        {
+            builder.WebHost.UseUrls(urls);
+        }
 
         var app = builder.Build();
 

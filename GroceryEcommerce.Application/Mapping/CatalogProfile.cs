@@ -57,7 +57,7 @@ public class CatalogProfile : Profile
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.ProductAttributeValues ?? new List<ProductAttributeValue>()))
             .ForMember(dest => dest.Questions, opt => opt.MapFrom(src => src.ProductQuestions ?? new List<ProductQuestion>()))
             .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews ?? new List<Domain.Entities.Reviews.ProductReview>()));
-
+        
 
         CreateMap<Category, CreateCategoryResponse>()
             .IncludeBase<Category, CategoryDto>()
