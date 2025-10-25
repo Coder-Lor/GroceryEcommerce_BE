@@ -50,6 +50,7 @@ public class AuthController(IMediator mediator) : ControllerBase
         return Ok(result);   
     }
     
+    [HttpPost("refresh-token")]
     public async Task<ActionResult<RefreshTokenResponse>> RefreshToken([FromBody] RefreshTokenCommand request)
     {
         var result = await mediator.Send(request);
