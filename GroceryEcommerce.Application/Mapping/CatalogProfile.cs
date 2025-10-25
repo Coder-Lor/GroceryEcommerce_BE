@@ -63,12 +63,10 @@ public class CatalogProfile : Profile
             .IncludeBase<Category, CategoryDto>()
             .ForMember(dest => dest.ParentCategoryName, opt => opt.MapFrom(src => src.ParentCategory != null ? src.ParentCategory.Name : null))
             .ForMember(dest => dest.ProductCount, opt => opt.MapFrom(src => src.Products.Count));
-        
+
         CreateMap<Category, CategoryDto>()
             .ForMember(d => d.SubCategories, o => o.MapFrom(s => s.SubCategories ?? new List<Category>()))
             .PreserveReferences();
-        
-        
         
         CreateMap<IEnumerable<Category>, GetCategoryTreeResponse>()
             .ForMember(d => d.Categories, o => o.MapFrom(s => s));
