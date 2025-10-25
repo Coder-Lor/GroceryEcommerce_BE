@@ -62,6 +62,13 @@ public class CreateProductWithFilesCommandHandler : IRequestHandler<CreateProduc
                 return Result<CreateProductResponse>.Failure("Product with this SKU already exists.");
             }
 
+            var existingProductBySlug = await _productRepository.GetBySlugAsync(request.Slug, cancellationToken);
+            if (existingProductBySlug.IsSuccess && existingProductBySlug.Data != null)
+            {
+                _logger.LogWarning("Product with Slug {Slug} already exists", request.Slug);
+                return Result<CreateProductResponse>.Failure("Product with this Slug already exists.");
+            }
+
             await _unitOfWorkService.BeginTransactionAsync(cancellationToken);
 
             try
