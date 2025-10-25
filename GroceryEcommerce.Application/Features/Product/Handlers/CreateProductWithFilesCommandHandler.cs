@@ -9,40 +9,71 @@ using Microsoft.Extensions.Logging;
 
 namespace GroceryEcommerce.Application.Features.Product.Handlers;
 
-public class CreateProductWithFilesCommandHandler(
-    IMapper mapper,
-    ICurrentUserService currentUserService,
-    IUnitOfWorkService unitOfWorkService,
-    IProductRepository productRepository,
-    IProductImageRepository productImageRepository,
-    IProductVariantRepository productVariantRepository,
-    IProductAttributeValueRepository productAttributeValueRepository,
-    IProductTagAssignmentRepository productTagAssignmentRepository,
-    IAzureBlobStorageService blobStorageService,
-    ILogger<CreateProductWithFilesCommandHandler> logger)
-    : IRequestHandler<CreateProductWithFilesCommand, Result<CreateProductResponse>>
+public class CreateProductWithFilesCommandHandler : IRequestHandler<CreateProductWithFilesCommand, Result<CreateProductResponse>>
 {
+    private readonly ICurrentUserService _currentUserService;
+    private readonly IProductRepository _productRepository;
+    private readonly IProductImageRepository _productImageRepository;
+    private readonly IProductVariantRepository _productVariantRepository;
+    private readonly IProductAttributeValueRepository _productAttributeValueRepository;
+    private readonly IProductTagAssignmentRepository _productTagAssignmentRepository;
+    private readonly IAzureBlobStorageService _blobStorageService;
+    private readonly IMapper _mapper;
+    private readonly ILogger<CreateProductWithFilesCommandHandler> _logger;
+    private readonly IUnitOfWorkService _unitOfWorkService;
+    public CreateProductWithFilesCommandHandler(
+        IMapper mapper,
+        ICurrentUserService currentUserService,
+        IUnitOfWorkService unitOfWorkService,
+        IProductRepository productRepository,
+        IProductImageRepository productImageRepository,
+        IProductVariantRepository productVariantRepository,
+        IProductAttributeValueRepository productAttributeValueRepository,
+        IProductTagAssignmentRepository productTagAssignmentRepository,
+        IAzureBlobStorageService blobStorageService,
+        ILogger<CreateProductWithFilesCommandHandler> logger
+    )
+    {
+        _productRepository = productRepository;
+        _productImageRepository = productImageRepository;
+        _productVariantRepository = productVariantRepository;
+        _productAttributeValueRepository = productAttributeValueRepository;
+        _productTagAssignmentRepository = productTagAssignmentRepository;
+        _blobStorageService = blobStorageService;
+        _currentUserService = currentUserService;       
+        _unitOfWorkService = unitOfWorkService;
+        _mapper = mapper;
+        _logger = logger;
+    }
+
     public async Task<Result<CreateProductResponse>> Handle(CreateProductWithFilesCommand request, CancellationToken cancellationToken)
     {
         Domain.Entities.Catalog.Product? createdProduct = null;
         
         try
         {
-            logger.LogInformation("Creating product with files: {Name}", request.Name);
+            _logger.LogInformation("Creating product with files: {Name}", request.Name);
 
             // Check if product with same SKU already exists
-            var existingProduct = await productRepository.GetBySkuAsync(request.Sku, cancellationToken);
+            var existingProduct = await _productRepository.GetBySkuAsync(request.Sku, cancellationToken);
             if (existingProduct.IsSuccess && existingProduct.Data != null)
             {
-                logger.LogWarning("Product with SKU {Sku} already exists", request.Sku);
+                _logger.LogWarning("Product with SKU {Sku} already exists", request.Sku);
                 return Result<CreateProductResponse>.Failure("Product with this SKU already exists.");
             }
-            
-            await unitOfWorkService.BeginTransactionAsync(cancellationToken);
+
+            var existingProductBySlug = await _productRepository.GetBySlugAsync(request.Slug, cancellationToken);
+            if (existingProductBySlug.IsSuccess && existingProductBySlug.Data != null)
+            {
+                _logger.LogWarning("Product with Slug {Slug} already exists", request.Slug);
+                return Result<CreateProductResponse>.Failure("Product with this Slug already exists.");
+            }
+
+            await _unitOfWorkService.BeginTransactionAsync(cancellationToken);
 
             try
             {
-                var userId = currentUserService.GetCurrentUserId();
+                var userId = _currentUserService.GetCurrentUserId();
                 // Create new product entity
                 var product = new Domain.Entities.Catalog.Product
                 {
@@ -70,14 +101,12 @@ public class CreateProductWithFilesCommandHandler(
                     CreatedBy = userId ?? Guid.Parse("2e6d6589-8790-46be-8c73-b582618ccada")
                 };
                 
-                var productResult = await productRepository.CreateAsync(product, cancellationToken);
+                var productResult = await _productRepository.CreateAsync(product, cancellationToken);
                 if (!productResult.IsSuccess)
                 {
-                    logger.LogError("Failed to create product: {Name}", request.Name);
+                    _logger.LogError("Failed to create product: {Name}", request.Name);
                     throw new InvalidOperationException(productResult.ErrorMessage ?? "Unknown error occurred while creating the product.");
                 }
-
-                createdProduct = productResult.Data;
                 
                 if (request.ImageFiles != null && request.ImageFiles.Any())
                 {
@@ -92,20 +121,20 @@ public class CreateProductWithFilesCommandHandler(
                             var allowedTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/webp" };
                             if (!allowedTypes.Contains(file.ContentType))
                             {
-                                logger.LogWarning("Invalid file type for {FileName}", file.FileName);
+                                _logger.LogWarning("Invalid file type for {FileName}", file.FileName);
                                 continue;
                             }
 
                             // Validate file size (5MB max)
                             if (file.Length > 5 * 1024 * 1024)
                             {
-                                logger.LogWarning("File too large for {FileName}", file.FileName);
+                                _logger.LogWarning("File too large for {FileName}", file.FileName);
                                 continue;
                             }
 
                             // Upload file to Azure Blob Storage
                             using var stream = file.OpenReadStream();
-                            var imageUrl = await blobStorageService.UploadImageAsync(
+                            var imageUrl = await _blobStorageService.UploadImageAsync(
                                 stream, 
                                 file.FileName, 
                                 file.ContentType, 
@@ -114,7 +143,7 @@ public class CreateProductWithFilesCommandHandler(
                             var image = new Domain.Entities.Catalog.ProductImage
                             {
                                 ImageId = Guid.NewGuid(),
-                                ProductId = createdProduct!.ProductId,
+                                ProductId = product.ProductId,
                                 ImageUrl = imageUrl,
                                 AltText = request.ImageAltTexts?.ElementAtOrDefault(i) ?? $"Product image {i + 1}",
                                 IsPrimary = request.ImageIsPrimary?.ElementAtOrDefault(i) ?? (i == 0),
@@ -122,15 +151,15 @@ public class CreateProductWithFilesCommandHandler(
                                 CreatedAt = DateTime.UtcNow
                             };
 
-                            var imageResult = await productImageRepository.CreateAsync(image, cancellationToken);
+                            var imageResult = await _productImageRepository.CreateAsync(image, cancellationToken);
                             if (!imageResult.IsSuccess)
                             {
-                                logger.LogWarning("Failed to create product image: {ImageUrl}", imageUrl);
+                                _logger.LogWarning("Failed to create product image: {ImageUrl}", imageUrl);
                             }
                         }
                         catch (Exception ex)
                         {
-                            logger.LogError(ex, "Error processing product image {Index}", i);
+                            _logger.LogError(ex, "Error processing product image {Index}", i);
                         }
                     }
                 }
@@ -143,7 +172,7 @@ public class CreateProductWithFilesCommandHandler(
                         var variant = new Domain.Entities.Catalog.ProductVariant
                         {
                             VariantId = Guid.NewGuid(),
-                            ProductId = createdProduct!.ProductId,
+                            ProductId = product.ProductId,
                             // Guard against nulls in incoming variant DTOs to prevent possible null reference issues
                             Name = variantRequest.Name ?? string.Empty,
                             Sku = variantRequest.Sku,
@@ -156,10 +185,10 @@ public class CreateProductWithFilesCommandHandler(
                             CreatedAt = DateTime.UtcNow
                         };
 
-                        var variantResult = await productVariantRepository.CreateAsync(variant, cancellationToken);
+                        var variantResult = await _productVariantRepository.CreateAsync(variant, cancellationToken);
                         if (!variantResult.IsSuccess)
                         {
-                            logger.LogWarning("Failed to create product variant: {Name}", variantRequest.Name);
+                            _logger.LogWarning("Failed to create product variant: {Name}", variantRequest.Name);
                         }
                     }
                 }
@@ -172,16 +201,16 @@ public class CreateProductWithFilesCommandHandler(
                         var attributeValue = new Domain.Entities.Catalog.ProductAttributeValue
                         {
                             ValueId = Guid.NewGuid(),
-                            ProductId = createdProduct!.ProductId,
+                            ProductId = product.ProductId,
                             AttributeId = attributeRequest.ProductAttributeId,
                             Value = attributeRequest.Value,
                             CreatedAt = DateTime.UtcNow
                         };
 
-                        var attributeResult = await productAttributeValueRepository.CreateAsync(attributeValue, cancellationToken);
+                        var attributeResult = await _productAttributeValueRepository.CreateAsync(attributeValue, cancellationToken);
                         if (!attributeResult.IsSuccess)
                         {
-                            logger.LogWarning("Failed to create product attribute value: {ProductAttributeId}", attributeRequest.ProductAttributeId);
+                            _logger.LogWarning("Failed to create product attribute value: {ProductAttributeId}", attributeRequest.ProductAttributeId);
                         }
                     }
                 }
@@ -191,22 +220,22 @@ public class CreateProductWithFilesCommandHandler(
                 {
                     foreach (var tagId in request.TagIds)
                     {
-                        var tagResult = await productTagAssignmentRepository.AssignTagToProductAsync(createdProduct!.ProductId, tagId, cancellationToken);
+                        var tagResult = await _productTagAssignmentRepository.AssignTagToProductAsync(product.ProductId, tagId, cancellationToken);
                         if (!tagResult.IsSuccess)
                         {
-                            logger.LogWarning("Failed to assign tag to product: {TagId}", tagId);
+                            _logger.LogWarning("Failed to assign tag to product: {TagId}", tagId);
                         }
                     }
                 }
 
                 // Commit transaction trước khi map response
-                await unitOfWorkService.CommitAsync(cancellationToken);
+                await _unitOfWorkService.CommitAsync(cancellationToken);
                 
                 // Refresh entity từ database để đảm bảo đồng bộ
-                var refreshedProductResult = await productRepository.GetByIdAsync(createdProduct.ProductId, cancellationToken);
+                var refreshedProductResult = await _productRepository.GetByIdAsync(createdProduct.ProductId, cancellationToken);
                 if (!refreshedProductResult.IsSuccess || refreshedProductResult.Data == null)
                 {
-                    logger.LogError("Failed to refresh product after creation: {ProductId}", createdProduct.ProductId);
+                    _logger.LogError("Failed to refresh product after creation: {ProductId}", createdProduct.ProductId);
                     return Result<CreateProductResponse>.Failure("Product created but failed to retrieve updated data.");
                 }
                 
@@ -214,26 +243,26 @@ public class CreateProductWithFilesCommandHandler(
             }
             catch
             {
-                await unitOfWorkService.RollbackAsync(cancellationToken);
+                await _unitOfWorkService.RollbackAsync(cancellationToken);
                 throw;
             }
 
             // Map to response safely
             try
             {
-                var response = mapper.Map<CreateProductResponse>(createdProduct);
-                logger.LogInformation("Product created successfully: {ProductId}", createdProduct.ProductId);
+                var response = _mapper.Map<CreateProductResponse>(createdProduct);
+                _logger.LogInformation("Product created successfully: {ProductId}", createdProduct.ProductId);
                 return Result<CreateProductResponse>.Success(response);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to map created product to response for ProductId: {ProductId}", createdProduct.ProductId);
+                _logger.LogError(ex, "Failed to map created product to response for ProductId: {ProductId}", createdProduct.ProductId);
                 return Result<CreateProductResponse>.Failure("Product created but failed to prepare response.");
             }
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error creating product: {Name}", request.Name);
+            _logger.LogError(ex, "Error creating product: {Name}", request.Name);
             return Result<CreateProductResponse>.Failure("An error occurred while creating the product.");
         }
     }

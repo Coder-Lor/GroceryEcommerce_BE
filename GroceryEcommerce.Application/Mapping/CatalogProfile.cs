@@ -57,7 +57,43 @@ public class CatalogProfile : Profile
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.ProductAttributeValues ?? new List<ProductAttributeValue>()))
             .ForMember(dest => dest.Questions, opt => opt.MapFrom(src => src.ProductQuestions ?? new List<ProductQuestion>()))
             .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews ?? new List<Domain.Entities.Reviews.ProductReview>()));
-        
+        // Add mapping for CreateProductResponse (inherits from ProductBaseResponse)
+        CreateMap<Product, ProductBaseResponse>()
+            .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : string.Empty))
+            .ForMember(dest => dest.BrandName, opt => opt.MapFrom(src => src.Brand != null ? src.Brand.Name : null))
+            .ForMember(dest => dest.PrimaryImageUrl, opt => opt.MapFrom(src =>
+                src.ProductImages != null && src.ProductImages.Any(i => i.IsPrimary)
+                    ? src.ProductImages.FirstOrDefault(i => i.IsPrimary)!.ImageUrl
+                    : null))
+            .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.ProductImages ?? new List<ProductImage>()))
+            .ForMember(dest => dest.Variants, opt => opt.MapFrom(src => src.ProductVariants ?? new List<ProductVariant>()))
+            .ForMember(dest => dest.Tags, opt => opt.MapFrom(src =>
+                src.ProductTagAssignments != null
+                    ? src.ProductTagAssignments.Select(pta => new ProductTagDto
+                    {
+                        ProductTagId = pta.ProductTag != null ? pta.ProductTag.TagId : Guid.Empty,
+                        Name = pta.ProductTag != null ? pta.ProductTag.Name : string.Empty,
+                        Slug = pta.ProductTag != null ? pta.ProductTag.Slug : string.Empty,
+                        Description = pta.ProductTag != null ? pta.ProductTag.Description : string.Empty,
+                        ProductCount = pta.ProductTag != null ? pta.ProductTag.ProductTagAssignments.Count : 0
+                    })
+                    : new List<ProductTagDto>()))
+            .ForMember(dest => dest.AverageRating, opt => opt.MapFrom(src =>
+                src.Reviews != null && src.Reviews.Any()
+                    ? (decimal?)src.Reviews.Average(r => r.Rating)
+                    : null))
+            .ForMember(dest => dest.ReviewCount, opt => opt.MapFrom(src => src.Reviews != null ? src.Reviews.Count : 0))
+            .IncludeAllDerived();
+
+        CreateMap<Product, CreateProductResponse>()
+            .IncludeBase<Product, ProductBaseResponse>();
+
+        CreateMap<Product, ProductDetailDto>()
+            .IncludeBase<Product, ProductDto>()
+            .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.ProductAttributeValues ?? new List<ProductAttributeValue>()))
+            .ForMember(dest => dest.Questions, opt => opt.MapFrom(src => src.ProductQuestions ?? new List<ProductQuestion>()))
+            .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews ?? new List<Domain.Entities.Reviews.ProductReview>()));
+
 
         CreateMap<Category, CreateCategoryResponse>()
             .IncludeBase<Category, CategoryDto>()
