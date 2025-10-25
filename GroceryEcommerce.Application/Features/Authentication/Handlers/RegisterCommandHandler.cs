@@ -2,12 +2,13 @@ using AutoMapper;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Features.Authentication.Commands;
 using GroceryEcommerce.Application.Interfaces.Repositories;
+using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
 using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Domain.Entities.Auth;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
 
 namespace GroceryEcommerce.Application.Features.Authentication.Handlers;
 
@@ -106,7 +107,7 @@ public sealed class RegisterCommandHandler(
                     CreatedAt = DateTime.UtcNow,
                     CreatedByIp = null
                 };
-                
+
                 var saveTokenResult = await _authenticationRepository.SaveRefreshTokenAsync(refreshTokenEntity, cancellationToken);
                 if (!saveTokenResult.IsSuccess)
                 {
@@ -137,7 +138,7 @@ public sealed class RegisterCommandHandler(
             
             stopwatch.Stop();
             _logger.LogInformation("User registration completed in {TotalElapsedMs}ms", stopwatch.ElapsedMilliseconds);
-            
+
             var response = new RegisterResponse
             {
                 UserId = user.UserId.ToString(),
@@ -145,6 +146,8 @@ public sealed class RegisterCommandHandler(
                 RefreshToken = refreshToken,
                 ExpiresAt = DateTime.UtcNow.AddMinutes(30)
             };
+
+            
 
             return Result<RegisterResponse>.Success(response);
         }
