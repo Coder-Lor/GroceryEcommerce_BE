@@ -198,6 +198,13 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
                 }
             }
 
+            // Get total count
+            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
+            var totalCount = await adapter.FetchScalarAsync<int>(
+                query.Select(() => Functions.CountRow()),
+                cancellationToken
+            );
+            
             // Apply sorting
             if (request.HasSorting)
             {
@@ -207,13 +214,6 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
             {
                 query = ApplyDefaultSorting(query);
             }
-
-            // Get total count
-            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
-            var totalCount = await adapter.FetchScalarAsync<int>(
-                query.Select(() => Functions.CountRow()),
-                cancellationToken
-            );
 
             // Apply paging
             query = query.Page(request.Page, request.PageSize);
