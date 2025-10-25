@@ -142,7 +142,9 @@ public class ProductImageRepository(
                 await CacheService.RemoveAsync($"ProductImage_{image.ImageId}", cancellationToken);
                 await CacheService.RemoveAsync($"ProductImages_ByProduct_{image.ProductId}", cancellationToken);
                 logger.LogInformation("Product image created: {Image}", image);
-                return Result<ProductImage>.Success(Mapper.Map<ProductImage>(entity));
+            
+                // Trả về image gốc vì đã được save thành công
+                return Result<ProductImage>.Success(image);
             }
             logger.LogWarning("Product image not created: {ImageId}", image.ImageId);
             return Result<ProductImage>.Failure("Product image not created.");

@@ -232,16 +232,16 @@ public class CreateProductWithFilesCommandHandler : IRequestHandler<CreateProduc
                 await _unitOfWorkService.CommitAsync(cancellationToken);
                 
                 // Refresh entity từ database để đảm bảo đồng bộ
-                var refreshedProductResult = await _productRepository.GetByIdAsync(createdProduct.ProductId, cancellationToken);
+                var refreshedProductResult = await _productRepository.GetByIdAsync(product.ProductId, cancellationToken);
                 if (!refreshedProductResult.IsSuccess || refreshedProductResult.Data == null)
                 {
-                    _logger.LogError("Failed to refresh product after creation: {ProductId}", createdProduct.ProductId);
+                    _logger.LogError("Failed to refresh product after creation: {ProductId}", product.ProductId);
                     return Result<CreateProductResponse>.Failure("Product created but failed to retrieve updated data.");
                 }
                 
                 createdProduct = refreshedProductResult.Data;
             }
-            catch
+            catch (Exception ex)
             {
                 await _unitOfWorkService.RollbackAsync(cancellationToken);
                 throw;
