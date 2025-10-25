@@ -57,13 +57,13 @@ public class CatalogProfile : Profile
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.ProductAttributeValues ?? new List<ProductAttributeValue>()))
             .ForMember(dest => dest.Questions, opt => opt.MapFrom(src => src.ProductQuestions ?? new List<ProductQuestion>()))
             .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews ?? new List<Domain.Entities.Reviews.ProductReview>()));
-        
 
-        // CreateMap<Category, CreateCategoryResponse>()
-        //     .IncludeBase<Category, CategoryDto>()
-        //     .ForMember(dest => dest.ParentCategoryName, opt => opt.MapFrom(src => src.ParentCategory != null ? src.ParentCategory.Name : null))
-        //     .ForMember(dest => dest.ProductCount, opt => opt.MapFrom(src => src.Products.Count));
-        
+
+        CreateMap<Category, CreateCategoryResponse>()
+            .IncludeBase<Category, CategoryDto>()
+            .ForMember(dest => dest.ParentCategoryName, opt => opt.MapFrom(src => src.ParentCategory != null ? src.ParentCategory.Name : null))
+            .ForMember(dest => dest.ProductCount, opt => opt.MapFrom(src => src.Products.Count));
+
         CreateMap<Category, CategoryDto>()
             .ForMember(d => d.SubCategories, o => o.MapFrom(s => s.SubCategories ?? new List<Category>()))
             .PreserveReferences();

@@ -1,13 +1,16 @@
+using GroceryEcommerce.Application.Interfaces.Repositories;
+using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
+using GroceryEcommerce.Application.Interfaces.Services;
+using GroceryEcommerce.Application.Models;
+using GroceryEcommerce.Domain.Entities.Auth;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using GroceryEcommerce.Application.Interfaces.Repositories;
-using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
-using GroceryEcommerce.Application.Interfaces.Services;
-using GroceryEcommerce.Domain.Entities.Auth;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 
 namespace GroceryEcommerce.Infrastructure.Services;
 
@@ -67,6 +70,22 @@ public class TokenService : ITokenService
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomBytes);
         var refreshToken = Convert.ToBase64String(randomBytes);
+
+        var cookieOptions = new CookieOptions
+        {
+            // --- Cờ bảo mật chính ---
+            HttpOnly = true,  // <-- Ngăn JavaScript truy cập
+            Secure = true,    // <-- Chỉ gửi qua HTTPS
+            SameSite = SameSiteMode.Lax, // <-- Chống CSRF. (Giải thích bên dưới)
+
+            // --- Cấu hình thời gian sống ---
+            // Thời gian sống của cookie phải khớp với thời gian sống
+            // của refreshToken trong database
+            Expires = DateTime.UtcNow.AddDays(7)
+        };
+
+
+
         return await Task.FromResult(refreshToken);
     }
 
@@ -102,6 +121,7 @@ public class TokenService : ITokenService
             !t.Revoked &&
             t.ExpiresAt > DateTime.UtcNow));
     }
+
 
     public async Task<bool> ValidateRefreshTokenAsync(string token)
     {
