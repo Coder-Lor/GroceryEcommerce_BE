@@ -49,6 +49,14 @@ public class AuthController(IMediator mediator) : ControllerBase
             return BadRequest(result); 
         return Ok(result);   
     }
+    
+    public async Task<ActionResult<RefreshTokenResponse>> RefreshToken([FromBody] RefreshTokenCommand request)
+    {
+        var result = await mediator.Send(request);
+        if (!result.IsSuccess)
+            return BadRequest(result);
+        return Ok(result);
+    }
 
     private void SetRefreshTokenCookie(string refreshToken)
     {
