@@ -12,9 +12,9 @@ public class GetCategoryTreeHandler(
     ICategoryRepository categoryRepository,
     IMapper mapper,
     ILogger<GetCategoryTreeHandler> logger
-) : IRequestHandler<GetCategoryTreeQuery, Result<GetCategoryTreeResponse>>
+) : IRequestHandler<GetCategoryTreeQuery, Result<List<CategoryDto>>>
 {
-    public async Task<Result<GetCategoryTreeResponse>> Handle(GetCategoryTreeQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<CategoryDto>>> Handle(GetCategoryTreeQuery request, CancellationToken cancellationToken)
     {
         try
         {
@@ -24,18 +24,18 @@ public class GetCategoryTreeHandler(
             if (!result.IsSuccess)
             {
                 logger.LogError("Failed to get category tree");
-                return Result<GetCategoryTreeResponse>.Failure(result.ErrorMessage ?? "Failed to get category tree.");
+                return Result<List<CategoryDto>>.Failure(result.ErrorMessage ?? "Failed to get category tree.");
             }
 
-            var response = mapper.Map<GetCategoryTreeResponse>(result.Data);
+            var response = mapper.Map<List<CategoryDto>>(result.Data);
             
             logger.LogInformation("Category tree retrieved successfully: {Count}", result.Data?.Count ?? 0);
-            return Result<GetCategoryTreeResponse>.Success(response);
+            return Result<List<CategoryDto>>.Success(response);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error getting category tree");
-            return Result<GetCategoryTreeResponse>.Failure("An error occurred while retrieving category tree.");
+            return Result<List<CategoryDto>>.Failure("An error occurred while retrieving category tree.");
         }
     }
 }
