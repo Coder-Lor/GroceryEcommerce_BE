@@ -8,7 +8,7 @@ public interface IUserSessionRepository
     // Basic CRUD operations
     Task<Result<UserSession?>> GetByIdAsync(Guid sessionId, CancellationToken cancellationToken = default);
     Task<Result<UserSession?>> GetByTokenAsync(string sessionToken, CancellationToken cancellationToken = default);
-    Task<Result<List<UserSession>>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<UserSession>>> GetByUserIdAsync(PagedRequest request, Guid userId, CancellationToken cancellationToken = default);
     Task<Result<UserSession>> CreateAsync(UserSession session, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateAsync(UserSession session, CancellationToken cancellationToken = default);
     Task<Result<bool>> DeleteAsync(Guid sessionId, CancellationToken cancellationToken = default);
@@ -17,7 +17,7 @@ public interface IUserSessionRepository
     Task<Result<bool>> RevokeSessionAsync(Guid sessionId, CancellationToken cancellationToken = default);
     Task<Result<bool>> RevokeAllUserSessionsAsync(Guid userId, CancellationToken cancellationToken = default);
     Task<Result<bool>> RevokeExpiredSessionsAsync(CancellationToken cancellationToken = default);
-    Task<Result<List<UserSession>>> GetActiveSessionsByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<UserSession>>> GetActiveSessionsByUserIdAsync(PagedRequest request, Guid userId, CancellationToken cancellationToken = default);
     Task<Result<bool>> IsSessionValidAsync(string sessionToken, CancellationToken cancellationToken = default);
     Task<Result<int>> GetActiveSessionCountAsync(Guid userId, CancellationToken cancellationToken = default);
 }

@@ -50,14 +50,34 @@ public class AuthController(IMediator mediator) : ControllerBase
         return Ok(result);   
     }
     
-    [HttpPost("refresh-token")]
-    public async Task<ActionResult<RefreshTokenResponse>> RefreshToken([FromBody] RefreshTokenCommand request)
+    [HttpPost("logout")]
+    public async Task<ActionResult<Result<bool>>> Logout([FromBody] LogoutCommand request)
     {
         var result = await mediator.Send(request);
         if (!result.IsSuccess)
             return BadRequest(result);
+        
+        // Clear refresh token cookie
+        Response.Cookies.Delete("refreshToken");
+        
         return Ok(result);
     }
+    
+    [HttpPost("refresh-token")]
+    public async Task<ActionResult<Result<RefreshTokenResponse>>> RefreshToken([FromBody] RefreshTokenCommand request)
+    {
+        var result = await mediator.Send(request);
+        if (!result.IsSuccess)
+            return BadRequest(result);
+        
+        if (result.Data is not null)
+        {
+            SetRefreshTokenCookie(result.Data.RefreshToken);
+        }
+        
+        return Ok(result);
+    }
+    
 
     private void SetRefreshTokenCookie(string refreshToken)
     {

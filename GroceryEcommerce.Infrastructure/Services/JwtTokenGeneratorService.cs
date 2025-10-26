@@ -75,9 +75,6 @@ public class JwtTokenGeneratorService : IJwtTokenGeneratorService
     {
         try
         {
-            // Bạn cần validate refresh token từ database
-            // Đây là implementation cơ bản
-            
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_secretKey);
 
