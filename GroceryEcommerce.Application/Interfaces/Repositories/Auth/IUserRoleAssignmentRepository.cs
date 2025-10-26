@@ -7,8 +7,8 @@ public interface IUserRoleAssignmentRepository
 {
     // Basic CRUD operations
     Task<Result<UserRoleAssignment?>> GetByIdAsync(Guid userId, Guid roleId, CancellationToken cancellationToken = default);
-    Task<Result<List<UserRoleAssignment>>> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
-    Task<Result<List<UserRoleAssignment>>> GetByRoleIdAsync(Guid roleId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<UserRoleAssignment>>> GetByUserIdAsync(PagedRequest request, Guid userId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<UserRoleAssignment>>> GetByRoleIdAsync(PagedRequest request, Guid roleId, CancellationToken cancellationToken = default);
     Task<Result<UserRoleAssignment>> CreateAsync(UserRoleAssignment assignment, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateAsync(UserRoleAssignment assignment, CancellationToken cancellationToken = default);
     Task<Result<bool>> DeleteAsync(Guid userId, Guid roleId, CancellationToken cancellationToken = default);

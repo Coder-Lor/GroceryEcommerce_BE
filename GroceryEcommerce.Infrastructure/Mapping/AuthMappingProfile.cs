@@ -59,10 +59,25 @@ public class AuthMappingProfile : Profile
         
         CreateMap<RefreshToken, RefreshTokenEntity>()
             .ForMember(dest => dest.RefreshToken, opt => opt.MapFrom(src => src.RefreshTokenValue))
-            .ForMember(dest => dest.User, opt => opt.Ignore());
+            .ForMember(dest => dest.User, opt => opt.Ignore())
+            .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
+            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+            .ForMember(dest => dest.ExpiresAt, opt => opt.MapFrom(src => src.ExpiresAt))
+            .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.CreatedByIp, opt => opt.MapFrom(src => src.CreatedByIp))
+            .ForMember(dest => dest.ReplacedByToken, opt => opt.MapFrom(src => src.ReplacedByToken));
 
         CreateMap<RefreshTokenEntity, RefreshToken>()
-            .ForMember(dest => dest.RefreshTokenValue, opt => opt.MapFrom(src => src.RefreshToken));
+            .ForMember(dest => dest.RefreshTokenValue, opt => opt.MapFrom(src => src.RefreshToken ?? string.Empty))
+            .ForMember(dest => dest.User, opt => opt.Ignore())
+            .ForMember(dest => dest.TokenId, opt => opt.MapFrom(src => src.TokenId))
+            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+            .ForMember(dest => dest.ExpiresAt, opt => opt.MapFrom(src => src.ExpiresAt))
+            .ForMember(dest => dest.Revoked, opt => opt.MapFrom(src => src.Revoked))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.CreatedByIp, opt => opt.MapFrom(src => src.CreatedByIp))
+            .ForMember(dest => dest.ReplacedByToken, opt => opt.MapFrom(src => src.ReplacedByToken));
         
         CreateMap<UserAddress, UserAddressEntity>()
             .ForMember(dest => dest.User, opt => opt.Ignore());

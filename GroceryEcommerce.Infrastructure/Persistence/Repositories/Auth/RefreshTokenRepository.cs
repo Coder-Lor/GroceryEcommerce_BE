@@ -130,8 +130,18 @@ public class RefreshTokenRepository(
         try
         {
             var entity = mapper.Map<RefreshTokenEntity>(refreshToken);
-            entity.TokenId = Guid.NewGuid();
-            entity.CreatedAt = DateTime.UtcNow;
+            
+            // Ensure TokenId is set if not already provided
+            if (entity.TokenId == Guid.Empty)
+            {
+                entity.TokenId = Guid.NewGuid();
+            }
+            
+            // Ensure CreatedAt is set if not already provided
+            if (entity.CreatedAt == DateTime.MinValue)
+            {
+                entity.CreatedAt = DateTime.UtcNow;
+            }
             
             var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             
@@ -141,7 +151,17 @@ public class RefreshTokenRepository(
                 return Result<RefreshToken>.Failure("Failed to create refresh token", "REFRESH_TOKEN_CREATE_001");
             }
             
-            var createdToken = mapper.Map<RefreshToken>(entity);
+            // Fetch lại entity sau khi save để tránh ORMEntityOutOfSyncException
+            var savedEntity = new RefreshTokenEntity(entity.TokenId);
+            var fetched = await Task.Run(() => adapter.FetchEntity(savedEntity), cancellationToken);
+            
+            if (!fetched)
+            {
+                logger.LogError("Failed to fetch created refresh token: {TokenId}", entity.TokenId);
+                return Result<RefreshToken>.Failure("Failed to fetch created refresh token", "REFRESH_TOKEN_CREATE_002");
+            }
+            
+            var createdToken = mapper.Map<RefreshToken>(savedEntity);
             logger.LogInformation("Refresh token created successfully: {TokenId}", entity.TokenId);
             
             return Result<RefreshToken>.Success(createdToken);

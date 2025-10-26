@@ -1,12 +1,8 @@
-using GroceryEcommerce.Application.Interfaces.Repositories;
 using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
 using GroceryEcommerce.Application.Interfaces.Services;
-using GroceryEcommerce.Application.Models;
 using GroceryEcommerce.Domain.Entities.Auth;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Org.BouncyCastle.Asn1.Ocsp;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -64,27 +60,12 @@ public class TokenService : ITokenService
         return await Task.FromResult(tokenString);
     }
 
-    public async Task<string> GenerateRefreshTokenAsync(Guid userId, string ipAddress = null)
+    public async Task<string> GenerateRefreshTokenAsync(Guid userId, string? ipAddress = null)
     {
         var randomBytes = new byte[64];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomBytes);
         var refreshToken = Convert.ToBase64String(randomBytes);
-
-        var cookieOptions = new CookieOptions
-        {
-            // --- Cờ bảo mật chính ---
-            HttpOnly = true,  // <-- Ngăn JavaScript truy cập
-            Secure = true,    // <-- Chỉ gửi qua HTTPS
-            SameSite = SameSiteMode.Lax, // <-- Chống CSRF. (Giải thích bên dưới)
-
-            // --- Cấu hình thời gian sống ---
-            // Thời gian sống của cookie phải khớp với thời gian sống
-            // của refreshToken trong database
-            Expires = DateTime.UtcNow.AddDays(7)
-        };
-
-
 
         return await Task.FromResult(refreshToken);
     }
@@ -102,73 +83,180 @@ public class TokenService : ITokenService
         };
 
         var res = await _refreshTokenRepository.CreateAsync(token);
-        return res.IsSuccess ? res.Data : null;
+        return res.IsSuccess ? res.Data : null!;
+    }
+
+    public async Task<bool> CreateRefreshTokenInDatabaseAsync(Guid userId, string refreshToken, string? ipAddress = null)
+    {
+        try
+        {
+            var token = new RefreshToken
+            {
+                UserId = userId,
+                RefreshTokenValue = refreshToken,
+                ExpiresAt = DateTime.UtcNow.AddDays(_refreshTokenExpirationDays),
+                CreatedAt = DateTime.UtcNow,
+                CreatedByIp = ipAddress,
+                Revoked = false
+            };
+
+            var res = await _refreshTokenRepository.CreateAsync(token);
+            return res.IsSuccess;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     public async Task<RefreshToken?> GetRefreshTokenAsync(string token)
     {
-        var result = await _refreshTokenRepository.GetByTokenAsync(token);
-        return result.IsSuccess ? result.Data : null;
+        try
+        {
+            var result = await _refreshTokenRepository.GetByTokenAsync(token);
+            return result.IsSuccess ? result.Data : null;
+        }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging
+            Console.WriteLine($"Error in GetRefreshTokenAsync: {ex.Message}");
+            return null;
+        }
     }
 
     public async Task<RefreshToken?> GetActiveRefreshTokenAsync(Guid userId)
     {
-        var result = await _refreshTokenRepository.GetByUserIdAsync(userId);
-        if (!result.IsSuccess || result.Data == null)
-            return null;
+        try
+        {
+            var result = await _refreshTokenRepository.GetByUserIdAsync(userId);
+            if (!result.IsSuccess || result.Data == null)
+                return null;
 
-        return await Task.FromResult(result.Data.FirstOrDefault(t =>
-            !t.Revoked &&
-            t.ExpiresAt > DateTime.UtcNow));
+            return await Task.FromResult(result.Data.FirstOrDefault(t =>
+                !t.Revoked &&
+                t.ExpiresAt > DateTime.UtcNow));
+        }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging
+            Console.WriteLine($"Error in GetActiveRefreshTokenAsync: {ex.Message}");
+            return null;
+        }
     }
 
 
     public async Task<bool> ValidateRefreshTokenAsync(string token)
     {
-        var result = await _refreshTokenRepository.GetByTokenAsync(token);
+        try
+        {
+            var result = await _refreshTokenRepository.GetByTokenAsync(token);
 
-        if (!result.IsSuccess || result.Data == null)
+            if (!result.IsSuccess || result.Data == null)
+                return false;
+
+            var refreshToken = result.Data;
+
+            if (refreshToken.Revoked)
+                return false;
+
+            if (refreshToken.ExpiresAt < DateTime.UtcNow)
+                return false;
+
+            return await Task.FromResult(true);
+        }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging
+            Console.WriteLine($"Error in ValidateRefreshTokenAsync: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<bool> ValidateAndCreateRefreshTokenAsync(string token, Guid userId)
+    {
+        if (string.IsNullOrWhiteSpace(token))
             return false;
 
-        var refreshToken = result.Data;
+        try
+        {
+            var result = await _refreshTokenRepository.GetByTokenAsync(token);
+            if (result.IsSuccess && result.Data != null)
+            {
+                var refreshToken = result.Data;
 
-        if (refreshToken.Revoked)
+                if (refreshToken.UserId != userId)
+                    return false;
+
+                if (refreshToken.Revoked || refreshToken.ExpiresAt <= DateTime.UtcNow)
+                    return false;
+
+                return true;
+            }
+
+            var newToken = new RefreshToken
+            {
+                UserId = userId,
+                RefreshTokenValue = token,
+                ExpiresAt = DateTime.UtcNow.AddDays(_refreshTokenExpirationDays),
+                CreatedAt = DateTime.UtcNow,
+                Revoked = false
+            };
+
+            var createResult = await _refreshTokenRepository.CreateAsync(newToken);
+            return createResult.IsSuccess;
+        }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging
+            Console.WriteLine($"Error in ValidateAndCreateRefreshTokenAsync: {ex.Message}");
             return false;
-
-        if (refreshToken.ExpiresAt < DateTime.UtcNow)
-            return false;
-
-        return await Task.FromResult(true);
+        }
     }
 
     public async Task RevokeRefreshTokenAsync(string token, string? replacedByToken = null)
     {
-        var result = await _refreshTokenRepository.GetByTokenAsync(token);
+        try
+        {
+            var result = await _refreshTokenRepository.GetByTokenAsync(token);
 
-        if (!result.IsSuccess || result.Data == null)
-            return;
+            if (!result.IsSuccess || result.Data == null)
+                return;
 
-        var refreshToken = result.Data;
-        refreshToken.Revoked = true;
-        refreshToken.ReplacedByToken = replacedByToken;
+            var refreshToken = result.Data;
+            refreshToken.Revoked = true;
+            refreshToken.ReplacedByToken = replacedByToken;
 
-        await _refreshTokenRepository.UpdateAsync(refreshToken);
+            await _refreshTokenRepository.UpdateAsync(refreshToken);
+        }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging
+            Console.WriteLine($"Error in RevokeRefreshTokenAsync: {ex.Message}");
+        }
     }
 
     public async Task RevokeAllUserRefreshTokensAsync(Guid userId)
     {
-        var result = await _refreshTokenRepository.GetByUserIdAsync(userId);
-
-        if (!result.IsSuccess || result.Data == null)
-            return;
-
-        foreach (var token in result.Data)
+        try
         {
-            if (!token.Revoked)
+            var result = await _refreshTokenRepository.GetByUserIdAsync(userId);
+
+            if (!result.IsSuccess || result.Data == null)
+                return;
+
+            foreach (var token in result.Data)
             {
-                token.Revoked = true;
-                await _refreshTokenRepository.UpdateAsync(token);
+                if (!token.Revoked)
+                {
+                    token.Revoked = true;
+                    await _refreshTokenRepository.UpdateAsync(token);
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging
+            Console.WriteLine($"Error in RevokeAllUserRefreshTokensAsync: {ex.Message}");
         }
     }
 
@@ -180,12 +268,21 @@ public class TokenService : ITokenService
 
     public async Task<bool> IsTokenRevokedAsync(string token)
     {
-        var result = await _refreshTokenRepository.GetByTokenAsync(token);
+        try
+        {
+            var result = await _refreshTokenRepository.GetByTokenAsync(token);
 
-        if (!result.IsSuccess || result.Data == null)
-            return true;
+            if (!result.IsSuccess || result.Data == null)
+                return true;
 
-        return await Task.FromResult(result.Data.Revoked);
+            return await Task.FromResult(result.Data.Revoked);
+        }
+        catch (Exception ex)
+        {
+            // Log the exception for debugging
+            Console.WriteLine($"Error in IsTokenRevokedAsync: {ex.Message}");
+            return true; // Assume revoked if error occurs
+        }
     }
     
     public Task<string> GetUserIdFromExpiredToken(string token)

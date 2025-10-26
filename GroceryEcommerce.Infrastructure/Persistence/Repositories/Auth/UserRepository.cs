@@ -296,7 +296,7 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
 
         public Task<Result<User?>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return GetSingleAsync(UserFields.UserId, id, "User_ById", TimeSpan.FromHours(1), cancellationToken);
         }
 
         public async Task<Result<User?>> GetByEmailAsync(string email, CancellationToken cancellationToken = default) {
