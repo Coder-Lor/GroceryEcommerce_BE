@@ -182,11 +182,13 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
 
             var qf = new QueryFactory();
             var query = qf.Create<TEntity>();
+            var countQuery = qf.Create<TEntity>();
 
             // Apply search
             if (request.HasSearch)
             {
                 query = ApplySearch(query, request.Search ?? string.Empty);
+                countQuery = ApplySearch(countQuery, request.Search ?? string.Empty);
             }
 
             // Apply filters
@@ -195,15 +197,14 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
                 foreach (var filter in request.Filters)
                 {
                     query = ApplyFilter(query, filter);
+                    countQuery = ApplyFilter(countQuery, filter);
                 }
             }
 
-            // Get total count
-            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
-            var totalCount = await adapter.FetchScalarAsync<int>(
-                query.Select(() => Functions.CountRow()),
-                cancellationToken
-            );
+            // Get total count - Fetch từ count query
+            var adapter = GetAdapter();
+            var countEntities = await FetchEntitiesAsync(countQuery, adapter, cancellationToken);
+            var totalCount = countEntities.Count;
             
             // Apply sorting
             if (request.HasSorting)

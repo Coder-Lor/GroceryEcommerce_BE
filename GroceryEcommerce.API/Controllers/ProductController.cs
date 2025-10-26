@@ -1,5 +1,6 @@
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Features.Product.Commands;
+using GroceryEcommerce.Application.Features.Product.Queries;
 using GroceryEcommerce.Application.Models.Catalog;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -24,4 +25,13 @@ public class ProductController(IMediator mediator) : ControllerBase
         var result = await mediator.Send(command);
         return Ok(result);
     }
+    
+    [HttpGet("paging")]
+    public async Task<ActionResult<Result<PagedResult<ProductBaseResponse>>>> GetProductsPaging([FromQuery] PagedRequest request)
+    {
+        var query = new GetProductsPagingQuery(request);
+        var result = await mediator.Send(query);
+        return Ok(result);
+    }
+    
 }

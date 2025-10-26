@@ -20,7 +20,6 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        // Register Repositories (Interfaces only - implementations will be created later)
         services.AddScoped<IDataAccessAdapterFactory, DataAccessAdapterFactory>();
         services.AddScoped<DataAccessAdapter>(provider =>
         {
@@ -177,7 +176,16 @@ public static class DependencyInjection
             return new ProductVariantRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
-        
+        // Audit log repository
+        services.AddScoped<IAuditLogRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<AuditLogRepository>>();
+            return new AuditLogRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
 
         // Register existing services
         services.AddMemoryCache();
