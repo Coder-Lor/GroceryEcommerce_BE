@@ -99,9 +99,10 @@ public class AuditLogController(IMediator mediator) : ControllerBase
     [HttpGet("recent")]
     public async Task<ActionResult<Result<PagedResult<AuditLogDto>>>> GetRecent(
         [FromQuery] int count = 100,
-        [FromQuery] PagedRequest? request = null)
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
     {
-        request ??= new PagedRequest();
+        var request = new PagedRequest { Page = page, PageSize = pageSize };
         var query = new GetRecentAuditLogsQuery(request, count);
         var result = await mediator.Send(query);
         if (!result.IsSuccess)

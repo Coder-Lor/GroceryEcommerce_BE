@@ -19,7 +19,7 @@ public class GetAuditLogsByEntityHandler(
         logger.LogInformation("Handling GetAuditLogsByEntityQuery for Entity: {Entity}, EntityId: {EntityId}", 
             request.Entity, request.EntityId);
 
-        var entityId = request.EntityId ?? Guid.Empty;
+        var entityId = request.EntityId.HasValue ? request.EntityId.Value : Guid.Empty;
         var result = await repository.GetByEntityAsync(request.Request, request.Entity, entityId, cancellationToken);
         if (!result.IsSuccess || result.Data is null)
         {
