@@ -4,25 +4,46 @@ using System.Text;
 using GroceryEcommerce.Infrastructure;
 using GroceryEcommerce.Application.Mapping;
 using GroceryEcommerce.Infrastructure.Mapping;
-using GroceryEcommerce.Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using Scalar.AspNetCore;
 using SD.LLBLGen.Pro.DQE.PostgreSql;
 using SD.LLBLGen.Pro.ORMSupportClasses;
+using Microsoft.AspNetCore.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using NSwag.AspNetCore;
+using Microsoft.AspNetCore.OpenApi;
 
 internal class Program
 {
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
+        
         builder.Services.AddControllers();
-        builder.Services.AddOpenApi();
+        // builder.Services.AddOpenApi();
+        builder.Services.AddOpenApiDocument();
 
-        // Configure form options for file upload
+
+
+        builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(opts =>
+        {
+            // Tăng giới hạn độ sâu để tránh lỗi JsonSchemaExporterDepthTooLarge
+            opts.SerializerOptions.MaxDepth = 256; // Tăng từ 64 lên 128
+
+            // Bỏ qua vòng tham chiếu để tránh đệ quy vô hạn khi export schema/serialize
+            opts.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        });
+
+
+
+        builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+        {
+            options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50MB
+        });
+        
         builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
         {
             options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50MB
@@ -115,12 +136,19 @@ internal class Program
         {
             options.AddPolicy("AllowSpecificOrigins", policy =>
             {
-                policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "https://localhost:7129")
+                policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "https://localhost:7129", "http://localhost:4200")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
             });
         });
+        
+        // PORT 
+        var urls = builder.Configuration["Urls"];
+        if (!string.IsNullOrEmpty(urls))
+        {
+            builder.WebHost.UseUrls(urls);
+        }
 
         var app = builder.Build();
 
@@ -129,6 +157,7 @@ internal class Program
             app.MapOpenApi();
             app.UseOpenApi();
             app.MapScalarApiReference();
+            app.UseSwaggerUI();
         }
 
         app.UseHttpsRedirection();
