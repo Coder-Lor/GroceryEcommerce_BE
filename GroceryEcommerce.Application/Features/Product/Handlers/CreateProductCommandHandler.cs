@@ -18,6 +18,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
     private readonly IProductAttributeValueRepository _productAttributeValueRepository;
     private readonly IProductTagAssignmentRepository _productTagAssignmentRepository;
     private readonly IAzureBlobStorageService _blobStorageService;
+    private readonly ICacheService _cacheService;
     private readonly IMapper _mapper;
     private readonly ILogger<CreateProductCommandHandler> _logger;
 
@@ -28,6 +29,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
         IProductAttributeValueRepository productAttributeValueRepository,
         IProductTagAssignmentRepository productTagAssignmentRepository,
         IAzureBlobStorageService blobStorageService,
+        ICacheService cacheService,
         IMapper mapper,
         ILogger<CreateProductCommandHandler> logger)
     {
@@ -37,6 +39,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
         _productAttributeValueRepository = productAttributeValueRepository;
         _productTagAssignmentRepository = productTagAssignmentRepository;
         _blobStorageService = blobStorageService;
+        _cacheService = cacheService;
         _mapper = mapper;
         _logger = logger;
     }
@@ -208,9 +211,10 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
                 }
             }
 
-            // Map to response
+            
             var response = _mapper.Map<CreateProductResponse>(createdProduct);
             
+            await _cacheService.RemoveByPatternAsync("Product_*", cancellationToken);
             _logger.LogInformation("Product created successfully: {ProductId}", createdProduct!.ProductId);
             return Result<CreateProductResponse>.Success(response);
         }

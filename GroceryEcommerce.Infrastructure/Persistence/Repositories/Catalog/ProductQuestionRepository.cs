@@ -122,6 +122,21 @@ public class ProductQuestionRepository(
         return entities;
     }
 
+    protected override EntityField2? GetPrimaryKeyField()
+    {
+        return ProductQuestionFields.QuestionId;
+    }
+
+    protected override object GetEntityId(ProductQuestionEntity entity, EntityField2 primaryKeyField)
+    {
+        return entity.QuestionId;
+    }
+
+    protected override IPredicate CreateIdFilter(EntityField2 primaryKeyField, List<object> ids)
+    {
+        return new PredicateExpression(primaryKeyField.In(ids));
+    }
+
     public async Task<Result<ProductQuestion?>> GetByIdAsync(Guid questionId, CancellationToken cancellationToken = default)
     {
         if (questionId == Guid.Empty)

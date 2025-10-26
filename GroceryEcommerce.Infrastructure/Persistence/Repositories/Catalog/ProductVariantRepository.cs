@@ -135,6 +135,21 @@ public class ProductVariantRepository(
         return entities;
     }
 
+    protected override EntityField2? GetPrimaryKeyField()
+    {
+        return ProductVariantFields.VariantId;
+    }
+
+    protected override object GetEntityId(ProductVariantEntity entity, EntityField2 primaryKeyField)
+    {
+        return entity.VariantId;
+    }
+
+    protected override IPredicate CreateIdFilter(EntityField2 primaryKeyField, List<object> ids)
+    {
+        return new PredicateExpression(primaryKeyField.In(ids));
+    }
+
     public Task<Result<ProductVariant?>> GetByIdAsync(Guid variantId, CancellationToken cancellationToken = default)
     {
         if (variantId == Guid.Empty)

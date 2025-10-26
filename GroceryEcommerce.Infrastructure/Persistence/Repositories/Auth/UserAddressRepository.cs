@@ -123,6 +123,21 @@ public class UserAddressRepository(
         return entities;
     }
 
+    protected override EntityField2? GetPrimaryKeyField()
+    {
+        return UserAddressFields.AddressId;
+    }
+
+    protected override object GetEntityId(UserAddressEntity entity, EntityField2 primaryKeyField)
+    {
+        return entity.AddressId;
+    }
+
+    protected override IPredicate CreateIdFilter(EntityField2 primaryKeyField, List<object> ids)
+    {
+        return new PredicateExpression(primaryKeyField.In(ids));
+    }
+
     public async Task<Result<UserAddress?>> GetByIdAsync(Guid addressId, CancellationToken cancellationToken = default)
     {
         if (addressId == Guid.Empty)

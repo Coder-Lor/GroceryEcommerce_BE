@@ -24,8 +24,7 @@ public class GetProductsPagingHandler(
         {
             return Result<PagedResult<ProductBaseResponse>>.Failure(result.ErrorMessage ?? "Failed to get paged products.");
         }
-
-        // Map từng item trong PagedResult thay vì map toàn bộ PagedResult
+        
         var mappedItems = mapper.Map<List<ProductBaseResponse>>(result.Data.Items);
         var response = new PagedResult<ProductBaseResponse>(
             mappedItems,

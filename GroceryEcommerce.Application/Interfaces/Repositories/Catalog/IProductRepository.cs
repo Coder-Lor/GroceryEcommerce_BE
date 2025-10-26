@@ -23,6 +23,7 @@ public interface IProductRepository
     Task<Result<PagedResult<Product>>> GetLowStockProductsAsync( PagedRequest request, int threshold = 10, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<Product>>> SearchProductsAsync( PagedRequest request, string searchTerm, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<Product>>> GetProductsByPriceRangeAsync( PagedRequest request, decimal minPrice, decimal maxPrice, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<Product>>> GetProductsByTagNameAsync(PagedRequest request, string tagName, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateStockAsync(Guid productId, int quantity, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateStatusAsync(Guid productId, short status, CancellationToken cancellationToken = default);
 }

@@ -118,7 +118,8 @@ public class CatalogProfile : Profile
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
         // Product Image mappings
-        CreateMap<ProductImage, ProductImageDto>();
+        CreateMap<ProductImage, ProductImageDto>()
+            .ForMember(dest => dest.ProductImageId, opt => opt.MapFrom(src => src.ImageId));
 
         CreateMap<CreateProductImageRequest, ProductImage>()
             .ForMember(dest => dest.ImageId, opt => opt.MapFrom(src => Guid.NewGuid()))

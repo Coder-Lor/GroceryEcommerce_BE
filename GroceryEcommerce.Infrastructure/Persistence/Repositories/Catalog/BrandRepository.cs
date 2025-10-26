@@ -156,6 +156,21 @@ public class BrandRepository(
         return query.OrderBy(BrandFields.Name.Ascending());   
     }
 
+    protected override EntityField2? GetPrimaryKeyField()
+    {
+        return BrandFields.BrandId;
+    }
+
+    protected override object GetEntityId(BrandEntity entity, EntityField2 primaryKeyField)
+    {
+        return entity.BrandId;
+    }
+
+    protected override IPredicate CreateIdFilter(EntityField2 primaryKeyField, List<object> ids)
+    {
+        return new PredicateExpression(primaryKeyField.In(ids));
+    }
+
     protected override async Task<IList<BrandEntity>> FetchEntitiesAsync(EntityQuery<BrandEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
     {
         var entities = new EntityCollection<BrandEntity>();

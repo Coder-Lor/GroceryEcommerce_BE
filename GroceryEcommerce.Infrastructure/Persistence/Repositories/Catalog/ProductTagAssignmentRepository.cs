@@ -92,6 +92,21 @@ public class ProductTagAssignmentRepository(
         return entities;
     }
 
+    protected override EntityField2? GetPrimaryKeyField()
+    {
+        return ProductTagAssignmentFields.ProductId;
+    }
+
+    protected override object GetEntityId(ProductTagAssignmentEntity entity, EntityField2 primaryKeyField)
+    {
+        return entity.ProductId;
+    }
+
+    protected override IPredicate CreateIdFilter(EntityField2 primaryKeyField, List<object> ids)
+    {
+        return new PredicateExpression(primaryKeyField.In(ids));
+    }
+
     public async Task<Result<ProductTagAssignment?>> GetByIdAsync(Guid productId, Guid tagId, CancellationToken cancellationToken = default)
     {
         if (productId == Guid.Empty || tagId == Guid.Empty) {

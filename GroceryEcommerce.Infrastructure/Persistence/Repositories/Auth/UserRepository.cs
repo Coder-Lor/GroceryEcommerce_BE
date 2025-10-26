@@ -212,7 +212,22 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
             await adapter.FetchQueryAsync(query, entitties, cancellationToken);
             return entitties;
         }
-        
+
+        protected override EntityField2? GetPrimaryKeyField()
+        {
+            return UserFields.UserId;
+        }
+
+        protected override object GetEntityId(UserEntity entity, EntityField2 primaryKeyField)
+        {
+            return entity.UserId;
+        }
+
+        protected override IPredicate CreateIdFilter(EntityField2 primaryKeyField, List<object> ids)
+        {
+            return new PredicateExpression(primaryKeyField.In(ids));
+        }
+
         public async Task<Result<bool>> AddAsync(User user, CancellationToken cancellationToken = default) {
             try {
 

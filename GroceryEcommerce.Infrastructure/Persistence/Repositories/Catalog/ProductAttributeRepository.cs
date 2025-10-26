@@ -113,6 +113,21 @@ public class ProductAttributeRepository(
         return entities;
     }
 
+    protected override EntityField2? GetPrimaryKeyField()
+    {
+        return ProductAttributeFields.AttributeId;
+    }
+
+    protected override object GetEntityId(ProductAttributeEntity entity, EntityField2 primaryKeyField)
+    {
+        return entity.AttributeId;
+    }
+
+    protected override IPredicate CreateIdFilter(EntityField2 primaryKeyField, List<object> ids)
+    {
+        return new PredicateExpression(primaryKeyField.In(ids));
+    }
+
     public async Task<Result<ProductAttribute?>> GetByIdAsync(Guid attributeId, CancellationToken cancellationToken = default)
     {
         if (attributeId == Guid.Empty) {

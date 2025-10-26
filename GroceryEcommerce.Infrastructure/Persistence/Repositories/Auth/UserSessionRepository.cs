@@ -118,6 +118,21 @@ public class UserSessionRepository(DataAccessAdapter scopedAdapter, IUnitOfWorkS
         return entities;
     }
 
+    protected override EntityField2? GetPrimaryKeyField()
+    {
+        return UserSessionFields.SessionId;
+    }
+
+    protected override object GetEntityId(UserSessionEntity entity, EntityField2 primaryKeyField)
+    {
+        return entity.SessionId;
+    }
+
+    protected override IPredicate CreateIdFilter(EntityField2 primaryKeyField, List<object> ids)
+    {
+        return new PredicateExpression(primaryKeyField.In(ids));
+    }
+
     public async Task<Result<UserSession?>> GetByIdAsync(Guid sessionId, CancellationToken cancellationToken = default)
     {
         try
