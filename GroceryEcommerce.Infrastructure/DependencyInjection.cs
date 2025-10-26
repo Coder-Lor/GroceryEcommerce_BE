@@ -65,6 +65,16 @@ public static class DependencyInjection
             return new RefreshTokenRepository(adapter, unitOfWorkService, mapper, logger);
         });
         
+        services.AddScoped<IAuditLogRepository>(provider =>
+        {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<AuditLogRepository>>();
+            return new AuditLogRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+        
         services.AddScoped<ICartRepository>(provider =>
         {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
