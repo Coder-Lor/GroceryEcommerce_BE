@@ -3,7 +3,6 @@ using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Interfaces.Repositories.Common;
 using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.DatabaseSpecific;
-using GroceryEcommerce.EntityClasses;
 using GroceryEcommerce.FactoryClasses;
 using GroceryEcommerce.HelperClasses;
 using Microsoft.Extensions.Logging;
