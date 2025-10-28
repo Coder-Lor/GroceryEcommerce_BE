@@ -1,8 +1,9 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using GroceryEcommerce.Application.Common;
-using GroceryEcommerce.Application.Features.Brand.Commands;
-using GroceryEcommerce.Application.Features.Brand.Queries;
+using GroceryEcommerce.Application.Features.Catalog.Brand.Commands;
+using GroceryEcommerce.Application.Features.Catalog.Brand.Queries;
+
 
 namespace GroceryEcommerce.API.Controllers;
 

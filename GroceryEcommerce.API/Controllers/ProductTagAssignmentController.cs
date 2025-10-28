@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using GroceryEcommerce.Application.Features.ProductTagAssignment.Commands;
-using GroceryEcommerce.Application.Features.ProductTagAssignment.Queries;
+using GroceryEcommerce.Application.Features.Catalog.ProductTagAssignment.Commands;
+using GroceryEcommerce.Application.Features.Catalog.ProductTagAssignment.Queries;
 
 namespace GroceryEcommerce.API.Controllers;
 

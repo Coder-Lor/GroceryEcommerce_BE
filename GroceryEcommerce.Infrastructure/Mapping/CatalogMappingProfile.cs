@@ -18,7 +18,7 @@ public class CatalogMappingProfile : Profile
             .ForMember(dest => dest.ShoppingCartItems, opt => opt.Ignore())
             .ForMember(dest => dest.WishlistItems, opt => opt.Ignore())
             .ForMember(dest => dest.ProductAttributeValues, opt => opt.Ignore())
-            .ForMember(dest => dest.ProductImages, opt => opt.Ignore())
+            .ForMember(dest => dest.ProductImages, opt => opt.Ignore()) 
             .ForMember(dest => dest.ProductQuestions, opt => opt.Ignore())
             .ForMember(dest => dest.ProductTagAssignments, opt => opt.Ignore())
             .ForMember(dest => dest.ProductVariants, opt => opt.Ignore())

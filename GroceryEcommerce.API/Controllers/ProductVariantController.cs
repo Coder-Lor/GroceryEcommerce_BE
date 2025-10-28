@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using GroceryEcommerce.Application.Features.ProductVariant.Commands;
-using GroceryEcommerce.Application.Features.ProductVariant.Queries;
+using GroceryEcommerce.Application.Features.Catalog.ProductVariant.Commands;
+using GroceryEcommerce.Application.Features.Catalog.ProductVariant.Queries;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Models.Catalog;
 

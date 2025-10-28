@@ -7,6 +7,7 @@ using GroceryEcommerce.DatabaseSpecific;
 using GroceryEcommerce.Infrastructure.Mapping;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth;
+using GroceryEcommerce.Infrastructure.Persistence.Repositories.Cart;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
 using GroceryEcommerce.Infrastructure.Services;
 using GroceryEcommerce.Infrastructure.Settings;

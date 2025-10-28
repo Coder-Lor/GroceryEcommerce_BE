@@ -7,7 +7,7 @@ public interface IShoppingCartItemRepository
 {
     // Basic CRUD operations
     Task<Result<ShoppingCartItem?>> GetByIdAsync(Guid cartItemId, CancellationToken cancellationToken = default);
-    Task<Result<List<ShoppingCartItem>>> GetByCartIdAsync(Guid cartId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<ShoppingCartItem>>> GetByCartIdAsync(PagedRequest request, Guid cartId, CancellationToken cancellationToken = default);
     Task<Result<ShoppingCartItem?>> GetByProductAsync(Guid cartId, Guid productId, Guid? variantId = null, CancellationToken cancellationToken = default);
     Task<Result<ShoppingCartItem>> CreateAsync(ShoppingCartItem item, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateAsync(ShoppingCartItem item, CancellationToken cancellationToken = default);

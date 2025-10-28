@@ -1,6 +1,6 @@
 using GroceryEcommerce.Application.Common;
-using GroceryEcommerce.Application.Features.ProductImage.Commands;
-using GroceryEcommerce.Application.Features.ProductImage.Queries;
+using GroceryEcommerce.Application.Features.Catalog.ProductImage.Commands;
+using GroceryEcommerce.Application.Features.Catalog.ProductImage.Queries;
 using GroceryEcommerce.Application.Models.Catalog;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

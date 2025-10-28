@@ -1,6 +1,6 @@
 using AutoMapper;
 using GroceryEcommerce.Application.Common;
-using GroceryEcommerce.Application.Features.Authentication.Commands;
+using GroceryEcommerce.Application.Features.Auth.Authentication.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
