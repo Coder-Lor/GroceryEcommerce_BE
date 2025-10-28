@@ -484,3 +484,4 @@ $RECYCLE.BIN/
 *.swp
 
 **appsetting*.json
+/aspnet-dev-cert.crt

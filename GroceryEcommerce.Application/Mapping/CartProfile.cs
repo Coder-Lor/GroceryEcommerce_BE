@@ -1,6 +1,8 @@
 using AutoMapper;
 using GroceryEcommerce.Application.Models.Cart;
 using GroceryEcommerce.Domain.Entities.Cart;
+using GroceryEcommerce.Application.Features.Cart.ShoppingCart.Commands;
+using GroceryEcommerce.Application.Features.Cart.Wishlist.Commands;
 
 namespace GroceryEcommerce.Application.Mapping;
 
@@ -8,6 +10,16 @@ public class CartProfile : Profile
 {
     public CartProfile()
     {
+        // Request DTO to Command mappings
+        CreateMap<AddToCartRequest, AddShoppingCartItemCommand>()
+            .ConstructUsing(src => new AddShoppingCartItemCommand(src.UserId, src.ProductId, src.ProductVariantId, src.Quantity));
+
+        CreateMap<UpdateQuantityRequest, UpdateShoppingCartItemQuantityCommand>()
+            .ConstructUsing(src => new UpdateShoppingCartItemQuantityCommand(Guid.Empty, src.Quantity)); // itemId will be set from route
+
+        CreateMap<AddToWishlistRequest, AddWishlistItemCommand>()
+            .ConstructUsing(src => new AddWishlistItemCommand(Guid.Empty, src.ProductId, src.VariantId)); // userId will be set from route
+
         // Shopping Cart mappings
         CreateMap<ShoppingCart, ShoppingCartDto>()
             .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.ShoppingCartItems))

@@ -26,3 +26,9 @@ public class WishlistItemDto
     public string? VariantName { get; set; }
     public DateTime CreatedAt { get; set; }
 }
+
+public class AddToWishlistRequest
+{
+    public Guid ProductId { get; set; }
+    public Guid? VariantId { get; set; }
+}
