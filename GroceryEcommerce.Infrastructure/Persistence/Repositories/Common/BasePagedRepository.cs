@@ -195,15 +195,15 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
                 return Result<PagedResult<TDomainEntity>>.Failure(validation?.ErrorMessage ?? "Invalid paged request");
             }
 
-            // Generate cache key
-            // var cacheKey = request.GenerateCacheKey(typeof(TDomainEntity).Name);
-            // var cached = await CacheService.GetAsync<PagedResult<TDomainEntity>>(cacheKey, cancellationToken);
-            // if (cached != null)
-            // {
-            //     Logger.LogInformation("Paged {EntityName} fetched from cache: Page {Page}, PageSize {PageSize}", 
-            //         typeof(TDomainEntity).Name, request.Page, request.PageSize);
-            //     return Result<PagedResult<TDomainEntity>>.Success(cached);
-            // }
+            Generate cache key
+            var cacheKey = request.GenerateCacheKey(typeof(TDomainEntity).Name);
+            var cached = await CacheService.GetAsync<PagedResult<TDomainEntity>>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                Logger.LogInformation("Paged {EntityName} fetched from cache: Page {Page}, PageSize {PageSize}", 
+                    typeof(TDomainEntity).Name, request.Page, request.PageSize);
+                return Result<PagedResult<TDomainEntity>>.Success(cached);
+            }
 
             var qf = new QueryFactory();
             var query = qf.Create<TEntity>();
