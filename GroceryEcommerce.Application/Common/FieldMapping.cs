@@ -11,17 +11,19 @@ public class FieldMapping
     public bool IsFilterable { get; set; } = true;
 }
 
-public class FilterCriteria : IValidatableObject
+public class FilterCriteria
 {
     public string FieldName { get; set; } = string.Empty;
-    public object? Value { get; set; }
+    public string Value { get; set; } = null!;
     public FilterOperator Operator { get; set; } = FilterOperator.Equals;
+    public FilterCriteria()
+    {
 
-    public FilterCriteria() {}
-    public FilterCriteria(string fieldName, object? value, FilterOperator op = FilterOperator.Equals)
+    }
+    public FilterCriteria(string fieldName, object value, FilterOperator op = FilterOperator.Equals)
     {
         FieldName = fieldName ?? throw new ArgumentNullException(nameof(fieldName));
-        Value = value;
+        Value = value.ToString() ?? throw new ArgumentNullException(nameof(value));
         Operator = op;
     }
 
