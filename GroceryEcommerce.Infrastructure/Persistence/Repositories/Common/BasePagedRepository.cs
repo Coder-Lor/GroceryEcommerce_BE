@@ -268,7 +268,7 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
     protected virtual EntityQuery<TEntity> ApplyFilter(EntityQuery<TEntity> query, FilterCriteria filter)
     {
         var fieldMap = GetFieldMap();
-        if (!fieldMap.TryGetValue(filter.FieldName, out var field)) return query;
+        if (!fieldMap.TryGetValue(filter.FieldName.ToLower(), out var field)) return query;
         
         return filter.Operator switch
         {
