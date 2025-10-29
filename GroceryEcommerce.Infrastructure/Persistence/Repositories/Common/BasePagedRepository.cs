@@ -195,7 +195,7 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
                 return Result<PagedResult<TDomainEntity>>.Failure(validation?.ErrorMessage ?? "Invalid paged request");
             }
 
-            Generate cache key
+            // Generate cache key
             var cacheKey = request.GenerateCacheKey(typeof(TDomainEntity).Name);
             var cached = await CacheService.GetAsync<PagedResult<TDomainEntity>>(cacheKey, cancellationToken);
             if (cached != null)
