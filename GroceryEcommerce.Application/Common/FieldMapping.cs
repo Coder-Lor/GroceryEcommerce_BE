@@ -12,13 +12,16 @@ public class FieldMapping
 public class FilterCriteria
 {
     public string FieldName { get; set; } = string.Empty;
-    public object Value { get; set; } = null!;
+    public string Value { get; set; } = null!;
     public FilterOperator Operator { get; set; } = FilterOperator.Equals;
+    public FilterCriteria()
+    {
 
+    }
     public FilterCriteria(string fieldName, object value, FilterOperator op = FilterOperator.Equals)
     {
         FieldName = fieldName ?? throw new ArgumentNullException(nameof(fieldName));
-        Value = value ?? throw new ArgumentNullException(nameof(value));
+        Value = value.ToString() ?? throw new ArgumentNullException(nameof(value));
         Operator = op;
     }
 }
