@@ -35,6 +35,7 @@ public class CreateProductVariantCommandHandler(
             MinStockLevel = request.MinStockLevel,
             Weight = request.Weight,
             Dimensions = request.Dimensions,
+            ImageUrl = request.ImageUrl,
             Status = request.Status
         };
 

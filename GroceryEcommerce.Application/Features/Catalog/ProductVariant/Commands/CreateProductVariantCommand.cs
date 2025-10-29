@@ -14,5 +14,6 @@ public record CreateProductVariantCommand(
     int MinStockLevel,
     decimal? Weight,
     string? Dimensions,
+    string? ImageUrl,
     short Status = 1
 ) : IRequest<Result<CreateProductVariantResponse>>;

@@ -129,6 +129,7 @@ public class CatalogProfile : Profile
 
         // Product Variant mappings
         CreateMap<ProductVariant, ProductVariantDto>()
+            .ForMember(dest => dest.ProductVariantId, opt => opt.MapFrom(src => src.VariantId))
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.VariantAttributeValues));
 
         CreateMap<CreateProductVariantRequest, ProductVariant>()

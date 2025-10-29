@@ -12,6 +12,7 @@ public record ProductVariantDto
     public int MinStockLevel { get; set; }
     public decimal? Weight { get; set; }
     public string? Dimensions { get; set; }
+    public string? ImageUrl { get; set; }
     public short Status { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
@@ -44,6 +45,7 @@ public class UpdateProductVariantRequest
     public int MinStockLevel { get; set; }
     public decimal? Weight { get; set; }
     public string? Dimensions { get; set; }
+    public string? ImageUrl { get; set; }
     public short Status { get; set; }
 }
 

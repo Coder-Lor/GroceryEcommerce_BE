@@ -14,5 +14,6 @@ public record UpdateProductVariantCommand(
     int MinStockLevel,
     decimal? Weight,
     string? Dimensions,
+    string? ImageUrl,
     short Status
 ) : IRequest<Result<UpdateProductVariantResponse>>;

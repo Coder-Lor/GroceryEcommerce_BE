@@ -30,6 +30,7 @@ public class UpdateProductVariantCommandHandler(
         existing.Data.DiscountPrice = request.DiscountPrice;
         existing.Data.StockQuantity = request.StockQuantity;
         existing.Data.Weight = request.Weight;
+        existing.Data.ImageUrl = request.ImageUrl;
         existing.Data.Status = request.Status;
         existing.Data.UpdatedAt = DateTime.UtcNow;
 
