@@ -53,3 +53,8 @@ public class CartSummaryDto
     public bool IsValid { get; set; }
     public List<string> ValidationErrors { get; set; } = new();
 }
+
+public class UpdateQuantityRequest
+{
+    public int Quantity { get; set; }
+}

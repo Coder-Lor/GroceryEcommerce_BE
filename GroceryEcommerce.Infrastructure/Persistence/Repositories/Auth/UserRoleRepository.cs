@@ -97,6 +97,21 @@ public class UserRoleRepository(DataAccessAdapter scopedAdapter, IUnitOfWorkServ
         return entities;
     }
 
+    protected override EntityField2? GetPrimaryKeyField()
+    {
+        return UserRoleFields.RoleId;
+    }
+
+    protected override object GetEntityId(UserRoleEntity entity, EntityField2 primaryKeyField)
+    {
+        return entity.RoleId;
+    }
+
+    protected override IPredicate CreateIdFilter(EntityField2 primaryKeyField, List<object> ids)
+    {
+        return new PredicateExpression(primaryKeyField.In(ids));
+    }
+
     public Task<Result<UserRole?>> GetByIdAsync(Guid roleId, CancellationToken cancellationToken = default)
     {
         if (roleId == Guid.Empty)

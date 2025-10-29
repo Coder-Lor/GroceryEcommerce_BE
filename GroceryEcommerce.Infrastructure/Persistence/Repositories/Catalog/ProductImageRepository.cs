@@ -110,6 +110,21 @@ public class ProductImageRepository(
         return query.OrderBy(ProductImageFields.DisplayOrder.Ascending());
     }
 
+    protected override EntityField2? GetPrimaryKeyField()
+    {
+        return ProductImageFields.ImageId;
+    }
+
+    protected override object GetEntityId(ProductImageEntity entity, EntityField2 primaryKeyField)
+    {
+        return entity.ImageId;
+    }
+
+    protected override IPredicate CreateIdFilter(EntityField2 primaryKeyField, List<object> ids)
+    {
+        return new PredicateExpression(primaryKeyField.In(ids));
+    }
+
     protected override async Task<IList<ProductImageEntity>> FetchEntitiesAsync(EntityQuery<ProductImageEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
     {
         var entities = new EntityCollection<ProductImageEntity>();

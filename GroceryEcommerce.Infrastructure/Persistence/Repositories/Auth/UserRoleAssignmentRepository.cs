@@ -112,6 +112,21 @@ public class UserRoleAssignmentRepository(
         return entities;
     }
 
+    protected override EntityField2? GetPrimaryKeyField()
+    {
+        return UserRoleAssignmentFields.UserId;
+    }
+
+    protected override object GetEntityId(UserRoleAssignmentEntity entity, EntityField2 primaryKeyField)
+    {
+        return entity.UserId;
+    }
+
+    protected override IPredicate CreateIdFilter(EntityField2 primaryKeyField, List<object> ids)
+    {
+        return new PredicateExpression(primaryKeyField.In(ids));
+    }
+
     public async Task<Result<UserRoleAssignment?>> GetByIdAsync(Guid userId, Guid roleId, CancellationToken cancellationToken = default)
     {
         try

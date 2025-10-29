@@ -8,11 +8,6 @@ namespace GroceryEcommerce.API.Controllers;
 [Route("api/[controller]")]
 public class ImageController(IAzureBlobStorageService blobService) : ControllerBase
 {
-    /// <summary>
-    /// Upload ảnh mới lên Azure Blob Storage
-    /// </summary>
-    /// <param name="file">File ảnh cần upload</param>
-    /// <returns>URL của ảnh đã upload</returns>
     [HttpPost("upload")]
     [Consumes("multipart/form-data")]
     public async Task<ActionResult<Result<string>>> UploadImage(IFormFile file)
@@ -49,13 +44,7 @@ public class ImageController(IAzureBlobStorageService blobService) : ControllerB
             return StatusCode(500, Result<string>.Failure($"Failed to upload image: {ex.Message}"));
         }
     }
-
-    /// <summary>
-    /// Lấy URL ảnh với Stored Access Policy (có thể truy cập public)
-    /// </summary>
-    /// <param name="blobName">Tên blob của ảnh</param>
-    /// <param name="policyName">Tên policy (mặc định: readonly-policy)</param>
-    /// <returns>URL ảnh với SAS token</returns>
+    
     [HttpGet("{blobName}/url")]
     public async Task<ActionResult<Result<string>>> GetImageUrl(string blobName, [FromQuery] string policyName = "readonly-policy")
     {
@@ -74,11 +63,6 @@ public class ImageController(IAzureBlobStorageService blobService) : ControllerB
         }
     }
 
-    /// <summary>
-    /// Lấy URL container với Stored Access Policy (có thể cache lâu dài)
-    /// </summary>
-    /// <param name="policyName">Tên policy (mặc định: readonly-policy)</param>
-    /// <returns>URL container với SAS token</returns>
     [HttpGet("container/url")]
     public async Task<ActionResult<Result<string>>> GetContainerUrl([FromQuery] string policyName = "readonly-policy")
     {
@@ -93,12 +77,7 @@ public class ImageController(IAzureBlobStorageService blobService) : ControllerB
         }
     }
 
-    /// <summary>
-    /// Cập nhật ảnh (thay thế ảnh cũ bằng ảnh mới)
-    /// </summary>
-    /// <param name="blobName">Tên blob của ảnh cần thay thế</param>
-    /// <param name="file">File ảnh mới</param>
-    /// <returns>URL của ảnh mới</returns>
+
     [HttpPut("{blobName}")]
     [Consumes("multipart/form-data")]
     public async Task<ActionResult<Result<string>>> UpdateImage(string blobName, IFormFile file)
@@ -109,8 +88,7 @@ public class ImageController(IAzureBlobStorageService blobService) : ControllerB
             {
                 return BadRequest(Result<string>.Failure("No file uploaded"));
             }
-
-            // Kiểm tra định dạng file
+            
             var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
             var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
             
@@ -118,14 +96,12 @@ public class ImageController(IAzureBlobStorageService blobService) : ControllerB
             {
                 return BadRequest(Result<string>.Failure("Invalid file format. Only JPG, JPEG, PNG, GIF, WEBP are allowed"));
             }
-
-            // Kiểm tra kích thước file (max 10MB)
+            
             if (file.Length > 10 * 1024 * 1024)
             {
                 return BadRequest(Result<string>.Failure("File size too large. Maximum size is 10MB"));
             }
-
-            // Kiểm tra ảnh cũ có tồn tại không
+            
             var exists = await blobService.ImageExistsAsync(blobName);
             if (!exists)
             {
@@ -142,12 +118,7 @@ public class ImageController(IAzureBlobStorageService blobService) : ControllerB
             return StatusCode(500, Result<string>.Failure($"Failed to update image: {ex.Message}"));
         }
     }
-
-    /// <summary>
-    /// Xóa ảnh
-    /// </summary>
-    /// <param name="blobName">Tên blob của ảnh cần xóa</param>
-    /// <returns>Kết quả xóa ảnh</returns>
+    
     [HttpDelete("{blobName}")]
     public async Task<ActionResult<Result<bool>>> DeleteImage(string blobName)
     {
@@ -169,12 +140,7 @@ public class ImageController(IAzureBlobStorageService blobService) : ControllerB
             return StatusCode(500, Result<bool>.Failure($"Failed to delete image: {ex.Message}"));
         }
     }
-
-    /// <summary>
-    /// Kiểm tra ảnh có tồn tại không
-    /// </summary>
-    /// <param name="blobName">Tên blob của ảnh</param>
-    /// <returns>Trạng thái tồn tại của ảnh</returns>
+    
     [HttpGet("{blobName}/exists")]
     public async Task<ActionResult<Result<bool>>> ImageExists(string blobName)
     {
@@ -188,12 +154,7 @@ public class ImageController(IAzureBlobStorageService blobService) : ControllerB
             return StatusCode(500, Result<bool>.Failure($"Failed to check image existence: {ex.Message}"));
         }
     }
-
-    /// <summary>
-    /// Lấy metadata của ảnh
-    /// </summary>
-    /// <param name="blobName">Tên blob của ảnh</param>
-    /// <returns>Metadata của ảnh</returns>
+    
     [HttpGet("{blobName}/metadata")]
     public async Task<ActionResult<Result<object>>> GetImageMetadata(string blobName)
     {
@@ -211,12 +172,7 @@ public class ImageController(IAzureBlobStorageService blobService) : ControllerB
             return StatusCode(500, Result<object>.Failure($"Failed to get image metadata: {ex.Message}"));
         }
     }
-
-    /// <summary>
-    /// Lấy danh sách tất cả ảnh trong container
-    /// </summary>
-    /// <param name="prefix">Tiền tố để lọc ảnh (tùy chọn)</param>
-    /// <returns>Danh sách tên các ảnh</returns>
+    
     [HttpGet("list")]
     public async Task<ActionResult<Result<List<string>>>> ListImages([FromQuery] string prefix = "")
     {
@@ -231,11 +187,6 @@ public class ImageController(IAzureBlobStorageService blobService) : ControllerB
         }
     }
 
-    /// <summary>
-    /// Upload nhiều ảnh cùng lúc
-    /// </summary>
-    /// <param name="files">Danh sách file ảnh</param>
-    /// <returns>Danh sách URL của các ảnh đã upload</returns>
     [HttpPost("upload-multiple")]
     [Consumes("multipart/form-data")]
     public async Task<ActionResult<Result<List<string>>>> UploadMultipleImages(List<IFormFile> files)

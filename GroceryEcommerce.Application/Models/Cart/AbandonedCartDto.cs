@@ -14,3 +14,8 @@ public class AbandonedCartDto
     public bool IsRecovered { get; set; }
     public List<ShoppingCartItemDto> Items { get; set; } = new();
 }
+
+public class MarkCartsNotifiedRequest
+{
+    public List<Guid> AbandonedCartIds { get; set; } = new();
+}

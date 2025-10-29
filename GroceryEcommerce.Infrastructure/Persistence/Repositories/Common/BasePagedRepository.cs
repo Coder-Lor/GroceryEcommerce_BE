@@ -4,6 +4,7 @@ using GroceryEcommerce.Application.Interfaces.Repositories.Common;
 using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.DatabaseSpecific;
 using GroceryEcommerce.FactoryClasses;
+using GroceryEcommerce.HelperClasses;
 using Microsoft.Extensions.Logging;
 using SD.LLBLGen.Pro.QuerySpec;
 using SD.LLBLGen.Pro.QuerySpec.Adapter;
@@ -58,6 +59,22 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
             request.WithSorting(defaultSortField, defaultSortDirection);
         }
         return await GetPagedAsync(request, cancellationToken);
+    }
+
+    protected async Task<Result<PagedResult<TDomainEntity>>> GetPagedConfiguredAsync(
+        PagedRequest request,
+        Action<PagedRequest> configure,
+        PrefetchPath2? prefetchPath,
+        string? defaultSortField = null,
+        SortDirection defaultSortDirection = SortDirection.Ascending,
+        CancellationToken cancellationToken = default)
+    {
+        configure(request);
+        if (!request.HasSorting && !string.IsNullOrWhiteSpace(defaultSortField))
+        {
+            request.WithSorting(defaultSortField, defaultSortDirection);
+        }
+        return await GetPagedAsync(request, prefetchPath, cancellationToken);
     }
 
     protected async Task<Result<TDomainEntity?>> GetSingleAsync<TValue>(
@@ -160,6 +177,14 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
         PagedRequest request,
         CancellationToken cancellationToken = default)
     {
+        return await GetPagedAsync(request, null, cancellationToken);
+    }
+
+    public virtual async Task<Result<PagedResult<TDomainEntity>>> GetPagedAsync(
+        PagedRequest request,
+        PrefetchPath2? prefetchPath,
+        CancellationToken cancellationToken = default)
+    {
         try
         {
             request.AvailableFields = GetSearchableFields();
@@ -203,7 +228,7 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
 
             // Get total count - Fetch từ count query
             var adapter = GetAdapter();
-            var countEntities = await FetchEntitiesAsync(countQuery, adapter, cancellationToken);
+            var countEntities = await FetchEntitiesAsync(countQuery, adapter, null, cancellationToken);
             var totalCount = countEntities.Count;
             
             // Apply sorting
@@ -219,14 +244,14 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
             // Apply paging
             query = query.Page(request.Page, request.PageSize);
 
-            // Fetch data
-            var entities = await FetchEntitiesAsync(query, adapter, cancellationToken);
+            // Fetch data với PrefetchPath nếu có
+            var entities = await FetchEntitiesAsync(query, adapter, prefetchPath, cancellationToken);
             var domainEntities = Mapper.Map<List<TDomainEntity>>(entities);
 
             var result = new PagedResult<TDomainEntity>(domainEntities, totalCount, request.Page, request.PageSize);
 
             // Cache result
-            await CacheService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(15), cancellationToken);
+            // await CacheService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(15), cancellationToken);
 
             Logger.LogInformation("Paged {EntityName} fetched: Page {Page}, PageSize {PageSize}, Total {Total}", 
                 typeof(TDomainEntity).Name, request.Page, request.PageSize, totalCount);
@@ -269,5 +294,67 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
     protected abstract EntityQuery<TEntity> ApplySearch(EntityQuery<TEntity> query, string searchTerm);
     protected abstract EntityQuery<TEntity> ApplySorting(EntityQuery<TEntity> query, string? sortBy, SortDirection sortDirection);
     protected abstract EntityQuery<TEntity> ApplyDefaultSorting(EntityQuery<TEntity> query);
-    protected abstract Task<IList<TEntity>> FetchEntitiesAsync(EntityQuery<TEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken);
+    
+    protected virtual Task<IList<TEntity>> FetchEntitiesAsync(EntityQuery<TEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
+    {
+        return FetchEntitiesAsync(query, adapter, null, cancellationToken);
+    }
+    
+    protected virtual async Task<IList<TEntity>> FetchEntitiesAsync(EntityQuery<TEntity> query, DataAccessAdapter adapter, PrefetchPath2? prefetchPath, CancellationToken cancellationToken)
+    {
+        var entities = new EntityCollection<TEntity>();
+        
+        // Nếu không có PrefetchPath, chỉ fetch đơn giản với QuerySpec
+        if (prefetchPath == null)
+        {
+            await adapter.FetchQueryAsync(query, entities, cancellationToken);
+            return entities;
+        }
+        
+        // Nếu có PrefetchPath, fetch một lần với PrefetchPath
+        // Fetch query trước để lấy IDs
+        var tempEntities = new EntityCollection<TEntity>();
+        await adapter.FetchQueryAsync(query, tempEntities, cancellationToken);
+        
+        if (tempEntities.Count == 0)
+        {
+            return entities;
+        }
+        
+        // Lấy primary key field để filter
+        var primaryKeyField = GetPrimaryKeyField();
+        if (primaryKeyField is null)
+        {
+            // Fallback: không có PrefetchPath
+            await adapter.FetchQueryAsync(query, entities, cancellationToken);
+            return entities;
+        }
+        
+        // Thu thập IDs
+        var ids = tempEntities.Select(e => GetEntityId(e, primaryKeyField)).ToList();
+        
+        // Fetch đầy đủ với PrefetchPath
+        var prefetchQuery = new QueryParameters
+        {
+            CollectionToFetch = entities,
+            FilterToUse = CreateIdFilter(primaryKeyField, ids),
+            PrefetchPathToUse = prefetchPath
+        };
+        
+        await adapter.FetchEntityCollectionAsync(prefetchQuery, cancellationToken);
+        
+        // Sort theo thứ tự ban đầu
+        var entityDict = entities.ToDictionary(e => GetEntityId(e, primaryKeyField));
+        var sortedEntities = ids
+            .Where(id => entityDict.ContainsKey(id))
+            .Select(id => entityDict[id])
+            .ToList();
+        
+        return sortedEntities;
+    }
+    
+    // Helper methods để support generic primary key
+    protected abstract EntityField2? GetPrimaryKeyField();
+    protected abstract object GetEntityId(TEntity entity, EntityField2 primaryKeyField);
+    protected abstract IPredicate CreateIdFilter(EntityField2 primaryKeyField, List<object> ids);
 }

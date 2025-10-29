@@ -7,6 +7,7 @@ using GroceryEcommerce.DatabaseSpecific;
 using GroceryEcommerce.Infrastructure.Mapping;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth;
+using GroceryEcommerce.Infrastructure.Persistence.Repositories.Cart;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
 using GroceryEcommerce.Infrastructure.Services;
 using GroceryEcommerce.Infrastructure.Settings;
@@ -186,7 +187,95 @@ public static class DependencyInjection
             return new AuditLogRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
+        services.AddScoped<IUserAddressRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<UserAddressRepository>>();
+            return new UserAddressRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
 
+        services.AddScoped<IUserRoleAssignmentRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<UserRoleAssignmentRepository>>();
+            return new UserRoleAssignmentRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IUserRoleRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<UserRoleRepository>>();
+            return new UserRoleRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IUserSessionRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<UserSessionRepository>>();
+            return new UserSessionRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IAbandonedCartRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<AbandonedCartRepository>>();
+            return new AbandonedCartRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+        
+        services.AddScoped<ICartRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<CartRepository>>();
+            return new CartRepository(adapter, mapper, unitOfWorkService, cacheService, logger);
+        });
+
+        services.AddScoped<IShoppingCartItemRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<ShoppingCartItemRepository>>();
+            return new ShoppingCartItemRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IShipmentItemRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<ShipmentItemRepository>>();
+            return new ShipmentItemRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IWishlistItemRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<WishlistItemRepository>>();
+            return new WishlistItemRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+        
+        services.AddScoped<IWishlistRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<WishlistRepository>>();
+            return new WishlistRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
         // Register existing services
         services.AddMemoryCache();
         services.AddHttpContextAccessor();

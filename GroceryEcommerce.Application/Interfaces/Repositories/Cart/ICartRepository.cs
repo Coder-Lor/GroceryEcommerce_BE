@@ -13,7 +13,7 @@ public interface ICartRepository
     Task<Result<bool>> ClearShoppingCartAsync(Guid userId, CancellationToken cancellationToken = default);
 
     // Shopping Cart Item operations
-    Task<Result<List<ShoppingCartItem>>> GetShoppingCartItemsAsync(Guid cartId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<ShoppingCartItem>>> GetShoppingCartItemsAsync(PagedRequest request, Guid cartId, CancellationToken cancellationToken = default);
     Task<Result<ShoppingCartItem?>> GetShoppingCartItemByIdAsync(Guid itemId, CancellationToken cancellationToken = default);
     Task<Result<ShoppingCartItem?>> GetShoppingCartItemByProductAsync(Guid cartId, Guid productId, Guid? variantId = null, CancellationToken cancellationToken = default);
     Task<Result<ShoppingCartItem>> AddShoppingCartItemAsync(ShoppingCartItem item, CancellationToken cancellationToken = default);
@@ -29,7 +29,7 @@ public interface ICartRepository
     Task<Result<bool>> DeleteWishlistAsync(Guid wishlistId, CancellationToken cancellationToken = default);
 
     // Wishlist Item operations
-    Task<Result<List<WishlistItem>>> GetWishlistItemsAsync(Guid wishlistId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<WishlistItem>>> GetWishlistItemsAsync(PagedRequest request, Guid wishlistId, CancellationToken cancellationToken = default);
     Task<Result<WishlistItem?>> GetWishlistItemByIdAsync(Guid itemId, CancellationToken cancellationToken = default);
     Task<Result<WishlistItem?>> GetWishlistItemByProductAsync(Guid wishlistId, Guid productId, Guid? variantId = null, CancellationToken cancellationToken = default);
     Task<Result<WishlistItem>> AddWishlistItemAsync(WishlistItem item, CancellationToken cancellationToken = default);
@@ -38,12 +38,12 @@ public interface ICartRepository
     Task<Result<bool>> IsProductInWishlistAsync(Guid userId, Guid productId, Guid? variantId = null, CancellationToken cancellationToken = default);
 
     // Abandoned Cart operations
-    Task<Result<List<AbandonedCart>>> GetAbandonedCartsAsync(CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<AbandonedCart>>> GetAbandonedCartsAsync(PagedRequest request, CancellationToken cancellationToken = default);
     Task<Result<AbandonedCart?>> GetAbandonedCartByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
     Task<Result<AbandonedCart>> CreateAbandonedCartAsync(AbandonedCart abandonedCart, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateAbandonedCartAsync(AbandonedCart abandonedCart, CancellationToken cancellationToken = default);
     Task<Result<bool>> DeleteAbandonedCartAsync(Guid abandonedCartId, CancellationToken cancellationToken = default);
-    Task<Result<List<AbandonedCart>>> GetAbandonedCartsByDateRangeAsync(DateTime fromDate, DateTime toDate, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<AbandonedCart>>> GetAbandonedCartsByDateRangeAsync(PagedRequest request, DateTime fromDate, DateTime toDate, CancellationToken cancellationToken = default);
 
     // Cart calculations
     Task<Result<decimal>> CalculateCartTotalAsync(Guid cartId, CancellationToken cancellationToken = default);

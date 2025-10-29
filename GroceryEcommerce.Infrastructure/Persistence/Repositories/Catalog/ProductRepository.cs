@@ -5,6 +5,7 @@ using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.DatabaseSpecific;
 using GroceryEcommerce.Domain.Entities.Catalog;
 using GroceryEcommerce.EntityClasses;
+using GroceryEcommerce.FactoryClasses;
 using GroceryEcommerce.HelperClasses;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Common;
 using Microsoft.Extensions.Logging;
@@ -173,11 +174,38 @@ public class ProductRepository(
         return query.OrderBy(ProductFields.Name.Ascending());   
     }
 
-    protected override async Task<IList<ProductEntity>> FetchEntitiesAsync(EntityQuery<ProductEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
+
+    protected PrefetchPath2 BuildProductPrefetchPath()
     {
-        var entities = new EntityCollection<ProductEntity>();
-        await adapter.FetchQueryAsync(query, entities, cancellationToken);
-        return entities;
+        var prefetchPath = new PrefetchPath2(EntityType.ProductEntity);
+        
+        // Thêm prefetch cho ProductImages
+        prefetchPath.Add(ProductEntity.PrefetchPathProductImages);
+        
+        // Thêm prefetch cho ProductVariants
+        prefetchPath.Add(ProductEntity.PrefetchPathProductVariants);
+        
+        // Thêm prefetch cho ProductTagAssignments và nested ProductTag
+        var productTagAssignmentsPath = ProductEntity.PrefetchPathProductTagAssignments;
+        productTagAssignmentsPath.SubPath.Add(ProductTagAssignmentEntity.PrefetchPathProductTag);
+        prefetchPath.Add(productTagAssignmentsPath);
+        
+        return prefetchPath;
+    }
+
+    protected override EntityField2? GetPrimaryKeyField()
+    {
+        return ProductFields.ProductId;
+    }
+
+    protected override object GetEntityId(ProductEntity entity, EntityField2 primaryKeyField)
+    {
+        return entity.ProductId;
+    }
+
+    protected override IPredicate CreateIdFilter(EntityField2 primaryKeyField, List<object> ids)
+    {
+        return new PredicateExpression(primaryKeyField.In(ids));
     }
 
 
@@ -188,7 +216,42 @@ public class ProductRepository(
             logger.LogWarning("Product id is required");
             return Result<Product?>.Failure("Invalid product ID.");   
         }
-        return await GetSingleAsync(ProductFields.ProductId, productId, "Product", TimeSpan.FromHours(1), cancellationToken);
+        
+        try
+        {
+            var cacheKey = $"Product_{productId}";
+            var cached = await CacheService.GetAsync<Product>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                logger.LogInformation("Product fetched from cache by ID: {ProductId}", productId);
+                return Result<Product?>.Success(cached);
+            }
+
+            var adapter = GetAdapter();
+            var qf = new QueryFactory();
+            
+            // Prefetch ProductImages để có thể lấy danh sách ảnh và ảnh chính
+            var query = qf.Create<ProductEntity>()
+                .Where(ProductFields.ProductId == productId)
+                .WithPath(ProductEntity.PrefetchPathProductImages);
+                
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
+            if (entity == null)
+            {
+                logger.LogWarning("Product not found by ID: {ProductId}", productId);
+                return Result<Product?>.Failure("Product not found.");
+            }
+
+            var domainEntity = Mapper.Map<Product>(entity);
+            await CacheService.SetAsync(cacheKey, domainEntity, TimeSpan.FromHours(1), cancellationToken);
+            logger.LogInformation("Product fetched from database and cached by ID: {ProductId}", productId);
+            return Result<Product?>.Success(domainEntity);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting Product by ID: {ProductId}", productId);
+            return Result<Product?>.Failure("An error occurred while fetching Product.");
+        }
     }
 
     public async Task<Result<Product?>> GetBySkuAsync(string sku, CancellationToken cancellationToken = default)
@@ -198,7 +261,42 @@ public class ProductRepository(
             logger.LogWarning("Product sku is required");
             return Result<Product?>.Failure("Invalid product SKU.");  
         }
-        return await GetSingleAsync(ProductFields.Sku, sku, "Product_Sku", TimeSpan.FromHours(1), cancellationToken);
+        
+        try
+        {
+            var cacheKey = $"Product_Sku_{sku}";
+            var cached = await CacheService.GetAsync<Product>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                logger.LogInformation("Product fetched from cache by SKU: {Sku}", sku);
+                return Result<Product?>.Success(cached);
+            }
+
+            var adapter = GetAdapter();
+            var qf = new QueryFactory();
+            
+            // Prefetch ProductImages để có thể lấy danh sách ảnh và ảnh chính
+            var query = qf.Create<ProductEntity>()
+                .Where(ProductFields.Sku == sku)
+                .WithPath(ProductEntity.PrefetchPathProductImages);
+                
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
+            if (entity == null)
+            {
+                logger.LogWarning("Product not found by SKU: {Sku}", sku);
+                return Result<Product?>.Failure("Product not found.");
+            }
+
+            var domainEntity = Mapper.Map<Product>(entity);
+            await CacheService.SetAsync(cacheKey, domainEntity, TimeSpan.FromHours(1), cancellationToken);
+            logger.LogInformation("Product fetched from database and cached by SKU: {Sku}", sku);
+            return Result<Product?>.Success(domainEntity);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting Product by SKU: {Sku}", sku);
+            return Result<Product?>.Failure("An error occurred while fetching Product.");
+        }
     }
 
     public async Task<Result<Product?>> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)
@@ -208,7 +306,42 @@ public class ProductRepository(
             logger.LogWarning("Product slug is required");
             return Result<Product?>.Failure("Invalid product slug."); 
         }
-        return await GetSingleAsync(ProductFields.Slug, slug, "Product_Slug", TimeSpan.FromHours(1), cancellationToken);
+        
+        try
+        {
+            var cacheKey = $"Product_Slug_{slug}";
+            var cached = await CacheService.GetAsync<Product>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                logger.LogInformation("Product fetched from cache by slug: {Slug}", slug);
+                return Result<Product?>.Success(cached);
+            }
+
+            var adapter = GetAdapter();
+            var qf = new QueryFactory();
+            
+            // Prefetch ProductImages để có thể lấy danh sách ảnh và ảnh chính
+            var query = qf.Create<ProductEntity>()
+                .Where(ProductFields.Slug == slug)
+                .WithPath(ProductEntity.PrefetchPathProductImages);
+                
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
+            if (entity == null)
+            {
+                logger.LogWarning("Product not found by slug: {Slug}", slug);
+                return Result<Product?>.Failure("Product not found.");
+            }
+
+            var domainEntity = Mapper.Map<Product>(entity);
+            await CacheService.SetAsync(cacheKey, domainEntity, TimeSpan.FromHours(1), cancellationToken);
+            logger.LogInformation("Product fetched from database and cached by slug: {Slug}", slug);
+            return Result<Product?>.Success(domainEntity);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting Product by slug: {Slug}", slug);
+            return Result<Product?>.Failure("An error occurred while fetching Product.");
+        }
     }
 
     public async Task<Result<Product>> CreateAsync(Product product, CancellationToken cancellationToken = default)
@@ -311,30 +444,135 @@ public class ProductRepository(
     }
 
     public async Task<Result<PagedResult<Product>>> GetByCategoryIdAsync(PagedRequest request, Guid categoryId, CancellationToken cancellationToken = default)
-        => await GetPagedConfiguredAsync(request, r => r.WithFilter("CategoryId", categoryId), cancellationToken: cancellationToken);
+    {
+        var prefetchPath = BuildProductPrefetchPath();
+        return await GetPagedConfiguredAsync(request, r => r.WithFilter("CategoryId", categoryId), prefetchPath, cancellationToken: cancellationToken);
+    }
 
     public async Task<Result<PagedResult<Product>>> GetByBrandIdAsync(PagedRequest request, Guid brandId, CancellationToken cancellationToken = default)
-        => await GetPagedConfiguredAsync(request, r => r.WithFilter("BrandId", brandId), cancellationToken: cancellationToken);
+    {
+        var prefetchPath = BuildProductPrefetchPath();
+        return await GetPagedConfiguredAsync(request, r => r.WithFilter("BrandId", brandId), prefetchPath, cancellationToken: cancellationToken);
+    }
 
     public async Task<Result<PagedResult<Product>>> GetFeaturedProductsAsync(PagedRequest request, CancellationToken cancellationToken = default)
-        => await GetPagedConfiguredAsync(request, r => r.WithFilter("IsFeatured", true), cancellationToken: cancellationToken);
+    {
+        var prefetchPath = BuildProductPrefetchPath();
+        return await GetPagedConfiguredAsync(request, r => r.WithFilter("IsFeatured", true), prefetchPath, cancellationToken: cancellationToken);
+    }
 
     public async Task<Result<PagedResult<Product>>> GetActiveProductsAsync(PagedRequest request, CancellationToken cancellationToken = default)
-        => await GetPagedConfiguredAsync(request, r => r.WithFilter("Status", 1), cancellationToken: cancellationToken);
+    {
+        var prefetchPath = BuildProductPrefetchPath();
+        return await GetPagedConfiguredAsync(request, r => r.WithFilter("Status", 1), prefetchPath, cancellationToken: cancellationToken);
+    }
 
     public async Task<Result<PagedResult<Product>>> GetLowStockProductsAsync(PagedRequest request, int threshold = 10, CancellationToken cancellationToken = default)
-        => await GetPagedConfiguredAsync(request, r => r.WithFilter("Stock", threshold, FilterOperator.LessThanOrEqual), cancellationToken: cancellationToken);
+    {
+        var prefetchPath = BuildProductPrefetchPath();
+        return await GetPagedConfiguredAsync(request, r => r.WithFilter("Stock", threshold, FilterOperator.LessThanOrEqual), prefetchPath, cancellationToken: cancellationToken);
+    }
 
     public async Task<Result<PagedResult<Product>>> SearchProductsAsync(PagedRequest request, string searchTerm, CancellationToken cancellationToken = default)
-        => await GetPagedConfiguredAsync(request, r => r.WithSearch(searchTerm), cancellationToken: cancellationToken);
+    {
+        var prefetchPath = BuildProductPrefetchPath();
+        return await GetPagedConfiguredAsync(request, r => r.WithSearch(searchTerm), prefetchPath, cancellationToken: cancellationToken);
+    }
 
-    public Task<Result<PagedResult<Product>>> GetProductsByPriceRangeAsync(PagedRequest request, decimal minPrice,
+    public async Task<Result<PagedResult<Product>>> GetProductsByPriceRangeAsync(PagedRequest request, decimal minPrice,
         decimal maxPrice, CancellationToken cancellationToken = default)
-        => GetPagedConfiguredAsync(
+    {
+        var prefetchPath = BuildProductPrefetchPath();
+        return await GetPagedConfiguredAsync(
             request, 
             r => r.WithRangeFilter("Price", minPrice, maxPrice), 
+            prefetchPath,
             GetDefaultSortField(), SortDirection.Ascending, cancellationToken
         );
+    }
+
+    public async Task<Result<PagedResult<Product>>> GetProductsByTagNameAsync(PagedRequest request, string tagName, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(tagName))
+            {
+                logger.LogWarning("Tag name is required");
+                return Result<PagedResult<Product>>.Failure("Invalid tag name.");
+            }
+
+            var adapter = GetAdapter();
+            var qf = new QueryFactory();
+            
+            // Tìm tag theo name
+            var tagQuery = qf.Create<ProductTagEntity>()
+                .Where(ProductTagFields.Name == tagName);
+            var tag = await adapter.FetchFirstAsync(tagQuery, cancellationToken);
+            
+            if (tag == null)
+            {
+                logger.LogInformation("No products found for tag name: {TagName}", tagName);
+                return Result<PagedResult<Product>>.Success(new PagedResult<Product>(new List<Product>(), request.Page, request.PageSize, 0));
+            }
+
+            // Sử dụng Exists để filter products có tag này
+            var prefetchPath = BuildProductPrefetchPath();
+            
+            // Override GetPagedAsync để filter bằng Exists
+            var productQuery = qf.Create<ProductEntity>()
+                .Where(ProductFields.ProductId.In(
+                    qf.ProductTagAssignment
+                        .Where(ProductTagAssignmentFields.TagId == tag.TagId)
+                        .Select(ProductTagAssignmentFields.ProductId)
+                ));
+
+            // Apply filters từ request
+            if (request.HasFilters)
+            {
+                foreach (var filter in request.Filters)
+                {
+                    productQuery = ApplyFilter(productQuery, filter);
+                }
+            }
+
+            // Get total count
+            var countQuery = productQuery.Select(() => Functions.CountRow());
+            var totalCount = await adapter.FetchScalarAsync<int>(countQuery, cancellationToken);
+
+            if (totalCount == 0)
+            {
+                return Result<PagedResult<Product>>.Success(new PagedResult<Product>(new List<Product>(), request.Page, request.PageSize, 0));
+            }
+
+            // Apply sorting
+            if (request.HasSorting)
+            {
+                productQuery = ApplySorting(productQuery, request.SortBy, request.SortDirection);
+            }
+            else
+            {
+                productQuery = ApplyDefaultSorting(productQuery);
+            }
+
+            // Apply paging
+            productQuery = productQuery.Page(request.Page, request.PageSize);
+
+            // Fetch entities với prefetch path
+            var entities = await FetchEntitiesAsync(productQuery, adapter, prefetchPath, cancellationToken);
+            var domainEntities = Mapper.Map<List<Product>>(entities);
+
+            var result = new PagedResult<Product>(domainEntities, totalCount, request.Page, request.PageSize);
+            logger.LogInformation("Products by tag name fetched: TagName {TagName}, Page {Page}, PageSize {PageSize}, Total {Total}", 
+                tagName, request.Page, request.PageSize, totalCount);
+            
+            return Result<PagedResult<Product>>.Success(result);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error fetching products by tag name: {TagName}", tagName);
+            return Result<PagedResult<Product>>.Failure("An error occurred while fetching products by tag name.");
+        }
+    }
 
     public async Task<Result<bool>> UpdateStockAsync(Guid productId, int quantity, CancellationToken cancellationToken = default)
     {

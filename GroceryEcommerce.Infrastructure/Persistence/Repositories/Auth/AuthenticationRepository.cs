@@ -100,6 +100,21 @@ public class AuthenticationRepository(
         return entities;
     }
 
+    protected override EntityField2? GetPrimaryKeyField()
+    {
+        return UserFields.UserId;
+    }
+
+    protected override object GetEntityId(UserEntity entity, EntityField2 primaryKeyField)
+    {
+        return entity.UserId;
+    }
+
+    protected override IPredicate CreateIdFilter(EntityField2 primaryKeyField, List<object> ids)
+    {
+        return new PredicateExpression(primaryKeyField.In(ids));
+    }
+
     private EntityField2? GetSortField(string? sortBy)
     {
         return sortBy?.ToLower() switch

@@ -95,6 +95,21 @@ public class AuditLogRepository(
         return query.OrderBy(AuditLogFields.CreatedAt.Descending());
     }
 
+    protected override EntityField2? GetPrimaryKeyField()
+    {
+        return AuditLogFields.AuditId;
+    }
+
+    protected override object GetEntityId(AuditLogEntity entity, EntityField2 primaryKeyField)
+    {
+        return entity.AuditId;
+    }
+
+    protected override IPredicate CreateIdFilter(EntityField2 primaryKeyField, List<object> ids)
+    {
+        return new PredicateExpression(primaryKeyField.In(ids));
+    }
+
     protected override async Task<IList<AuditLogEntity>> FetchEntitiesAsync(EntityQuery<AuditLogEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
     {
         var entities = new EntityCollection<AuditLogEntity>();

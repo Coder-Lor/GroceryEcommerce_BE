@@ -95,11 +95,19 @@ public class CategoryRepository(
         return query.OrderBy(CategoryFields.Name.Ascending());
     }
 
-    protected override async Task<IList<CategoryEntity>> FetchEntitiesAsync(EntityQuery<CategoryEntity> query, DataAccessAdapter adapter, CancellationToken cancellationToken)
+    protected override EntityField2? GetPrimaryKeyField()
     {
-        var entities = new EntityCollection<CategoryEntity>();
-        await adapter.FetchQueryAsync(query, entities, cancellationToken);
-        return entities;
+        return CategoryFields.CategoryId;
+    }
+
+    protected override object GetEntityId(CategoryEntity entity, EntityField2 primaryKeyField)
+    {
+        return entity.CategoryId;
+    }
+
+    protected override IPredicate CreateIdFilter(EntityField2 primaryKeyField, List<object> ids)
+    {
+        return new PredicateExpression(primaryKeyField.In(ids));
     }
 
     private EntityField2? GetSortField(string? sortBy)

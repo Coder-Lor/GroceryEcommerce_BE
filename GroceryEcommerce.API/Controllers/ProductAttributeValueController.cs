@@ -1,6 +1,6 @@
 using GroceryEcommerce.Application.Common;
-using GroceryEcommerce.Application.Features.ProductAttributeValue.Commands;
-using GroceryEcommerce.Application.Features.ProductAttributeValue.Queries;
+using GroceryEcommerce.Application.Features.Catalog.ProductAttributeValue.Commands;
+using GroceryEcommerce.Application.Features.Catalog.ProductAttributeValue.Queries;
 using GroceryEcommerce.Application.Models.Catalog;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
