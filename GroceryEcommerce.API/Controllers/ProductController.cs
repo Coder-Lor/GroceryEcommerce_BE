@@ -3,6 +3,7 @@ using GroceryEcommerce.Application.Features.Catalog.Product.Commands;
 using GroceryEcommerce.Application.Features.Catalog.Product.Queries;
 using GroceryEcommerce.Application.Models.Catalog;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GroceryEcommerce.API.Controllers;
@@ -26,6 +27,7 @@ public class ProductController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
     
+    [AllowAnonymous]
     [HttpGet("paging")]
     public async Task<ActionResult<Result<PagedResult<ProductBaseResponse>>>> GetProductsPaging([FromQuery] PagedRequest request)
     {

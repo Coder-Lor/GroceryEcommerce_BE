@@ -21,6 +21,7 @@ public class AuthController(IMediator mediator) : ControllerBase
         if (result.Data is not null)
         {
             SetRefreshTokenCookie(result.Data.RefreshToken);
+            SetAccessTokenCookie(result.Data.Token);
         }
         return Ok(result);
     }
@@ -69,6 +70,7 @@ public class AuthController(IMediator mediator) : ControllerBase
         
         // Clear refresh token cookie
         Response.Cookies.Delete("refreshToken");
+        Response.Cookies.Delete("accessToken"); 
         
         return Ok(result);
     }
