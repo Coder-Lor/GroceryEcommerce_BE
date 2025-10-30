@@ -16,31 +16,37 @@ public class UpdateProductVariantCommandHandler(
 {
     public async Task<Result<UpdateProductVariantResponse>> Handle(UpdateProductVariantCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Updating product variant {VariantId}", request.VariantId);
+        try {
+            logger.LogInformation("Updating product variant {VariantId}", request.VariantId);
 
-        var existing = await repository.GetByIdAsync(request.VariantId, cancellationToken);
-        if (!existing.IsSuccess || existing.Data is null)
-        {
-            return Result<UpdateProductVariantResponse>.Failure("Product variant not found");
+            var existing = await repository.GetByIdAsync(request.VariantId, cancellationToken);
+            if (!existing.IsSuccess || existing.Data is null)
+            {
+                return Result<UpdateProductVariantResponse>.Failure("Product variant not found");
+            }
+
+            existing.Data.Sku = request.Sku;
+            existing.Data.Name = request.Name;
+            existing.Data.Price = request.Price;
+            existing.Data.DiscountPrice = request.DiscountPrice;
+            existing.Data.StockQuantity = request.StockQuantity;
+            existing.Data.Weight = request.Weight;
+            existing.Data.ImageUrl = request.ImageUrl;
+            existing.Data.Status = request.Status;
+            existing.Data.UpdatedAt = DateTime.UtcNow;
+
+            var updateResult = await repository.UpdateAsync(existing.Data, cancellationToken);
+            if (!updateResult.IsSuccess)
+            {
+                return Result<UpdateProductVariantResponse>.Failure(updateResult.ErrorMessage ?? "Failed to update product variant");
+            }
+
+            var response = mapper.Map<UpdateProductVariantResponse>(existing.Data);
+            return Result<UpdateProductVariantResponse>.Success(response);
         }
-
-        existing.Data.Sku = request.Sku;
-        existing.Data.Name = request.Name;
-        existing.Data.Price = request.Price;
-        existing.Data.DiscountPrice = request.DiscountPrice;
-        existing.Data.StockQuantity = request.StockQuantity;
-        existing.Data.Weight = request.Weight;
-        existing.Data.ImageUrl = request.ImageUrl;
-        existing.Data.Status = request.Status;
-        existing.Data.UpdatedAt = DateTime.UtcNow;
-
-        var updateResult = await repository.UpdateAsync(existing.Data, cancellationToken);
-        if (!updateResult.IsSuccess)
-        {
-            return Result<UpdateProductVariantResponse>.Failure(updateResult.ErrorMessage ?? "Failed to update product variant");
+        catch (Exception ex){
+            logger.LogError(ex, "Error updating product variant");
+            return Result<UpdateProductVariantResponse>.Failure("An error occurred while updating product variant.", ex.Message);
         }
-
-        var response = mapper.Map<UpdateProductVariantResponse>(existing.Data);
-        return Result<UpdateProductVariantResponse>.Success(response);
     }
 }

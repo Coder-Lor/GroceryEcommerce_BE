@@ -9,7 +9,7 @@ public interface IProductVariantRepository
     Task<Result<ProductVariant?>> GetByIdAsync(Guid variantId, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<ProductVariant>>> GetByProductIdAsync( PagedRequest request, Guid productId, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<ProductVariant>>> GetBySkuAsync( PagedRequest request, string sku, CancellationToken cancellationToken = default);
-    Task<Result<ProductVariant>> CreateAsync(ProductVariant variant, CancellationToken cancellationToken = default);
+    Task<Result<bool>> CreateAsync(ProductVariant variant, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateAsync(ProductVariant variant, CancellationToken cancellationToken = default);
     Task<Result<bool>> DeleteAsync(Guid variantId, CancellationToken cancellationToken = default);
     

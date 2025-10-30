@@ -132,6 +132,13 @@ public class CatalogProfile : Profile
             .ForMember(dest => dest.ProductVariantId, opt => opt.MapFrom(src => src.VariantId))
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.VariantAttributeValues));
 
+        // Add these mappings for response types
+        CreateMap<ProductVariant, CreateProductVariantResponse>()
+            .IncludeBase<ProductVariant, ProductVariantDto>();
+
+        CreateMap<ProductVariant, UpdateProductVariantResponse>()
+            .IncludeBase<ProductVariant, ProductVariantDto>();
+
         CreateMap<CreateProductVariantRequest, ProductVariant>()
             .ForMember(dest => dest.VariantId, opt => opt.MapFrom(src => Guid.NewGuid()))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
