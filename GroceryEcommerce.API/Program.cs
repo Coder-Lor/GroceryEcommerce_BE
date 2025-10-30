@@ -32,7 +32,20 @@ internal class Program
             options.Filters.Add(new AuthorizeFilter(policy));
         });
         // builder.Services.AddOpenApi();
-        builder.Services.AddOpenApiDocument();
+        builder.Services.AddOpenApiDocument(config =>
+        {
+            config.AddSecurity("JWT", Enumerable.Empty<string>(), new NSwag.OpenApiSecurityScheme
+            {
+                Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
+                Name = "Authorization",
+                In = NSwag.OpenApiSecurityApiKeyLocation.Header,
+                Description = "Nhập JWT Bearer token vào đây. Ví dụ: Bearer {token}"
+            });
+
+            config.OperationProcessors.Add(
+                new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor("JWT")
+            );
+        });
 
 
 
