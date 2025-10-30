@@ -31,7 +31,11 @@ public class AuthController(IMediator mediator) : ControllerBase
     {
         var result = await mediator.Send(request);
         if (!result.IsSuccess)
-            return BadRequest(result); 
+            return BadRequest(result);
+        if (result.Data is not null)
+        {
+            SetRefreshTokenCookie(result.Data.RefreshToken);
+        }
         return Ok(result);
     }
 
