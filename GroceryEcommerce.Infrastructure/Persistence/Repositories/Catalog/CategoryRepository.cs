@@ -802,27 +802,41 @@ public class CategoryRepository(
                 logger.LogWarning("Category id is required");
                 return Result<bool>.Failure("Invalid category ID.");
             }
-            
-            var qf = new QueryFactory();
-            var query = qf.Category
-                .Where(CategoryFields.CategoryId == categoryId);
 
-            var adapter = GetAdapter(); // Sử dụng adapter phù hợp
-            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
-            if (entity != null)
+            var adapter = GetAdapter();
+            var qf = new QueryFactory();
+
+            // 1. Check category status trước (optional nếu bạn cần Status == 1)
+            var catQuery = qf.Category
+                .Where(CategoryFields.CategoryId == categoryId)
+                .Select(CategoryFields.Status);
+
+            var categoryStatus = await adapter.FetchScalarAsync<int?>(catQuery, cancellationToken);
+
+            if (categoryStatus is null)
             {
-                logger.LogInformation("Category is active and in use: {CategoryId}", categoryId);
-                return Result<bool>.Success(entity.Status == 1);
+                logger.LogWarning("Category not found: {CategoryId}", categoryId);
+                return Result<bool>.Failure("Category not found or inactive.");
             }
-            logger.LogWarning("Category not found or inactive: {CategoryId}", categoryId);
-            return Result<bool>.Failure("Category not found or inactive.");
+
+            // 2. Đếm product thuộc category đó
+            // giả sử ProductFields.CategoryId là FK
+            var productCountQuery = qf.Product
+                .Where(ProductFields.CategoryId == categoryId & ProductFields.Status == 1);
+
+            var entity = await adapter.FetchFirstAsync(productCountQuery);
+
+            bool inUse = entity != null;
+
+            return Result<bool>.Success(inUse);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error checking if category is in use: {CategoryId}", categoryId);
-            return Result<bool>.Failure("An error occurred while checking if category is in use.");       
+            return Result<bool>.Failure("An error occurred while checking if category is in use.");
         }
     }
+
 
     public async Task<Result<int>> GetProductCountByCategoryAsync(Guid categoryId, CancellationToken cancellationToken = default)
     {
