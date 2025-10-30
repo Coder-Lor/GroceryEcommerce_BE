@@ -80,9 +80,6 @@ internal class Program
             c.SetTraceLevel(TraceLevel.Verbose); // bật log (optional)
         });
         
-        
-
-
         // Clean Architecture layers
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddAutoMapper(cfg =>
@@ -141,9 +138,10 @@ internal class Program
 
                 options.Events = new JwtBearerEvents
                 {
-                    OnAuthenticationFailed = context =>
+                    OnMessageReceived = context =>
                     {
-                        Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                        if (context.Request.Cookies.TryGetValue("accessToken", out var token))
+                            context.Token = token;
                         return Task.CompletedTask;
                     }
                 };

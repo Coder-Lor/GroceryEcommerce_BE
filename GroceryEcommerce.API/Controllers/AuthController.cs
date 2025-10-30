@@ -35,6 +35,7 @@ public class AuthController(IMediator mediator) : ControllerBase
         if (result.Data is not null)
         {
             SetRefreshTokenCookie(result.Data.RefreshToken);
+            SetAccessTokenCookie(result.Data.Token); // Đúng property access token cho LoginResponse
         }
         return Ok(result);
     }
@@ -83,25 +84,33 @@ public class AuthController(IMediator mediator) : ControllerBase
         if (result.Data is not null)
         {
             SetRefreshTokenCookie(result.Data.RefreshToken);
+            SetAccessTokenCookie(result.Data.AccessToken); 
         }
         
         return Ok(result);
     }
     
 
-    private void SetRefreshTokenCookie(string refreshToken)
+    private void SetAccessTokenCookie(string accessToken)
     {
-        var cookieOptions = new CookieOptions
+        Response.Cookies.Append("accessToken", accessToken, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Strict,
+            SameSite = SameSiteMode.None,
+            Expires = DateTimeOffset.UtcNow.AddMinutes(10)
+        });
+    }
+
+    private void SetRefreshTokenCookie(string refreshToken)
+    {
+        Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None,
             Expires = DateTimeOffset.UtcNow.AddDays(7)
-        };
-
-        // Response.Cookies to add cookie
-        Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
-
+        });
     }
 
 }
