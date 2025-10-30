@@ -4,52 +4,26 @@ using GroceryEcommerce.Application.Features.Auth.UserAddresses.Queries;
 using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
 using GroceryEcommerce.Domain.Entities.Auth;
 using MediatR;
+using AutoMapper;
 
 namespace GroceryEcommerce.Application.Features.Auth.UserAddresses.Handlers;
 
-public sealed class CreateUserAddressCommandHandler(IUserAddressRepository repository)
+public sealed class CreateUserAddressCommandHandler(IUserAddressRepository repository, IMapper mapper)
     : IRequestHandler<CreateUserAddressCommand, Result<UserAddress>>
 {
     public Task<Result<UserAddress>> Handle(CreateUserAddressCommand request, CancellationToken cancellationToken)
     {
-        var entity = new UserAddress
-        {
-            AddressId = Guid.NewGuid(),
-            UserId = request.UserId,
-            AddressLine1 = request.AddressLine1,
-            AddressLine2 = request.AddressLine2,
-            City = request.City,
-            State = request.State,
-            Country = request.Country,
-            ZipCode = request.PostalCode,
-            AddressType = request.AddressType,
-            IsDefault = request.IsDefault,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = null
-        };
+        var entity = mapper.Map<UserAddress>(request);
         return repository.CreateAsync(entity, cancellationToken);
     }
 }
 
-public sealed class UpdateUserAddressCommandHandler(IUserAddressRepository repository)
+public sealed class UpdateUserAddressCommandHandler(IUserAddressRepository repository, IMapper mapper)
     : IRequestHandler<UpdateUserAddressCommand, Result<bool>>
 {
     public Task<Result<bool>> Handle(UpdateUserAddressCommand request, CancellationToken cancellationToken)
     {
-        var entity = new UserAddress
-        {
-            AddressId = request.AddressId,
-            UserId = request.UserId,
-            AddressLine1 = request.AddressLine1,
-            AddressLine2 = request.AddressLine2,
-            City = request.City,
-            State = request.State,
-            Country = request.Country,
-            ZipCode = request.PostalCode,
-            AddressType = request.AddressType,
-            IsDefault = request.IsDefault,
-            UpdatedAt = DateTime.UtcNow
-        };
+        var entity = mapper.Map<UserAddress>(request);
         return repository.UpdateAsync(entity, cancellationToken);
     }
 }

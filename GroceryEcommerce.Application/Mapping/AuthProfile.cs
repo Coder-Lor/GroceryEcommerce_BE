@@ -33,6 +33,17 @@ public class AuthProfile : Profile
 
         CreateMap<RefreshToken, RefreshTokenDto>()
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}".Trim()));
+
+            // Commands -> Domain entities (UserAddress)
+            CreateMap<Features.Auth.UserAddresses.Commands.CreateUserAddressCommand, UserAddress>()
+                .ForMember(dest => dest.AddressId, opt => opt.MapFrom(_ => Guid.NewGuid()))
+                .ForMember(dest => dest.ZipCode, opt => opt.MapFrom(src => src.PostalCode))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => (DateTime?)null));
+
+            CreateMap<Features.Auth.UserAddresses.Commands.UpdateUserAddressCommand, UserAddress>()
+                .ForMember(dest => dest.ZipCode, opt => opt.MapFrom(src => src.PostalCode))
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
     }
 
     private static string GetUserStatusName(short status)
