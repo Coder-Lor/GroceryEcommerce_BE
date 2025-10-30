@@ -2,6 +2,7 @@ using AutoMapper;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Features.Auth.Authentication.Commands;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GroceryEcommerce.API.Controllers;
@@ -10,6 +11,7 @@ namespace GroceryEcommerce.API.Controllers;
 [Route("api/[controller]")]
 public class AuthController(IMediator mediator) : ControllerBase
 {
+    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<ActionResult<Result<RegisterResponse>>> RegisterAccount ([FromBody]RegisterCommand request)
     {
@@ -23,6 +25,7 @@ public class AuthController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
     
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<ActionResult<Result<LoginResponse>>> Login ([FromBody] LoginCommand request)
     {
@@ -32,6 +35,7 @@ public class AuthController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
 
+    [AllowAnonymous]
     [HttpPost("forgot-password")]
     public async Task<ActionResult<Result<bool>>> ForgotPassword([FromBody] ForgotPasswordCommand request)
     {
@@ -41,6 +45,7 @@ public class AuthController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
     
+    [AllowAnonymous]
     [HttpPost("reset-password")]
     public async Task<ActionResult<Result<bool>>> ResetPassword([FromBody] ResetPasswordCommand request)
     {
@@ -63,6 +68,7 @@ public class AuthController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
     
+    [AllowAnonymous]
     [HttpPost("refresh-token")]
     public async Task<ActionResult<Result<RefreshTokenResponse>>> RefreshToken([FromBody] RefreshTokenCommand request)
     {

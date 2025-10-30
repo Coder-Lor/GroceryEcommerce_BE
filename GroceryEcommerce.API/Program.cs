@@ -15,6 +15,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using NSwag.AspNetCore;
 using Microsoft.AspNetCore.OpenApi;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 internal class Program
 {
@@ -22,7 +24,13 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         
-        builder.Services.AddControllers();
+        builder.Services.AddControllers(options =>
+        {
+            var policy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+            options.Filters.Add(new AuthorizeFilter(policy));
+        });
         // builder.Services.AddOpenApi();
         builder.Services.AddOpenApiDocument();
 
