@@ -41,6 +41,40 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
         return ScopedAdapter;
     }
 
+    private Type? GetFieldType(string fieldName)
+    {
+        var mappings = GetFieldMappings();
+        var type = mappings
+            .FirstOrDefault(m => string.Equals(m.FieldName, fieldName, StringComparison.OrdinalIgnoreCase))
+            ?.FieldType;
+        return type;
+    }
+
+    private object? ConvertFilterValue(string fieldName, string? value)
+    {
+        if (value is null) return null;
+        var targetType = GetFieldType(fieldName) ?? typeof(string);
+
+        try
+        {
+            if (targetType == typeof(string)) return value;
+            if (targetType == typeof(Guid)) return Guid.Parse(value);
+            if (targetType == typeof(int)) return int.Parse(value);
+            if (targetType == typeof(long)) return long.Parse(value);
+            if (targetType == typeof(decimal)) return decimal.Parse(value);
+            if (targetType == typeof(double)) return double.Parse(value);
+            if (targetType == typeof(float)) return float.Parse(value);
+            if (targetType == typeof(bool)) return bool.Parse(value);
+            if (targetType == typeof(DateTime)) return DateTime.Parse(value);
+            if (targetType.IsEnum) return Enum.Parse(targetType, value, true);
+            return Convert.ChangeType(value, targetType);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
 
     public abstract IReadOnlyList<SearchableField> GetSearchableFields();
     public abstract string? GetDefaultSortField();
@@ -269,23 +303,52 @@ public abstract class BasePagedRepository<TEntity, TDomainEntity>(
     {
         var fieldMap = GetFieldMap();
         if (!fieldMap.TryGetValue(filter.FieldName.ToLower(), out var field)) return query;
-        
+
+        // Operators without value
+        if (filter.Operator is FilterOperator.IsNull)
+        {
+            return query.Where(field.IsNull());
+        }
+        if (filter.Operator is FilterOperator.IsNotNull)
+        {
+            return query.Where(field.IsNotNull());
+        }
+
+        // Handle In / NotIn as list of typed values
+        if (filter.Operator is FilterOperator.In or FilterOperator.NotIn)
+        {
+            var items = filter.Value
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(v => ConvertFilterValue(filter.FieldName, v))
+                .Where(v => v is not null)
+                .ToList();
+
+            if (items.Count == 0) return query;
+
+            return filter.Operator == FilterOperator.In
+                ? query.Where(field.In(items))
+                : query.Where(field.NotIn(items));
+        }
+
+        // Convert single value to target type
+        var typedValue = ConvertFilterValue(filter.FieldName, filter.Value);
+
         return filter.Operator switch
         {
-            FilterOperator.Equals => query.Where(field == filter.Value),
-            FilterOperator.NotEquals => query.Where(field != filter.Value),
-            FilterOperator.Contains => query.Where(field.Contains(filter.Value.ToString())),
-            FilterOperator.NotContains => query.Where(!field.Contains(filter.Value.ToString())),
-            FilterOperator.GreaterThan => query.Where(field > Convert.ToDecimal(filter.Value)),
-            FilterOperator.LessThan => query.Where(field < Convert.ToDecimal(filter.Value)),
-            FilterOperator.GreaterThanOrEqual => query.Where(field >= Convert.ToDecimal(filter.Value)),
-            FilterOperator.LessThanOrEqual => query.Where(field <= Convert.ToDecimal(filter.Value)),
-            FilterOperator.In => query.Where(field.In(filter.Value.ToString())),
-            FilterOperator.NotIn => query.Where(field.NotIn(filter.Value.ToString())),
-            FilterOperator.StartsWith => query.Where(field.StartsWith(filter.Value.ToString())),
-            FilterOperator.EndsWith => query.Where(field.EndsWith(filter.Value.ToString())),
-            FilterOperator.IsNull => query.Where(field.IsNull()),
-            FilterOperator.IsNotNull => query.Where(field.IsNotNull()),
+            FilterOperator.Equals => query.Where(field == typedValue),
+            FilterOperator.NotEquals => query.Where(field != typedValue),
+
+            // String-only operators
+            FilterOperator.Contains => query.Where(field.Contains(typedValue?.ToString() ?? string.Empty)),
+            FilterOperator.NotContains => query.Where(!field.Contains(typedValue?.ToString() ?? string.Empty)),
+            FilterOperator.StartsWith => query.Where(field.StartsWith(typedValue?.ToString() ?? string.Empty)),
+            FilterOperator.EndsWith => query.Where(field.EndsWith(typedValue?.ToString() ?? string.Empty)),
+
+            // Comparisons (numeric/date supported by LLBLGen)
+            FilterOperator.GreaterThan => query.Where(field > typedValue),
+            FilterOperator.LessThan => query.Where(field < typedValue),
+            FilterOperator.GreaterThanOrEqual => query.Where(field >= typedValue),
+            FilterOperator.LessThanOrEqual => query.Where(field <= typedValue),
             _ => query
         };
     }
