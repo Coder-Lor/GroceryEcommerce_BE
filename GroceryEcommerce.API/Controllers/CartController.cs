@@ -47,7 +47,6 @@ public class CartController(IMediator mediator) : ControllerBase
     public async Task<ActionResult<Result<bool>>> AddItemToCart([FromBody] AddToCartRequest request, CancellationToken cancellationToken = default)
     {
         var result = await mediator.Send(new AddShoppingCartItemCommand(
-            request.UserId,
             request.ProductId,
             request.ProductVariantId,
             request.Quantity

@@ -12,7 +12,7 @@ public class CartProfile : Profile
     {
         // Request DTO to Command mappings
         CreateMap<AddToCartRequest, AddShoppingCartItemCommand>()
-            .ConstructUsing(src => new AddShoppingCartItemCommand(src.UserId, src.ProductId, src.ProductVariantId, src.Quantity));
+            .ConstructUsing(src => new AddShoppingCartItemCommand(src.ProductId, src.ProductVariantId, src.Quantity));
 
         CreateMap<UpdateQuantityRequest, UpdateShoppingCartItemQuantityCommand>()
             .ConstructUsing(src => new UpdateShoppingCartItemQuantityCommand(Guid.Empty, src.Quantity)); // itemId will be set from route
