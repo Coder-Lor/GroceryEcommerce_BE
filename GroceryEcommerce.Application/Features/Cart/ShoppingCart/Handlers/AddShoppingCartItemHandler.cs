@@ -1,6 +1,7 @@
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Features.Cart.ShoppingCart.Commands;
 using GroceryEcommerce.Application.Interfaces.Repositories.Cart;
+using GroceryEcommerce.Application.Interfaces.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -8,23 +9,26 @@ namespace GroceryEcommerce.Application.Features.Cart.ShoppingCart.Handlers;
 
 public class AddShoppingCartItemHandler(
     ICartRepository cartRepository,
+    ICurrentUserService currentUserService,
     ILogger<AddShoppingCartItemHandler> logger
 ) : IRequestHandler<AddShoppingCartItemCommand, Result<bool>>
 {
     public async Task<Result<bool>> Handle(AddShoppingCartItemCommand request, CancellationToken cancellationToken)
     {
        try {
-            logger.LogInformation("Adding item to cart for user {UserId}, product {ProductId}", request.UserId, request.ProductId);
 
+            var userId = currentUserService.GetCurrentUserId() ?? Guid.Empty;
+            logger.LogInformation("Adding item to cart for user {UserId}, product {ProductId}", userId, request.ProductId);
+            
             // Ensure cart exists
-            var cartResult = await cartRepository.GetShoppingCartByUserIdAsync(request.UserId, cancellationToken);
+            var cartResult = await cartRepository.GetShoppingCartByUserIdAsync(userId, cancellationToken);
             Domain.Entities.Cart.ShoppingCart cart;
             if (!cartResult.IsSuccess || cartResult.Data is null)
             {
                 cart = new Domain.Entities.Cart.ShoppingCart
                 {
                     CartId = Guid.NewGuid(),
-                    UserId = request.UserId,
+                    UserId = userId,
                     CreatedAt = DateTime.UtcNow
                 };
                 var createCart = await cartRepository.CreateShoppingCartAsync(cart, cancellationToken);
