@@ -100,7 +100,7 @@ public class AuthController(IMediator mediator) : ControllerBase
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.None,
-            Expires = DateTimeOffset.UtcNow.AddMinutes(10)
+            Expires = DateTimeOffset.UtcNow.AddMinutes(60)
         });
     }
 
