@@ -5,8 +5,6 @@ using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
 using GroceryEcommerce.Application.Interfaces.Repositories.Inventory;
 using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.DatabaseSpecific;
-using GroceryEcommerce.Infrastructure.Mapping;
-using GroceryEcommerce.Infrastructure.Persistence.Repositories;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Cart;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
@@ -64,7 +62,8 @@ public static class DependencyInjection
             var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
             var mapper = provider.GetRequiredService<IMapper>();
             var logger = provider.GetRequiredService<ILogger<RefreshTokenRepository>>();
-            return new RefreshTokenRepository(adapter, unitOfWorkService, mapper, logger);
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            return new RefreshTokenRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
         
         services.AddScoped<ICartRepository>(provider =>

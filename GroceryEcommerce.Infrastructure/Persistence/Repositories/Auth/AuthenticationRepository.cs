@@ -144,17 +144,17 @@ public class AuthenticationRepository(
             var userResult = await adapter.FetchFirstAsync<UserEntity>(query, cancellationToken);
 
             if (userResult is null) {
-                logger.LogWarning("User not found {EmailOrUsername}", emailOrUsername);
+                Logger.LogWarning("User not found {EmailOrUsername}", emailOrUsername);
                 return Result<User?>.Failure("Invalid credentials", "AUTH_001");
             }
 
             if (!passwordHashService.VerifyPassword(password, userResult.PasswordHash)) {
-                logger.LogWarning("Invalid password for user: {EmailOrUsername}", emailOrUsername);
+                Logger.LogWarning("Invalid password for user: {EmailOrUsername}", emailOrUsername);
                 return Result<User?>.Failure("Invalid credentials", "AUTH_002");
             }
 
             if(userResult.Status != 1) {
-                logger.LogWarning("User account is not active: {EmailOrUsername}", emailOrUsername);
+                Logger.LogWarning("User account is not active: {EmailOrUsername}", emailOrUsername);
                 return Result<User?>.Failure("Account is inactive or banned", "AUTH_003");
             }
 
@@ -163,7 +163,7 @@ public class AuthenticationRepository(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error validating user credentials for {EmailOrUsername}", emailOrUsername);
+            Logger.LogError(ex, "Error validating user credentials for {EmailOrUsername}", emailOrUsername);
             return Result<User?>.Failure("An error occurred while validating credentials", "AUTH_ERROR");
         }
     }
@@ -186,15 +186,15 @@ public class AuthenticationRepository(
             var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
 
             if(!saved) {
-                logger.LogError("Failed to create refresh token for user: {UserId}", userId);
+                Logger.LogError("Failed to create refresh token for user: {UserId}", userId);
                 return Result<bool>.Failure("Failed to create refresh token", "TOKEN_001");
             }
 
-            logger.LogInformation("Refresh token created for user: {UserId}", userId);
+            Logger.LogInformation("Refresh token created for user: {UserId}", userId);
             return Result<bool>.Success(saved);
         }
         catch (Exception ex) {
-            logger.LogError(ex, "Error creating refresh token user: {UserId}", userId);
+            Logger.LogError(ex, "Error creating refresh token user: {UserId}", userId);
             return Result<bool>.Failure("An Error occurred while creating refresh token", "TOKEN_ERROR");
         }
     }
@@ -208,15 +208,15 @@ public class AuthenticationRepository(
             var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
 
             if(!saved) {
-                logger.LogError("Failed to save refresh token for user: {UserId}", refreshTokens.UserId);
+                Logger.LogError("Failed to save refresh token for user: {UserId}", refreshTokens.UserId);
                 return Result<bool>.Failure("Failed to save refresh token", "TOKEN_002");
             }
 
-            logger.LogInformation("Refresh token saved for user: {UserId}", refreshTokens.UserId);
+            Logger.LogInformation("Refresh token saved for user: {UserId}", refreshTokens.UserId);
             return Result<bool>.Success(saved);
         }
         catch (Exception ex) {
-            logger.LogError(ex, "Error saving refresh token for user: {UserId}", refreshTokens.UserId);
+            Logger.LogError(ex, "Error saving refresh token for user: {UserId}", refreshTokens.UserId);
             return Result<bool>.Failure("An error occurred while saving refresh token", "TOKEN_ERROR");
         }
     }
@@ -225,17 +225,14 @@ public class AuthenticationRepository(
         CancellationToken cancellationToken = default)
     {
         try {
-            var bucket = new RelationPredicateBucket();
-
-            var filter = new PredicateExpression();
-            filter.Add(RefreshTokenFields.UserId == userId);
-            filter.Add(RefreshTokenFields.Revoked == false);
-            filter.Add(RefreshTokenFields.ExpiresAt > DateTime.UtcNow);
-
-            bucket.PredicateExpression.Add(filter);
 
             var adapter = GetAdapter(); // Sử dụng adapter phù hợp
-            var entity = await Task.Run(() => adapter.FetchNewEntity<RefreshTokenEntity>(bucket), cancellationToken);
+            var query = new QueryFactory().RefreshToken
+            .Where(RefreshTokenFields.UserId == userId)
+            .Where(RefreshTokenFields.Revoked == false)
+            .Where(RefreshTokenFields.ExpiresAt > DateTime.UtcNow);
+
+            var entity = await adapter.FetchFirstAsync<RefreshTokenEntity>(query, cancellationToken);
             
             if(entity != null) {
                 entity.RefreshToken = refreshToken;
@@ -243,10 +240,10 @@ public class AuthenticationRepository(
                 var updated = await adapter.SaveEntityAsync(entity, cancellationToken);
 
                 if(!updated) {
-                    logger.LogError("Failed to update refresh token for user: {UserId}", userId);
+                    Logger.LogError("Failed to update refresh token for user: {UserId}", userId);
                     return Result<bool>.Failure("Failed to update refresh token", "TOKEN_003");
                 }
-                logger.LogInformation("Refresh token updated for user: {UserId}", userId);
+                Logger.LogInformation("Refresh token updated for user: {UserId}", userId);
                 return Result<bool>.Success(updated);
             }
             else {
@@ -254,7 +251,7 @@ public class AuthenticationRepository(
             }
         }
         catch (Exception ex) {
-            logger.LogError(ex, "Error updating refresh token for user: {UserId}", userId);
+            Logger.LogError(ex, "Error updating refresh token for user: {UserId}", userId);
             return Result<bool>.Failure("An error occurred while updating refresh token", "TOKEN_ERROR");
         }
     }
@@ -262,53 +259,45 @@ public class AuthenticationRepository(
     public async Task<Result<string?>> GetRefreshTokenAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         try {
-            var bucket = new RelationPredicateBucket();
-            var filter = new PredicateExpression();
-            filter.Add(RefreshTokenFields.UserId == userId);
-            filter.Add(RefreshTokenFields.Revoked == false);
-            filter.Add(RefreshTokenFields.ExpiresAt > DateTime.UtcNow);
-
-            bucket.PredicateExpression.Add(filter);
-
             var adapter = GetAdapter(); // Sử dụng adapter phù hợp
-            var entity = await Task.Run(() => adapter.FetchNewEntity<RefreshTokenEntity>(bucket));
-
+            var query = new QueryFactory().RefreshToken
+            .Where(RefreshTokenFields.UserId == userId)
+            .Where(RefreshTokenFields.Revoked == false)
+            .Where(RefreshTokenFields.ExpiresAt > DateTime.UtcNow);
+            var entity = await adapter.FetchFirstAsync<RefreshTokenEntity>(query, cancellationToken);
             if (entity == null) {
-                logger.LogWarning("No valid refresh token found for user: {UserId}", userId);
+                Logger.LogWarning("No valid refresh token found for user: {UserId}", userId);
                 return Result<string?>.Success(null);
             }
             return Result<string?>.Success(entity.RefreshToken);
         }
         catch (Exception ex) {
-            logger.LogWarning(ex, "Error getting refresh token for user: {UserId}", userId);
-            return Result<string?>.Failure("An error occurred while retrieving refresh token");
+            Logger.LogError(ex, "Error getting refresh token for user: {UserId}", userId);
+            return Result<string?>.Failure("An error occurred while retrieving refresh token", "TOKEN_ERROR");
         }
+
     }
 
     public async Task<Result<bool>> ValidateRefreshTokenAsync(Guid userId, string refreshToken, CancellationToken cancellationToken = default)
     {
         try {
-            var bucket = new RelationPredicateBucket();
-
-            var filter = new PredicateExpression();
-            filter.Add(RefreshTokenFields.UserId == userId);
-            filter.Add(RefreshTokenFields.Revoked == false);
-            filter.Add(RefreshTokenFields.ExpiresAt > DateTime.UtcNow);
-
-            bucket.PredicateExpression.Add(filter);
-
             var adapter = GetAdapter(); // Sử dụng adapter phù hợp
-            var entity = await Task.Run(() => adapter.FetchNewEntity<RefreshTokenEntity>(bucket));
+            var query = new QueryFactory().RefreshToken
+            .Where(RefreshTokenFields.UserId == userId)
+            .Where(RefreshTokenFields.Revoked == false)
+            .Where(RefreshTokenFields.ExpiresAt > DateTime.UtcNow);
+
+            var entity = await adapter.FetchFirstAsync<RefreshTokenEntity>(query, cancellationToken);
 
             if (entity == null) {
-                logger.LogWarning("Invalid or expired refresh token for user: {UserId}", userId);
+                Logger.LogWarning("Invalid or expired refresh token for user: {UserId}", userId);
                 return Result<bool>.Success(false);
             }
 
             return Result<bool>.Success(true);
         }
         catch (Exception ex) {
-            logger.LogError(ex, "Error validating refresh token for user: {UserId}", userId);
+            Logger.LogError(ex, "Error validating refresh token for user: {UserId}", userId);
             return Result<bool>.Failure("An error occurred while validating refresh token", "TOKEN_ERROR");
         }
     }
@@ -316,35 +305,32 @@ public class AuthenticationRepository(
     public async Task<Result<bool>> RevokeRefreshTokenAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         try {
-            var bucket = new RelationPredicateBucket();
 
-            var filter = new PredicateExpression();
-            filter.Add(RefreshTokenFields.UserId == userId);
-            filter.Add(RefreshTokenFields.Revoked == false);
-            filter.Add(RefreshTokenFields.ExpiresAt > DateTime.UtcNow);
-
-            bucket.PredicateExpression.Add(filter);
+            var query = new QueryFactory().RefreshToken
+            .Where(RefreshTokenFields.UserId == userId)
+            .Where(RefreshTokenFields.Revoked == false)
+            .Where(RefreshTokenFields.ExpiresAt > DateTime.UtcNow);
 
             var adapter = GetAdapter(); // Sử dụng adapter phù hợp
-            var entity = await Task.Run(() => adapter.FetchNewEntity<RefreshTokenEntity>(bucket));
 
+            var entity = await adapter.FetchFirstAsync<RefreshTokenEntity>(query, cancellationToken);
             if (entity == null) {
-                logger.LogWarning("Failed to fetch refresh token by userId: {UserId}", userId);
+                Logger.LogWarning("Failed to fetch refresh token by userId: {UserId}", userId);
                 return Result<bool>.Success(false);
             }
 
             entity.Revoked = true;
-            var saved = await adapter.SaveEntityAsync(entity);
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
 
             if (!saved) {
-                logger.LogWarning("Invalid or expired refresh token for user: {UserId}", userId);
+                Logger.LogWarning("Failed to revoke refresh token by userId: {UserId}", userId);
                 return Result<bool>.Success(false);
             }
 
             return Result<bool>.Success(true);
         }
         catch (Exception ex) {
-            logger.LogError(ex, "Error validating revoke token for user: {UserId}", userId);
+            Logger.LogError(ex, "Error validating revoke token for user: {UserId}", userId);
             return Result<bool>.Failure("An error occurred while validating revoke token", "TOKEN_ERROR");
         }
     }
@@ -353,26 +339,27 @@ public class AuthenticationRepository(
     {
         try {
             var adapter = GetAdapter(); // Sử dụng adapter phù hợp
-            var entity = new UserEntity(userId);
-            var fetched = await Task.Run(() => adapter.FetchEntity(entity), cancellationToken);
+            var query = new QueryFactory().User
+            .Where(UserFields.UserId == userId);
 
-            if (!fetched) {
-                logger.LogWarning("Failed to fetch user by id: {UserId}", userId);
+            var entity = await adapter.FetchFirstAsync<UserEntity>(query, cancellationToken);
+            if (entity == null) {
+                Logger.LogWarning("User not found for updating last login: {UserId}", userId);
                 return Result<bool>.Success(false);
             }
             entity.LastLoginAt = lastLogin;
-            var saved =  await adapter.SaveEntityAsync(entity, cancellationToken);
+            var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
 
             if (!saved) {
-                logger.LogWarning("Failed to update last login for user id: {UserId}", userId);
+                Logger.LogError("Failed to update last login for user: {UserId}", userId);
                 return Result<bool>.Success(false);
             }
-            logger.LogInformation("Update last login for user id: {UserId}", userId);
+            Logger.LogInformation("Last login updated for user: {UserId}", userId);
             return Result<bool>.Success(true);
         }
         catch (Exception ex) {
-            logger.LogError(ex, "Error validating update last login for user: {UserId}", userId);
-            return Result<bool>.Failure("An error occurred while validating update last login", "UPDATE_LAST_LOGIN");
+            Logger.LogError(ex, "Error updating last login for user: {UserId}", userId);
+            return Result<bool>.Failure("An error occurred while updating last login", "UPDATE_LAST_LOGIN");
         }
     }
 
@@ -380,35 +367,34 @@ public class AuthenticationRepository(
     {
         try {
 
-            var bucket = new RelationPredicateBucket();
-            var filter = new PredicateExpression();
-            filter.Add(UserFields.Email == emailOrUsername);
-            filter.AddWithOr(UserFields.Username == emailOrUsername);
-            bucket.PredicateExpression.Add(filter);
-
             var adapter = GetAdapter(); // Sử dụng adapter phù hợp
-            var userEntity = await Task.Run(() => adapter.FetchNewEntity<UserEntity>(bucket), cancellationToken);
+            var query = new QueryFactory().User
+            .Where(UserFields.Email == emailOrUsername | UserFields.Username == emailOrUsername);
+            var userEntity = await adapter.FetchFirstAsync<UserEntity>(query, cancellationToken);
 
             if (userEntity == null) {
-                logger.LogWarning("User not found for failed login attempt: {EmailOrUsername}", emailOrUsername);
+                Logger.LogWarning("User not found for failed login attempt: {EmailOrUsername}", emailOrUsername);
+                return Result<bool>.Success(false);
+            }
+            if(userEntity.FailedLoginAttempts >= 5) {
+                Logger.LogWarning("User has reached maximum failed login attempts: {EmailOrUsername}", emailOrUsername);
                 return Result<bool>.Success(false);
             }
 
             userEntity.FailedLoginAttempts = userEntity.FailedLoginAttempts + 1;
-            userEntity.LastLoginAt = DateTime.UtcNow;
+            userEntity.LastFailedLogin = DateTime.UtcNow;
+            userEntity.LockedUntil = DateTime.UtcNow.AddMinutes(15);    
 
             var saved = await adapter.SaveEntityAsync(userEntity, cancellationToken);
-
             if (!saved) {
-                logger.LogError("Failed to record failed login attempt for: {EmailOrUsername}", emailOrUsername);
-                return Result<bool>.Failure("Failed to record login attempt", "LOGIN_001");
+                Logger.LogError("Failed to record failed login attempt for: {EmailOrUsername}", emailOrUsername);
+                return Result<bool>.Failure("Failed to record failed login attempt", "LOGIN_001");
             }
-
-            logger.LogInformation("Recorded failed login attempt for: {EmailOrUsername}", emailOrUsername);
+            Logger.LogInformation("Failed login attempt recorded for: {EmailOrUsername}", emailOrUsername);
             return Result<bool>.Success(true);
         }
         catch (Exception ex) {
-            logger.LogError(ex, "Error recording failed login attempt for: {EmailOrUsername}", emailOrUsername);
+            Logger.LogError(ex, "Error recording failed login attempt for: {EmailOrUsername}", emailOrUsername);
             return Result<bool>.Failure("An error occurred while recording failed login attempt", "LOGIN_ERROR");
         }
     }
@@ -418,28 +404,21 @@ public class AuthenticationRepository(
         try
         {
             
-            var bucket = new RelationPredicateBucket();
-            var filter = new PredicateExpression();
-            filter.Add(UserFields.Email == emailOrUsername);
-            filter.AddWithOr(UserFields.Username == emailOrUsername);
-            bucket.PredicateExpression.Add(filter);
-
             var adapter = GetAdapter(); // Sử dụng adapter phù hợp
-            var userEntity = await Task.Run(() => adapter.FetchNewEntity<UserEntity>(bucket), cancellationToken);
+            var query = new QueryFactory().User
+            .Where(UserFields.Email == emailOrUsername | UserFields.Username == emailOrUsername);
+            var userEntity = await adapter.FetchFirstAsync<UserEntity>(query, cancellationToken);
 
-            if (userEntity == null)
-            {
-                logger.LogWarning("User not found for getting failed login attempts: {EmailOrUsername}", emailOrUsername);
+            if (userEntity == null) {
+                Logger.LogWarning("User not found for getting failed login attempts: {EmailOrUsername}", emailOrUsername);
                 return Result<int>.Success(0);
             }
 
-            var attempts = userEntity.FailedLoginAttempts;
-            logger.LogInformation("Failed login attempts for {EmailOrUsername}: {Attempts}", emailOrUsername, attempts);
-            return Result<int>.Success(attempts);
+            return Result<int>.Success(userEntity.FailedLoginAttempts);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error getting failed login attempts for: {EmailOrUsername}", emailOrUsername);
+            Logger.LogError(ex, "Error getting failed login attempts for: {EmailOrUsername}", emailOrUsername);
             return Result<int>.Failure("An error occurred while getting failed login attempts", "LOGIN_ERROR");
         }
     }
@@ -448,35 +427,29 @@ public class AuthenticationRepository(
     {
         try {
 
-            var bucket = new RelationPredicateBucket();
-            var filter = new PredicateExpression();
-            filter.Add(UserFields.Email == emailOrUsername);
-            filter.AddWithOr(UserFields.Username == emailOrUsername);
-            bucket.PredicateExpression.Add(filter);
-
             var adapter = GetAdapter(); // Sử dụng adapter phù hợp
-            var userEntity = await Task.Run(() => adapter.FetchNewEntity<UserEntity>(bucket), cancellationToken);
+            var query = new QueryFactory().User
+            .Where(UserFields.Email == emailOrUsername | UserFields.Username == emailOrUsername);
+            var userEntity = await adapter.FetchFirstAsync<UserEntity>(query, cancellationToken);
 
             if (userEntity == null) {
-                logger.LogWarning("User not found for resetting failed login attempts: {EmailOrUsername}", emailOrUsername);
+                Logger.LogWarning("User not found for resetting failed login attempts: {EmailOrUsername}", emailOrUsername);
                 return Result<bool>.Success(false);
             }
-
             userEntity.FailedLoginAttempts = 0;
             userEntity.LastFailedLogin = null;
-
+            userEntity.LockedUntil = null;
+            
             var saved = await adapter.SaveEntityAsync(userEntity, cancellationToken);
-
             if (!saved) {
-                logger.LogError("Failed to reset failed login attempts for: {EmailOrUsername}", emailOrUsername);
-                return Result<bool>.Failure("Failed to reset login attempts", "LOGIN_002");
+                Logger.LogError("Failed to reset failed login attempts for: {EmailOrUsername}", emailOrUsername);
+                return Result<bool>.Failure("Failed to reset failed login attempts", "LOGIN_002");
             }
-
-            logger.LogInformation("Reset failed login attempts for: {EmailOrUsername}", emailOrUsername);
+            Logger.LogInformation("Failed login attempts reseted for: {EmailOrUsername}", emailOrUsername);
             return Result<bool>.Success(true);
         }
         catch (Exception ex) {
-            logger.LogError(ex, "Error resetting failed login attempts for: {EmailOrUsername}", emailOrUsername);
+            Logger.LogError(ex, "Error resetting failed login attempts for: {EmailOrUsername}", emailOrUsername);
             return Result<bool>.Failure("An error occurred while resetting failed login attempts", "LOGIN_ERROR");
         }
     }
@@ -484,32 +457,34 @@ public class AuthenticationRepository(
     public async Task<Result<List<string>>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken = default)
     {
         try {
-            var userRoleAssignment = new EntityCollection<UserRoleAssignmentEntity>();
-
-            var prefetchPath = new PrefetchPath2(EntityType.UserRoleAssignmentEntity);
-            prefetchPath.Add(UserRoleAssignmentEntity.PrefetchPathUserRole);
-
-            var filter = new PredicateExpression(UserRoleAssignmentFields.UserId == userId);
-
-            var queryParameter = new QueryParameters {
-                CollectionToFetch = userRoleAssignment,
-                FilterToUse = filter,
-                PrefetchPathToUse = prefetchPath
-            };
 
             var adapter = GetAdapter(); // Sử dụng adapter phù hợp
-            await adapter.FetchEntityCollectionAsync(queryParameter, cancellationToken);
 
-            var roleNames = userRoleAssignment
-                .Select(ura => ura.UserRole.RoleName)
-                .Where(name => !string.IsNullOrEmpty(name))
-                .ToList();
+            var qf = new QueryFactory();
+            var query = qf.Create<UserRoleAssignmentEntity>()
+                .Where(UserRoleAssignmentFields.UserId == userId)
+                .WithPath(UserRoleAssignmentEntity.PrefetchPathUserRole)
+                .WithPath(UserRoleAssignmentEntity.PrefetchPathUser1);
 
-            logger.LogInformation("Retrieved {Count} roles for user: {UserId}", roleNames.Count, userId);
+
+            var userRoleAssignments = await adapter.FetchQueryAsync(query, cancellationToken) as EntityCollection<UserRoleAssignmentEntity>;
+            
+            var roleNames = new List<string>();
+            if (userRoleAssignments != null)
+            {
+                foreach (var userRoleAssignment in userRoleAssignments)
+                {
+                    if (userRoleAssignment.UserRole != null)
+                    {
+                        roleNames.Add(userRoleAssignment.UserRole.RoleName);
+                    }
+                }
+            }
+            Logger.LogInformation("Retrieved {Count} roles for user: {UserId}", roleNames.Count, userId);
             return Result<List<string>>.Success(roleNames);
         }
         catch (Exception ex) {
-            logger.LogError(ex, "Error getting user roles for: {UserId}", userId);
+            Logger.LogError(ex, "Error getting user roles for: {UserId}", userId);
             return Result<List<string>>.Failure("An error occurred while getting user roles", "ROLE_ERROR");
         }
     }

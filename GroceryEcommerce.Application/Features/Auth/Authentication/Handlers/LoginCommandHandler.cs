@@ -14,9 +14,6 @@ public sealed class
     IUserRepository userRepository,
     IPasswordHashService passwordHashService,
     ITokenService tokenService,
-    ICacheService cacheService,
-    IUnitOfWorkService unitOfWorkService,
-    IMapper mapper,
     ILogger<LoginCommandHandler> logger)
     : IRequestHandler<LoginCommand, Result<LoginResponse>>
 {

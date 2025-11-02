@@ -1,4 +1,3 @@
-using System.Linq;
 using AutoMapper;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
