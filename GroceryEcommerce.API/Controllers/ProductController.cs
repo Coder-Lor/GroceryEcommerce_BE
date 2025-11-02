@@ -36,6 +36,7 @@ public class ProductController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
 
+    [AllowAnonymous]
     [HttpGet("{productId}")]
     public async Task<ActionResult<Result<GetProductByIdResponse>>> GetById([FromRoute] Guid productId)
     {

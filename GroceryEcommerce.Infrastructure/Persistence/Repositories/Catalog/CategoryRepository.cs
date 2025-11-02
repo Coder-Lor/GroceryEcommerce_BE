@@ -72,7 +72,7 @@ public class CategoryRepository(
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
         searchTerm = searchTerm.Trim().ToLower();
-        
+
         return query.Where(
             CategoryFields.Name.Contains(searchTerm) |
             CategoryFields.Slug.Contains(searchTerm) |

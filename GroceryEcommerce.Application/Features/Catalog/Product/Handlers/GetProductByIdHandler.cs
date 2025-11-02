@@ -16,16 +16,25 @@ public class GetProductByIdHandler(
 {
     public async Task<Result<GetProductByIdResponse>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Handling GetProductByIdQuery for product: {ProductId}", request.ProductId);
-
-        var productResult = await repository.GetByIdAsync(request.ProductId, cancellationToken);
-        if (!productResult.IsSuccess || productResult.Data is null)
+        try
         {
-            logger.LogWarning("Product not found: {ProductId}", request.ProductId);
-            return Result<GetProductByIdResponse>.Failure("Product not found");
-        }
+            logger.LogInformation("Handling GetProductByIdQuery for product: {ProductId}", request.ProductId);
 
-        var response = mapper.Map<GetProductByIdResponse>(productResult.Data);
-        return Result<GetProductByIdResponse>.Success(response);
+            var productResult = await repository.GetByIdAsync(request.ProductId, cancellationToken);
+            if (!productResult.IsSuccess || productResult.Data is null)
+            {
+                logger.LogWarning("Product not found: {ProductId}", request.ProductId);
+                return Result<GetProductByIdResponse>.Failure("Product not found");
+            }
+
+            var response = mapper.Map<GetProductByIdResponse>(productResult.Data);
+            logger.LogInformation("Product retrieved successfully: {ProductId}", request.ProductId);
+            return Result<GetProductByIdResponse>.Success(response);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting product by ID: {ProductId}", request.ProductId);
+            return Result<GetProductByIdResponse>.Failure("An error occurred while retrieving the product.");
+        }
     }
 }
