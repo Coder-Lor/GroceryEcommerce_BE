@@ -10,6 +10,7 @@ using Npgsql;
 using Scalar.AspNetCore;
 using SD.LLBLGen.Pro.DQE.PostgreSql;
 using SD.LLBLGen.Pro.ORMSupportClasses;
+using SD.Tools.OrmProfiler.Interceptor;
 using Microsoft.AspNetCore.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -70,16 +71,24 @@ internal class Program
             options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50MB
         });
 
+        //    Bọc DbProviderFactory gốc bằng Interceptor
+        //    Đặt tên app tuỳ bạn
+        var wrappedFactoryType = InterceptorCore.Initialize("GroceryEcommerce.API", typeof(NpgsqlFactory));
+
         // Đăng ký DbProviderFactory với .NET
         DbProviderFactories.RegisterFactory("Npgsql", NpgsqlFactory.Instance);
 
         // ⚡ Cấu hình LLBLGen DQE cho PostgreSQL (RuntimeConfiguration)
         RuntimeConfiguration.ConfigureDQE<PostgreSqlDQEConfiguration>(c =>
         {
-            c.AddDbProviderFactory(typeof(NpgsqlFactory)); // dùng provider Npgsql
+            c.AddDbProviderFactory(wrappedFactoryType); // dùng provider Npgsql
             c.SetTraceLevel(TraceLevel.Verbose); // bật log (optional)
         });
-        
+
+        //RuntimeConfiguration.Tracing
+        //    .SetTraceLevel("ORMPersistenceExecution", TraceLevel.Verbose)
+        //    .SetTraceLevel("ORMPlainSQLQueryExecution", TraceLevel.Verbose);
+
         // Clean Architecture layers
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddAutoMapper(cfg =>
