@@ -62,6 +62,10 @@ public sealed class UpdateUserCommandHandler(IUserRepository repository)
         user.Email = request.Email ?? user.Email;
         user.Username = request.Username ?? user.Username;
         user.PasswordHash = request.PasswordHash ?? user.PasswordHash;
+        if (request.FirstName is not null) user.FirstName = request.FirstName;
+        if (request.LastName is not null) user.LastName = request.LastName;
+        if (request.PhoneNumber is not null) user.PhoneNumber = request.PhoneNumber;
+        if (request.DateOfBirth.HasValue) user.DateOfBirth = request.DateOfBirth;
         user.UpdatedAt = DateTime.UtcNow;
 
         return await repository.UpdateAsync(user, cancellationToken);
