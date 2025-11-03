@@ -32,7 +32,7 @@ public class ProductVariantController(IMediator mediator, IAzureBlobStorageServi
     public async Task<ActionResult<Result<CreateProductVariantResponse>>> CreateVariantWithFile(
         [FromForm] Guid productId,
         [FromForm] string sku,
-        [FromForm] string name,
+        [FromForm] string variantName,
         [FromForm] decimal price,
         [FromForm] int stockQuantity,
         [FromForm] int minStockLevel,
@@ -50,7 +50,7 @@ public class ProductVariantController(IMediator mediator, IAzureBlobStorageServi
             imageUrl = await blobStorageService.UploadImageAsync(stream, imageFile.FileName, imageFile.ContentType, cancellationToken);
         }
 
-        var command = new CreateProductVariantCommand(productId, sku, name, price, discountPrice, stockQuantity, minStockLevel, weight, dimensions, imageUrl, status);
+        var command = new CreateProductVariantCommand(productId, sku, variantName, price, discountPrice, stockQuantity, minStockLevel, weight, dimensions, imageUrl, status);
         var result = await mediator.Send(command);
         return Ok(result);
     }

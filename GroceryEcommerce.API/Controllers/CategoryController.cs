@@ -106,7 +106,7 @@ public class CategoryController(IMediator mediator, IAzureBlobStorageService blo
     [HttpPost("create-with-file")]
     [Consumes("multipart/form-data")]
     public async Task<ActionResult<Result<CategoryDto>>> CreateCategoryWithFile(
-        [FromForm] string name,
+        [FromForm] string categoryName,
         [FromForm] string? slug,
         [FromForm] string? description,
         [FromForm] string? metaTitle,
@@ -124,7 +124,7 @@ public class CategoryController(IMediator mediator, IAzureBlobStorageService blo
             imageUrl = await blobStorageService.UploadImageAsync(stream, imageFile.FileName, imageFile.ContentType, cancellationToken);
         }
 
-        var command = new CreateCategoryCommand(name, slug, description, imageUrl, metaTitle, metaDescription, parentCategoryId, status, displayOrder);
+        var command = new CreateCategoryCommand(categoryName, slug, description, imageUrl, metaTitle, metaDescription, parentCategoryId, status, displayOrder);
         var result = await mediator.Send(command);
         return Ok(result);
     }
