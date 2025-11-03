@@ -36,6 +36,7 @@ public class CreateCategoryCommandHandler(
                 Name = request.Name,
                 Slug = request.Slug,
                 Description = request.Description,
+                ImageUrl = request.ImageUrl,
                 MetaTitle = request.MetaTitle,
                 MetaDescription = request.MetaDescription,
                 ParentCategoryId = request.ParentCategoryId,

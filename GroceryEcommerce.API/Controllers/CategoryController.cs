@@ -5,13 +5,15 @@ using GroceryEcommerce.Application.Features.Catalog.Brand.Queries;
 using GroceryEcommerce.Application.Features.Catalog.Category.Commands;
 using GroceryEcommerce.Application.Features.Catalog.Category.Queries;
 using GroceryEcommerce.Application.Models.Catalog;
+using GroceryEcommerce.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Http;
 
 
 namespace GroceryEcommerce.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CategoryController(IMediator mediator) : ControllerBase
+public class CategoryController(IMediator mediator, IAzureBlobStorageService blobStorageService) : ControllerBase
 {
     [HttpGet("paging")  ]
     public async Task<ActionResult<Result<PagedResult<CategoryDto>>>> GetCategoriesPaging([FromQuery] PagedRequest request)
@@ -100,12 +102,53 @@ public class CategoryController(IMediator mediator) : ControllerBase
         var result = await mediator.Send(request);
         return Ok(result);
     }
+
+    [HttpPost("create-with-file")]
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<Result<CategoryDto>>> CreateCategoryWithFile(
+        [FromForm] string name,
+        [FromForm] string? slug,
+        [FromForm] string? description,
+        [FromForm] string? metaTitle,
+        [FromForm] string? metaDescription,
+        [FromForm] Guid? parentCategoryId,
+        [FromForm] short status,
+        [FromForm] int displayOrder,
+        [FromForm] IFormFile? imageFile,
+        CancellationToken cancellationToken)
+    {
+        string? imageUrl = null;
+        if (imageFile != null && imageFile.Length > 0)
+        {
+            using var stream = imageFile.OpenReadStream();
+            imageUrl = await blobStorageService.UploadImageAsync(stream, imageFile.FileName, imageFile.ContentType, cancellationToken);
+        }
+
+        var command = new CreateCategoryCommand(name, slug, description, imageUrl, metaTitle, metaDescription, parentCategoryId, status, displayOrder);
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
     
     [HttpPut("{categoryId}")]
     public async Task<ActionResult<Result<CategoryDto>>> UpdateCategory([FromRoute] Guid categoryId, [FromBody] UpdateCategoryCommand request)
     {
         var result = await mediator.Send(request);
         return Ok(result);
+    }
+
+    [HttpPut("{categoryId}/upload-image")]
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<Result<string>>> UploadCategoryImage([FromRoute] Guid categoryId, [FromForm] IFormFile file, CancellationToken cancellationToken)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest(Result<string>.Failure("No file uploaded"));
+        }
+
+        using var stream = file.OpenReadStream();
+        var imageUrl = await blobStorageService.UploadImageAsync(stream, file.FileName, file.ContentType, cancellationToken);
+        // Endpoint này chỉ upload và trả về URL; FE sẽ gọi UpdateCategory kèm ImageUrl.
+        return Ok(Result<string>.Success(imageUrl));
     }
     
     [HttpDelete("{categoryId}")]

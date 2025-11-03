@@ -4,12 +4,14 @@ using GroceryEcommerce.Application.Features.Catalog.ProductVariant.Commands;
 using GroceryEcommerce.Application.Features.Catalog.ProductVariant.Queries;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Models.Catalog;
+using GroceryEcommerce.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace GroceryEcommerce.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductVariantController(IMediator mediator) : ControllerBase
+public class ProductVariantController(IMediator mediator, IAzureBlobStorageService blobStorageService) : ControllerBase
 {
     [HttpPost("create")]
     public async Task<ActionResult<Result<CreateProductVariantResponse>>> CreateVariant([FromBody] CreateProductVariantCommand command)
@@ -23,6 +25,48 @@ public class ProductVariantController(IMediator mediator) : ControllerBase
     {
         var result = await mediator.Send(command);
         return Ok(result);
+    }
+
+    [HttpPost("create-with-file")]
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<Result<CreateProductVariantResponse>>> CreateVariantWithFile(
+        [FromForm] Guid productId,
+        [FromForm] string sku,
+        [FromForm] string name,
+        [FromForm] decimal price,
+        [FromForm] int stockQuantity,
+        [FromForm] int minStockLevel,
+        [FromForm] short status,
+        [FromForm] decimal? discountPrice,
+        [FromForm] decimal? weight,
+        [FromForm] string? dimensions,
+        [FromForm] IFormFile? imageFile,
+        CancellationToken cancellationToken)
+    {
+        string? imageUrl = null;
+        if (imageFile != null && imageFile.Length > 0)
+        {
+            using var stream = imageFile.OpenReadStream();
+            imageUrl = await blobStorageService.UploadImageAsync(stream, imageFile.FileName, imageFile.ContentType, cancellationToken);
+        }
+
+        var command = new CreateProductVariantCommand(productId, sku, name, price, discountPrice, stockQuantity, minStockLevel, weight, dimensions, imageUrl, status);
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPut("{variantId}/upload-image")]
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<Result<string>>> UploadVariantImage([FromRoute] Guid variantId, [FromForm] IFormFile file, CancellationToken cancellationToken)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest(Result<string>.Failure("No file uploaded"));
+        }
+        using var stream = file.OpenReadStream();
+        var imageUrl = await blobStorageService.UploadImageAsync(stream, file.FileName, file.ContentType, cancellationToken);
+        // Endpoint trả URL; FE gọi UpdateVariant với ImageUrl
+        return Ok(Result<string>.Success(imageUrl));
     }
 
     [HttpDelete("delete/{variantId}")]
