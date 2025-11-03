@@ -20,6 +20,12 @@ public class CatalogProfile : Profile
         CreateMap<UpdateCategoryRequest, Category>()
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
+        CreateMap<Category, CreateCategoryResponse>()
+            .IncludeBase<Category, CategoryDto>();
+
+        CreateMap<Category, UpdateCategoryResponse>()
+                .IncludeBase<Category, CategoryDto>();
+
         // Brand mappings
         CreateMap<Brand, BrandDto>()
             .ForMember(dest => dest.ProductCount, opt => opt.MapFrom(src => src.Products.Count))

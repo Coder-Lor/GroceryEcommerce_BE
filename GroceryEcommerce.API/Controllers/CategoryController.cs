@@ -5,15 +5,12 @@ using GroceryEcommerce.Application.Features.Catalog.Brand.Queries;
 using GroceryEcommerce.Application.Features.Catalog.Category.Commands;
 using GroceryEcommerce.Application.Features.Catalog.Category.Queries;
 using GroceryEcommerce.Application.Models.Catalog;
-using GroceryEcommerce.Application.Interfaces.Services;
-using Microsoft.AspNetCore.Http;
-
 
 namespace GroceryEcommerce.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CategoryController(IMediator mediator, IAzureBlobStorageService blobStorageService) : ControllerBase
+public class CategoryController(IMediator mediator) : ControllerBase
 {
     [HttpGet("paging")  ]
     public async Task<ActionResult<Result<PagedResult<CategoryDto>>>> GetCategoriesPaging([FromQuery] PagedRequest request)
@@ -97,7 +94,7 @@ public class CategoryController(IMediator mediator, IAzureBlobStorageService blo
     }
     
     [HttpPost]
-    public async Task<ActionResult<Result<CategoryDto>>> CreateCategory([FromBody] CreateCategoryCommand request)
+    public async Task<ActionResult<Result<CreateCategoryResponse>>> CreateCategory([FromBody] CreateCategoryCommand request)
     {
         var result = await mediator.Send(request);
         return Ok(result);
@@ -105,67 +102,45 @@ public class CategoryController(IMediator mediator, IAzureBlobStorageService blo
 
     [HttpPost("create-with-file")]
     [Consumes("multipart/form-data")]
-    public async Task<ActionResult<Result<CategoryDto>>> CreateCategoryWithFile(
-        [FromForm] string categoryName,
-        [FromForm] string? slug,
-        [FromForm] string? description,
-        [FromForm] string? metaTitle,
-        [FromForm] string? metaDescription,
-        [FromForm] Guid? parentCategoryId,
-        [FromForm] short status,
-        [FromForm] int displayOrder,
-        [FromForm] IFormFile? imageFile,
+    public async Task<ActionResult<Result<CreateCategoryResponse>>> CreateCategoryWithFile(
+        [FromForm] CreateCategoryCommand command,
         CancellationToken cancellationToken)
     {
-        string? imageUrl = null;
-        if (imageFile != null && imageFile.Length > 0)
-        {
-            using var stream = imageFile.OpenReadStream();
-            imageUrl = await blobStorageService.UploadImageAsync(stream, imageFile.FileName, imageFile.ContentType, cancellationToken);
-        }
-
-        var command = new CreateCategoryCommand(categoryName, slug, description, imageUrl, metaTitle, metaDescription, parentCategoryId, status, displayOrder);
-        var result = await mediator.Send(command);
+        var result = await mediator.Send(command, cancellationToken);
         return Ok(result);
     }
     
-    [HttpPut("{categoryId}")]
-    public async Task<ActionResult<Result<CategoryDto>>> UpdateCategory([FromRoute] Guid categoryId, [FromBody] UpdateCategoryCommand request)
+    [HttpPut("update")]
+    public async Task<ActionResult<Result<UpdateCategoryResponse>>> UpdateCategory([FromBody] UpdateCategoryCommand request)
     {
         var result = await mediator.Send(request);
         return Ok(result);
     }
-
-    [HttpPut("{categoryId}/upload-image")]
+    [HttpPut("update-with-file")]
     [Consumes("multipart/form-data")]
-    public async Task<ActionResult<Result<string>>> UploadCategoryImage([FromRoute] Guid categoryId, [FromForm] IFormFile file, CancellationToken cancellationToken)
+    public async Task<ActionResult<Result<bool>>> UpdateCategoryWithFile(
+        [FromForm] UpdateCategoryWithFileCommand command,
+        CancellationToken cancellationToken)
     {
-        if (file == null || file.Length == 0)
-        {
-            return BadRequest(Result<string>.Failure("No file uploaded"));
-        }
-
-        using var stream = file.OpenReadStream();
-        var imageUrl = await blobStorageService.UploadImageAsync(stream, file.FileName, file.ContentType, cancellationToken);
-        // Endpoint này chỉ upload và trả về URL; FE sẽ gọi UpdateCategory kèm ImageUrl.
-        return Ok(Result<string>.Success(imageUrl));
+        var result = await mediator.Send(command, cancellationToken);
+        return Ok(result);
     }
-    
+
     [HttpDelete("{categoryId}")]
-    public async Task<ActionResult<Result<CategoryDto>>> DeleteCategory([FromRoute] Guid categoryId)
+    public async Task<ActionResult<Result<bool>>> DeleteCategory([FromRoute] Guid categoryId)
     {
-        var result = await mediator.Send(new DeleteCategoryCommand(categoryId));
+      var result = await mediator.Send(new DeleteCategoryCommand(categoryId));
         return Ok(result);
     }
     
     [HttpPut("status/{categoryId}")]
-    public async Task<ActionResult<Result<CategoryDto>>> UpdateCategoryStatus([FromRoute] Guid categoryId, [FromBody] UpdateCategoryStatusCommand request)
+    public async Task<ActionResult<Result<bool>>> UpdateCategoryStatus([FromRoute] Guid categoryId, [FromBody] UpdateCategoryStatusCommand request)
     {
         var result = await mediator.Send(request);
-        return Ok(result);
+      return Ok(result);
     }
 
-    [HttpGet]
+    [HttpGet("exists/{categoryId}")]
     public async Task<ActionResult<Result<bool>>> CheckCategoryExistsById([FromRoute] Guid categoryId)
     {
         var query = new CheckCategoryExistsByIdQuery(categoryId);

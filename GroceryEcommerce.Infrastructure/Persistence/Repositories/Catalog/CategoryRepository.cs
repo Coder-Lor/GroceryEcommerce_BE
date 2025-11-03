@@ -307,7 +307,7 @@ public class CategoryRepository(
         try
         {
             var entity = Mapper.Map<CategoryEntity>(category);
-            entity.IsNew = true;
+            entity.IsNew = false;
             var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved)
