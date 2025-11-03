@@ -1,6 +1,7 @@
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Models.Catalog;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace GroceryEcommerce.Application.Features.Catalog.Category.Commands;
 
@@ -8,7 +9,7 @@ public record CreateCategoryCommand(
     string Name,
     string? Slug,
     string? Description,
-    string? ImageUrl,
+    IFormFile? Image,
     string? MetaTitle,
     string? MetaDescription,
     Guid? ParentCategoryId,

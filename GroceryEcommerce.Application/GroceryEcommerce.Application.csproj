@@ -22,8 +22,4 @@
     <ProjectReference Include="..\GroceryEcommerce.Domain\GroceryEcommerce.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Catalog\" />
-  </ItemGroup>
-
 </Project>

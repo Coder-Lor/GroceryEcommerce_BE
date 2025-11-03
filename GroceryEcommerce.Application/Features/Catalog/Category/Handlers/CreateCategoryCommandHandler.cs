@@ -13,6 +13,7 @@ public class CreateCategoryCommandHandler(
     IMapper mapper,
     ICategoryRepository categoryRepository,
     ICurrentUserService currentUserService,
+    IAzureBlobStorageService blobStorageService,
     ILogger<CreateCategoryCommandHandler> logger
 ) : IRequestHandler<CreateCategoryCommand, Result<CreateCategoryResponse>>
 {
@@ -29,6 +30,27 @@ public class CreateCategoryCommandHandler(
                 return Result<CreateCategoryResponse>.Failure("Category with this name already exists.");
             }
 
+            // Upload image to Azure Blob Storage if provided
+            string? imageUrl = null;
+            if (request.Image != null && request.Image.Length > 0)
+            {
+                try
+                {
+                    using var stream = request.Image.OpenReadStream();
+                    imageUrl = await blobStorageService.UploadImageAsync(
+                        stream,
+                        request.Image.FileName,
+                        request.Image.ContentType,
+                        cancellationToken);
+
+                    logger.LogInformation("Image uploaded successfully for category: {Name}", request.Name);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Failed to upload image for category: {Name}", request.Name);
+                    return Result<CreateCategoryResponse>.Failure("Failed to upload category image.");
+                }
+            }
 
             var category = new Domain.Entities.Catalog.Category
             {
@@ -36,7 +58,7 @@ public class CreateCategoryCommandHandler(
                 Name = request.Name,
                 Slug = request.Slug,
                 Description = request.Description,
-                ImageUrl = request.ImageUrl,
+                ImageUrl = imageUrl,
                 MetaTitle = request.MetaTitle,
                 MetaDescription = request.MetaDescription,
                 ParentCategoryId = request.ParentCategoryId,
@@ -51,12 +73,28 @@ public class CreateCategoryCommandHandler(
             if (!result.IsSuccess)
             {
                 logger.LogError("Failed to create category: {Name}", request.Name);
+
+                // Rollback: Delete uploaded image if category creation fails
+                if (!string.IsNullOrEmpty(imageUrl))
+                {
+                    try
+                    {
+                        var blobName = imageUrl.Split('/').Last();
+                        await blobStorageService.DeleteImageAsync(blobName, cancellationToken);
+                        logger.LogInformation("Rolled back image upload for failed category creation");
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex, "Failed to delete uploaded image during rollback");
+                    }
+                }
+
                 return Result<CreateCategoryResponse>.Failure("Failed to create category.");
             }
 
             // Map to response
             var response = mapper.Map<CreateCategoryResponse>(result.Data);
-            
+
             logger.LogInformation("Category created successfully: {CategoryId}", result.Data.CategoryId);
             return Result<CreateCategoryResponse>.Success(response);
         }
