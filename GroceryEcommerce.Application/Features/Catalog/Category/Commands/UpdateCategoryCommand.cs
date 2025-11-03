@@ -9,6 +9,7 @@ public record UpdateCategoryCommand(
     string Name,
     string? Slug,
     string? Description,
+    string? ImageUrl,
     string? MetaTitle,
     string? MetaDescription,
     Guid? ParentCategoryId,

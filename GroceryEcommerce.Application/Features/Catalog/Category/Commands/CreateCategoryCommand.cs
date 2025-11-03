@@ -8,6 +8,7 @@ public record CreateCategoryCommand(
     string Name,
     string? Slug,
     string? Description,
+    string? ImageUrl,
     string? MetaTitle,
     string? MetaDescription,
     Guid? ParentCategoryId,
