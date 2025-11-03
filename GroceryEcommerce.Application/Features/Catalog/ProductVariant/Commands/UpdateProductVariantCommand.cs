@@ -16,4 +16,4 @@ public record UpdateProductVariantCommand(
     string? Dimensions,
     string? ImageUrl,
     short Status
-) : IRequest<Result<UpdateProductVariantResponse>>;
+) : IRequest<Result<bool>>;

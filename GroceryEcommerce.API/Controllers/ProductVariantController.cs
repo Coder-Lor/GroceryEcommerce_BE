@@ -14,14 +14,14 @@ namespace GroceryEcommerce.API.Controllers;
 public class ProductVariantController(IMediator mediator, IAzureBlobStorageService blobStorageService) : ControllerBase
 {
     [HttpPost("create")]
-    public async Task<ActionResult<Result<CreateProductVariantResponse>>> CreateVariant([FromBody] CreateProductVariantCommand command)
+    public async Task<ActionResult<Result<bool>>> CreateVariant([FromBody] CreateProductVariantCommand command)
     {
         var result = await mediator.Send(command);
         return Ok(result);
     }
 
     [HttpPut("update")]
-    public async Task<ActionResult<Result<UpdateProductVariantResponse>>> UpdateVariant([FromBody] UpdateProductVariantCommand command)
+    public async Task<ActionResult<Result<bool>>> UpdateVariant([FromBody] UpdateProductVariantCommand command)
     {
         var result = await mediator.Send(command);
         return Ok(result);
@@ -29,7 +29,7 @@ public class ProductVariantController(IMediator mediator, IAzureBlobStorageServi
 
     [HttpPost("create-with-file")]
     [Consumes("multipart/form-data")]
-    public async Task<ActionResult<Result<CreateProductVariantResponse>>> CreateVariantWithFile(
+    public async Task<ActionResult<Result<bool>>> CreateVariantWithFile(
         [FromForm] Guid productId,
         [FromForm] string sku,
         [FromForm] string name,

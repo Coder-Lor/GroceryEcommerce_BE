@@ -12,16 +12,16 @@ public class CreateProductVariantCommandHandler(
     IProductVariantRepository repository,
     IMapper mapper,
     ILogger<CreateProductVariantCommandHandler> logger
-) : IRequestHandler<CreateProductVariantCommand, Result<CreateProductVariantResponse>>
+) : IRequestHandler<CreateProductVariantCommand, Result<bool>>
 {
-    public async Task<Result<CreateProductVariantResponse>> Handle(CreateProductVariantCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(CreateProductVariantCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Creating product variant for product {ProductId}", request.ProductId);
 
         var existingVariant = await repository.GetBySkuAsync(request.Sku, cancellationToken);
         if (existingVariant.IsSuccess && existingVariant.Data != null)
         {
-            return Result<CreateProductVariantResponse>.Failure("Variant with this SKU already exists");
+            return Result<bool>.Failure("Variant with this SKU already exists");
         }
 
         var createReq = new CreateProductVariantRequest
@@ -44,10 +44,9 @@ public class CreateProductVariantCommandHandler(
         var result = await repository.CreateAsync(entity, cancellationToken);
         if (!result.IsSuccess)
         {
-            return Result<CreateProductVariantResponse>.Failure(result.ErrorMessage ?? "Failed to create product variant");
+            return Result<bool>.Failure(result.ErrorMessage ?? "Failed to create product variant");
         }
 
-        var response = mapper.Map<CreateProductVariantResponse>(result.Data);
-        return Result<CreateProductVariantResponse>.Success(response);
+        return Result<bool>.Success(true);
     }
 }

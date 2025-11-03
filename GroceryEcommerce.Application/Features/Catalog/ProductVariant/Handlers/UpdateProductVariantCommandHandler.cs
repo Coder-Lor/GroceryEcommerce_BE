@@ -12,9 +12,9 @@ public class UpdateProductVariantCommandHandler(
     IProductVariantRepository repository,
     IMapper mapper,
     ILogger<UpdateProductVariantCommandHandler> logger
-) : IRequestHandler<UpdateProductVariantCommand, Result<UpdateProductVariantResponse>>
+) : IRequestHandler<UpdateProductVariantCommand, Result<bool>>
 {
-    public async Task<Result<UpdateProductVariantResponse>> Handle(UpdateProductVariantCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(UpdateProductVariantCommand request, CancellationToken cancellationToken)
     {
         try {
             logger.LogInformation("Updating product variant {VariantId}", request.VariantId);
@@ -22,7 +22,7 @@ public class UpdateProductVariantCommandHandler(
             var existing = await repository.GetByIdAsync(request.VariantId, cancellationToken);
             if (!existing.IsSuccess || existing.Data is null)
             {
-                return Result<UpdateProductVariantResponse>.Failure("Product variant not found");
+                return Result<bool>.Failure("Product variant not found");
             }
 
             existing.Data.Sku = request.Sku;
@@ -38,15 +38,14 @@ public class UpdateProductVariantCommandHandler(
             var updateResult = await repository.UpdateAsync(existing.Data, cancellationToken);
             if (!updateResult.IsSuccess)
             {
-                return Result<UpdateProductVariantResponse>.Failure(updateResult.ErrorMessage ?? "Failed to update product variant");
+                return Result<bool>.Failure(updateResult.ErrorMessage ?? "Failed to update product variant");
             }
 
-            var response = mapper.Map<UpdateProductVariantResponse>(existing.Data);
-            return Result<UpdateProductVariantResponse>.Success(response);
+            return Result<bool>.Success(true);
         }
         catch (Exception ex){
             logger.LogError(ex, "Error updating product variant");
-            return Result<UpdateProductVariantResponse>.Failure("An error occurred while updating product variant.", ex.Message);
+            return Result<bool>.Failure("An error occurred while updating product variant.", ex.Message);
         }
     }
 }
