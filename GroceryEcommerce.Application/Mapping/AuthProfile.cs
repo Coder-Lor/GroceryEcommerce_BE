@@ -1,4 +1,5 @@
 using AutoMapper;
+using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Models;
 using GroceryEcommerce.Domain.Entities.Auth;
 
@@ -8,6 +9,15 @@ public class AuthProfile : Profile
 {
     public AuthProfile()
     {
+        // PagedResult mapping for User
+        CreateMap<PagedResult<User>, PagedResult<UserDto>>()
+            .ConvertUsing((src, dest, context) => new PagedResult<UserDto>(
+                context.Mapper.Map<List<UserDto>>(src.Items),
+                src.TotalCount,
+                src.Page,
+                src.PageSize
+            ));
+
         // User mappings
         CreateMap<User, UserDto>()
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => $"{src.FirstName} {src.LastName}".Trim()))
@@ -34,16 +44,16 @@ public class AuthProfile : Profile
         CreateMap<RefreshToken, RefreshTokenDto>()
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}".Trim()));
 
-            // Commands -> Domain entities (UserAddress)
-            CreateMap<Features.Auth.UserAddresses.Commands.CreateUserAddressCommand, UserAddress>()
-                .ForMember(dest => dest.AddressId, opt => opt.MapFrom(_ => Guid.NewGuid()))
-                .ForMember(dest => dest.ZipCode, opt => opt.MapFrom(src => src.PostalCode))
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
-                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => (DateTime?)null));
+        // Commands -> Domain entities (UserAddress)
+        CreateMap<Features.Auth.UserAddresses.Commands.CreateUserAddressCommand, UserAddress>()
+            .ForMember(dest => dest.AddressId, opt => opt.MapFrom(_ => Guid.NewGuid()))
+            .ForMember(dest => dest.ZipCode, opt => opt.MapFrom(src => src.PostalCode))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => (DateTime?)null));
 
-            CreateMap<Features.Auth.UserAddresses.Commands.UpdateUserAddressCommand, UserAddress>()
-                .ForMember(dest => dest.ZipCode, opt => opt.MapFrom(src => src.PostalCode))
-                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
+        CreateMap<Features.Auth.UserAddresses.Commands.UpdateUserAddressCommand, UserAddress>()
+            .ForMember(dest => dest.ZipCode, opt => opt.MapFrom(src => src.PostalCode))
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
     }
 
     private static string GetUserStatusName(short status)
