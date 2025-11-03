@@ -2,6 +2,7 @@ using AutoMapper;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Features.Catalog.ProductVariant.Commands;
 using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
+using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Application.Models.Catalog;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,7 @@ namespace GroceryEcommerce.Application.Features.Catalog.ProductVariant.Handlers;
 
 public class UpdateProductVariantCommandHandler(
     IProductVariantRepository repository,
+    IAzureBlobStorageService blobStorageService,
     IMapper mapper,
     ILogger<UpdateProductVariantCommandHandler> logger
 ) : IRequestHandler<UpdateProductVariantCommand, Result<bool>>
@@ -25,14 +27,24 @@ public class UpdateProductVariantCommandHandler(
                 return Result<bool>.Failure("Product variant not found");
             }
 
-            existing.Data.Sku = request.Sku;
-            existing.Data.Name = request.Name;
-            existing.Data.Price = request.Price;
-            existing.Data.DiscountPrice = request.DiscountPrice;
-            existing.Data.StockQuantity = request.StockQuantity;
-            existing.Data.Weight = request.Weight;
-            existing.Data.ImageUrl = request.ImageUrl;
-            existing.Data.Status = request.Status;
+            var updateReq = request.Request;
+
+            // Upload image in handler if provided
+            if (updateReq.ImageFile != null && updateReq.ImageFile.Content.Length > 0)
+            {
+                using var stream = new MemoryStream(updateReq.ImageFile.Content);
+                var imageUrl = await blobStorageService.UploadImageAsync(stream, updateReq.ImageFile.FileName, updateReq.ImageFile.ContentType, cancellationToken);
+                updateReq.ImageUrl = imageUrl;
+            }
+
+            existing.Data.Sku = updateReq.Sku;
+            existing.Data.Name = updateReq.Name;
+            existing.Data.Price = updateReq.Price;
+            existing.Data.DiscountPrice = updateReq.DiscountPrice;
+            existing.Data.StockQuantity = updateReq.StockQuantity;
+            existing.Data.Weight = updateReq.Weight;
+            existing.Data.ImageUrl = updateReq.ImageUrl;
+            existing.Data.Status = updateReq.Status;
             existing.Data.UpdatedAt = DateTime.UtcNow;
 
             var updateResult = await repository.UpdateAsync(existing.Data, cancellationToken);

@@ -5,6 +5,7 @@ using GroceryEcommerce.Application.Features.Catalog.ProductVariant.Queries;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Models.Catalog;
 using GroceryEcommerce.Application.Interfaces.Services;
+using GroceryEcommerce.Application.Models.Common;
 using Microsoft.AspNetCore.Http;
 
 namespace GroceryEcommerce.API.Controllers;
@@ -14,16 +15,16 @@ namespace GroceryEcommerce.API.Controllers;
 public class ProductVariantController(IMediator mediator, IAzureBlobStorageService blobStorageService) : ControllerBase
 {
     [HttpPost("create")]
-    public async Task<ActionResult<Result<bool>>> CreateVariant([FromBody] CreateProductVariantCommand command)
+    public async Task<ActionResult<Result<bool>>> CreateVariant([FromBody] CreateProductVariantRequest request)
     {
-        var result = await mediator.Send(command);
+        var result = await mediator.Send(new CreateProductVariantCommand(request));
         return Ok(result);
     }
 
     [HttpPut("update")]
-    public async Task<ActionResult<Result<bool>>> UpdateVariant([FromBody] UpdateProductVariantCommand command)
+    public async Task<ActionResult<Result<bool>>> UpdateVariant([FromQuery] Guid variantId, [FromBody] UpdateProductVariantRequest request)
     {
-        var result = await mediator.Send(command);
+        var result = await mediator.Send(new UpdateProductVariantCommand(variantId, request));
         return Ok(result);
     }
 
@@ -43,30 +44,67 @@ public class ProductVariantController(IMediator mediator, IAzureBlobStorageServi
         [FromForm] IFormFile? imageFile,
         CancellationToken cancellationToken)
     {
-        string? imageUrl = null;
-        if (imageFile != null && imageFile.Length > 0)
+        var request = new CreateProductVariantRequest
         {
-            using var stream = imageFile.OpenReadStream();
-            imageUrl = await blobStorageService.UploadImageAsync(stream, imageFile.FileName, imageFile.ContentType, cancellationToken);
-        }
+            ProductId = productId,
+            Sku = sku,
+            Name = name,
+            Price = price,
+            DiscountPrice = discountPrice,
+            StockQuantity = stockQuantity,
+            MinStockLevel = minStockLevel,
+            Weight = weight,
+            Dimensions = dimensions,
+            Status = status,
+            ImageFile = imageFile != null && imageFile.Length > 0
+                ? new FileUploadDto
+                {
+                    Content = await ToBytesAsync(imageFile, cancellationToken),
+                    FileName = imageFile.FileName,
+                    ContentType = imageFile.ContentType
+                }
+                : null
+        };
 
-        var command = new CreateProductVariantCommand(productId, sku, name, price, discountPrice, stockQuantity, minStockLevel, weight, dimensions, imageUrl, status);
-        var result = await mediator.Send(command);
+        var result = await mediator.Send(new CreateProductVariantCommand(request));
         return Ok(result);
+    }
+
+    private static async Task<byte[]> ToBytesAsync(IFormFile file, CancellationToken cancellationToken)
+    {
+        using var ms = new MemoryStream();
+        await file.CopyToAsync(ms, cancellationToken);
+        return ms.ToArray();
     }
 
     [HttpPut("{variantId}/upload-image")]
     [Consumes("multipart/form-data")]
-    public async Task<ActionResult<Result<string>>> UploadVariantImage([FromRoute] Guid variantId, [FromForm] IFormFile file, CancellationToken cancellationToken)
+    public async Task<ActionResult<Result<bool>>> UploadVariantImage([FromRoute] Guid variantId, [FromForm] IFormFile file, CancellationToken cancellationToken)
     {
         if (file == null || file.Length == 0)
         {
-            return BadRequest(Result<string>.Failure("No file uploaded"));
+            return BadRequest(Result<bool>.Failure("No file uploaded"));
         }
-        using var stream = file.OpenReadStream();
-        var imageUrl = await blobStorageService.UploadImageAsync(stream, file.FileName, file.ContentType, cancellationToken);
-        // Endpoint trả URL; FE gọi UpdateVariant với ImageUrl
-        return Ok(Result<string>.Success(imageUrl));
+        var updateRequest = new UpdateProductVariantRequest
+        {
+            Sku = string.Empty,
+            Name = null,
+            Price = 0,
+            DiscountPrice = null,
+            StockQuantity = 0,
+            MinStockLevel = 0,
+            Weight = null,
+            Dimensions = null,
+            Status = 1,
+            ImageFile = new FileUploadDto
+            {
+                Content = await ToBytesAsync(file, cancellationToken),
+                FileName = file.FileName,
+                ContentType = file.ContentType
+            }
+        };
+        var result = await mediator.Send(new UpdateProductVariantCommand(variantId, updateRequest));
+        return Ok(result);
     }
 
     [HttpDelete("delete/{variantId}")]

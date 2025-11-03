@@ -6,14 +6,5 @@ namespace GroceryEcommerce.Application.Features.Catalog.ProductVariant.Commands;
 
 public record UpdateProductVariantCommand(
     Guid VariantId,
-    string Sku,
-    string Name,
-    decimal Price,
-    decimal? DiscountPrice,
-    int StockQuantity,
-    int MinStockLevel,
-    decimal? Weight,
-    string? Dimensions,
-    string? ImageUrl,
-    short Status
+    UpdateProductVariantRequest Request
 ) : IRequest<Result<bool>>;

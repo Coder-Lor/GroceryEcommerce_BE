@@ -1,3 +1,5 @@
+using GroceryEcommerce.Application.Models.Common;
+
 namespace GroceryEcommerce.Application.Models.Catalog;
 
 public record ProductVariantDto
@@ -32,6 +34,7 @@ public class CreateProductVariantRequest
     public string? Dimensions { get; set; }
     public short Status { get; set; } = 1;
     public string? ImageUrl { get; set; }
+    public FileUploadDto? ImageFile { get; set; }
     public List<CreateProductAttributeValueRequest> Attributes { get; set; } = new();
 }
 
@@ -46,6 +49,7 @@ public class UpdateProductVariantRequest
     public decimal? Weight { get; set; }
     public string? Dimensions { get; set; }
     public string? ImageUrl { get; set; }
+    public FileUploadDto? ImageFile { get; set; }
     public short Status { get; set; }
 }
 

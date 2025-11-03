@@ -2,6 +2,7 @@ using AutoMapper;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Features.Catalog.ProductVariant.Commands;
 using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
+using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Application.Models.Catalog;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,7 @@ namespace GroceryEcommerce.Application.Features.Catalog.ProductVariant.Handlers;
 
 public class CreateProductVariantCommandHandler(
     IProductVariantRepository repository,
+    IAzureBlobStorageService blobStorageService,
     IMapper mapper,
     ILogger<CreateProductVariantCommandHandler> logger
 ) : IRequestHandler<CreateProductVariantCommand, Result<bool>>
@@ -24,20 +26,15 @@ public class CreateProductVariantCommandHandler(
             return Result<bool>.Failure("Variant with this SKU already exists");
         }
 
-        var createReq = new CreateProductVariantRequest
+        var createReq = request.Request;
+
+        // Upload image in handler if provided
+        if (createReq.ImageFile != null && createReq.ImageFile.Content.Length > 0)
         {
-            ProductId = request.ProductId,
-            Sku = request.Sku,
-            Name = request.Name,
-            Price = request.Price,
-            DiscountPrice = request.DiscountPrice,
-            StockQuantity = request.StockQuantity,
-            MinStockLevel = request.MinStockLevel,
-            Weight = request.Weight,
-            Dimensions = request.Dimensions,
-            ImageUrl = request.ImageUrl,
-            Status = request.Status
-        };
+            using var stream = new MemoryStream(createReq.ImageFile.Content);
+            var imageUrl = await blobStorageService.UploadImageAsync(stream, createReq.ImageFile.FileName, createReq.ImageFile.ContentType, cancellationToken);
+            createReq.ImageUrl = imageUrl;
+        }
 
         var entity = mapper.Map<Domain.Entities.Catalog.ProductVariant>(createReq);
 
