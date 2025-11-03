@@ -64,7 +64,7 @@ public sealed class
         {
             UserId = user.UserId.ToString(),
             Username = user.Username,
-            Role = userRoles.Data.FirstOrDefault() ?? "User",
+            Role = userRoles.Data.FirstOrDefault() ?? "Admin",
             Email = user.Email,
             Token = accessToken,
             RefreshToken = refreshToken,

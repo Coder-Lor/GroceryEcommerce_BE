@@ -4,20 +4,32 @@ using GroceryEcommerce.Application.Features.Catalog.ProductVariant.Commands;
 using GroceryEcommerce.Application.Features.Catalog.ProductVariant.Queries;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Models.Catalog;
-using GroceryEcommerce.Application.Interfaces.Services;
+// using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Application.Models.Common;
-using Microsoft.AspNetCore.Http;
+using GroceryEcommerce.API.Contracts.Catalog;
 
 namespace GroceryEcommerce.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductVariantController(IMediator mediator, IAzureBlobStorageService blobStorageService) : ControllerBase
+public class ProductVariantController(IMediator mediator) : ControllerBase
 {
     [HttpPost("create")]
     public async Task<ActionResult<Result<bool>>> CreateVariant([FromBody] CreateProductVariantRequest request)
     {
-        var result = await mediator.Send(new CreateProductVariantCommand(request));
+        var result = await mediator.Send(new CreateProductVariantCommand(
+            request.ProductId,
+            request.Sku,
+            request.Name,
+            request.Price,
+            request.DiscountPrice,
+            request.StockQuantity,
+            request.MinStockLevel,
+            request.Weight,
+            request.Dimensions,
+            request.Status,
+            request.ImageFile
+        ));
         return Ok(result);
     }
 
@@ -31,42 +43,31 @@ public class ProductVariantController(IMediator mediator, IAzureBlobStorageServi
     [HttpPost("create-with-file")]
     [Consumes("multipart/form-data")]
     public async Task<ActionResult<Result<bool>>> CreateVariantWithFile(
-        [FromForm] Guid productId,
-        [FromForm] string sku,
-        [FromForm] string name,
-        [FromForm] decimal price,
-        [FromForm] int stockQuantity,
-        [FromForm] int minStockLevel,
-        [FromForm] short status,
-        [FromForm] decimal? discountPrice,
-        [FromForm] decimal? weight,
-        [FromForm] string? dimensions,
-        [FromForm] IFormFile? imageFile,
+        [FromForm] CreateProductVariantForm form,
         CancellationToken cancellationToken)
     {
-        var request = new CreateProductVariantRequest
-        {
-            ProductId = productId,
-            Sku = sku,
-            Name = name,
-            Price = price,
-            DiscountPrice = discountPrice,
-            StockQuantity = stockQuantity,
-            MinStockLevel = minStockLevel,
-            Weight = weight,
-            Dimensions = dimensions,
-            Status = status,
-            ImageFile = imageFile != null && imageFile.Length > 0
-                ? new FileUploadDto
-                {
-                    Content = await ToBytesAsync(imageFile, cancellationToken),
-                    FileName = imageFile.FileName,
-                    ContentType = imageFile.ContentType
-                }
-                : null
-        };
+        var imageFile = form.ImageFile != null && form.ImageFile.Length > 0
+            ? new FileUploadDto
+            {
+                Content = await ToBytesAsync(form.ImageFile, cancellationToken),
+                FileName = form.ImageFile.FileName,
+                ContentType = form.ImageFile.ContentType
+            }
+            : null;
 
-        var result = await mediator.Send(new CreateProductVariantCommand(request));
+        var result = await mediator.Send(new CreateProductVariantCommand(
+            form.ProductId,
+            form.Sku,
+            form.VariantName,
+            form.Price,
+            form.DiscountPrice,
+            form.StockQuantity,
+            form.MinStockLevel,
+            form.Weight,
+            form.Dimensions,
+            form.Status,
+            imageFile
+        ));
         return Ok(result);
     }
 
@@ -81,7 +82,7 @@ public class ProductVariantController(IMediator mediator, IAzureBlobStorageServi
     [Consumes("multipart/form-data")]
     public async Task<ActionResult<Result<bool>>> UploadVariantImage([FromRoute] Guid variantId, [FromForm] IFormFile file, CancellationToken cancellationToken)
     {
-        if (file == null || file.Length == 0)
+        if (file.Length == 0)
         {
             return BadRequest(Result<bool>.Failure("No file uploaded"));
         }

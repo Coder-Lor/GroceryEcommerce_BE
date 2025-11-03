@@ -4,6 +4,7 @@ using GroceryEcommerce.Application.Features.Catalog.ProductVariant.Commands;
 using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
 using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Application.Models.Catalog;
+// using GroceryEcommerce.Application.Models.Common;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -26,7 +27,21 @@ public class CreateProductVariantCommandHandler(
             return Result<bool>.Failure("Variant with this SKU already exists");
         }
 
-        var createReq = request.Request;
+        var createReq = new CreateProductVariantRequest
+        {
+            ProductId = request.ProductId,
+            Sku = request.Sku,
+            Name = request.Name,
+            Price = request.Price,
+            DiscountPrice = request.DiscountPrice,
+            StockQuantity = request.StockQuantity,
+            MinStockLevel = request.MinStockLevel,
+            Weight = request.Weight,
+            Dimensions = request.Dimensions,
+            Status = request.Status,
+            ImageUrl = request.ImageUrl,
+            ImageFile = request.ImageFile
+        };
 
         // Upload image in handler if provided
         if (createReq.ImageFile != null && createReq.ImageFile.Content.Length > 0)

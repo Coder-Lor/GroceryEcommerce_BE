@@ -11,6 +11,14 @@ namespace GroceryEcommerce.API.Controllers;
 [Route("api/[controller]")]
 public class UserController(IMediator mediator) : ControllerBase
 {
+    [HttpGet("paging")]
+    public async Task<IActionResult> GetUsersPaging([FromQuery] PagedRequest request)
+    {
+        var result = await mediator.Send(new GetUsersPagingQuery(request));
+        if (!result.IsSuccess) return BadRequest(result);
+        return Ok(result);
+    }
+
     [HttpGet("{userId:guid}")]
     public async Task<ActionResult<Result<User?>>> GetById(Guid userId)
     {

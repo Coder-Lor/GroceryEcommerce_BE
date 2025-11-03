@@ -25,4 +25,4 @@ public record UpdateProductCommand(
     bool IsDigital,
     string? MetaTitle,
     string? MetaDescription
-) : IRequest<Result<UpdateProductResponse>>;
+) : IRequest<Result<bool>>;
