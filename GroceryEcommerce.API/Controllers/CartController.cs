@@ -15,8 +15,8 @@ public class CartController(IMediator mediator) : ControllerBase
 {
     #region Shopping Cart
 
-    [HttpGet("users/{userId:guid}")]
-    public async Task<ActionResult<Result<ShoppingCartDto>>> GetShoppingCart(Guid userId, CancellationToken cancellationToken = default)
+    [HttpGet("users/{userId:guid?}")]
+    public async Task<ActionResult<Result<ShoppingCartDto>>> GetShoppingCart(Guid? userId, CancellationToken cancellationToken = default)
     {
         var result = await mediator.Send(new GetShoppingCartByUserIdQuery(userId), cancellationToken);
         return Ok(result);

@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DAL\DatabaseSpecific\GroceryEcommerceDBSpecific.csproj" />
     <ProjectReference Include="..\GroceryEcommerce.Domain\GroceryEcommerce.Domain.csproj" />
+    <ProjectReference Include="..\DAL\DatabaseGeneric\GroceryEcommerce.csproj" />
   </ItemGroup>
 
 </Project>
