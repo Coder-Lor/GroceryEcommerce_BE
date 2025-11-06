@@ -1,3 +1,4 @@
+using System.Linq;
 using AutoMapper;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Interfaces.Repositories.Cart;
@@ -108,13 +109,81 @@ public class CartRepository(
             if (userId == Guid.Empty) return Result<ShoppingCart?>.Failure("Invalid userId");
             var adapter = GetAdapter();
             var qf = new QueryFactory();
-            var query = qf.Create<ShoppingCartEntity>()
-                .Where(ShoppingCartFields.UserId == userId)
-                .WithPath(ShoppingCartEntity.PrefetchPathShoppingCartItems);
-            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
-            return entity is null
-                ? Result<ShoppingCart?>.Success(null)
-                : Result<ShoppingCart?>.Success(Mapper.Map<ShoppingCart>(entity));
+            
+            // Fetch cart entity trước để lấy CartId
+            var cartQuery = qf.Create<ShoppingCartEntity>()
+                .Where(ShoppingCartFields.UserId == userId);
+            var cartEntity = await adapter.FetchFirstAsync(cartQuery, cancellationToken);
+            
+            if (cartEntity is null)
+                return Result<ShoppingCart?>.Success(null);
+            
+            // Fetch ShoppingCartItems với JOIN Product (INNER JOIN) và LEFT JOIN ProductVariant
+            // Logic: Nếu không có variant (ProductVariantId == null) thì dùng Product gốc
+            //        Nếu có variant (ProductVariantId != null) thì dùng ProductVariant
+            
+            // Bước 1: Fetch ShoppingCartItems với JOIN Product (INNER JOIN - luôn có ProductId)
+            var itemsQuery = qf.ShoppingCartItem
+                .Where(ShoppingCartItemFields.CartId == cartEntity.CartId)
+                .WithPath(ShoppingCartItemEntity.PrefetchPathProduct);
+            
+            var cartItemsList = await adapter.FetchQueryAsync(itemsQuery, cancellationToken);
+            var cartItems = cartItemsList.Cast<ShoppingCartItemEntity>().ToList();
+            
+            // Bước 2: Lấy danh sách ProductVariantId từ items
+            var variantIds = cartItems
+                .Where(item => item.ProductVariantId.HasValue)
+                .Select(item => item.ProductVariantId!.Value)
+                .Distinct()
+                .ToList();
+            
+            // Bước 3: Fetch ProductVariant bằng JOIN theo IDs (LEFT JOIN logic)
+            if (variantIds.Any())
+            {
+                var variantsQuery = qf.ProductVariant
+                    .Where(ProductVariantFields.VariantId.In(variantIds));
+                var variantsList = await adapter.FetchQueryAsync(variantsQuery, cancellationToken);
+                var variants = variantsList.Cast<ProductVariantEntity>().ToList();
+                
+                // Gán ProductVariant vào từng item theo ProductVariantId
+                var variantsDict = variants.ToDictionary(v => v.VariantId);
+                foreach (var item in cartItems)
+                {
+                    if (item.ProductVariantId.HasValue && variantsDict.TryGetValue(item.ProductVariantId.Value, out var variant))
+                    {
+                        item.ProductVariant = variant;
+                    }
+                }
+            }
+            
+            // Bước 4: Sử dụng PrefetchPath để gán items vào cart entity
+            var prefetchPath = new PrefetchPath2(EntityType.ShoppingCartEntity);
+            var itemsPath = ShoppingCartEntity.PrefetchPathShoppingCartItems;
+            prefetchPath.Add(itemsPath);
+            
+            var cartCollection = new EntityCollection<ShoppingCartEntity>();
+            var prefetchQuery = new QueryParameters
+            {
+                CollectionToFetch = cartCollection,
+                FilterToUse = new PredicateExpression(ShoppingCartFields.CartId == cartEntity.CartId),
+                PrefetchPathToUse = prefetchPath
+            };
+            await adapter.FetchEntityCollectionAsync(prefetchQuery, cancellationToken);
+            
+            var cartWithItems = cartCollection.FirstOrDefault() ?? cartEntity;
+            
+            // Gán items đã có Product và ProductVariant vào cart
+            if (cartWithItems.ShoppingCartItems != null)
+            {
+                cartWithItems.ShoppingCartItems.Clear();
+                foreach (var item in cartItems)
+                {
+                    cartWithItems.ShoppingCartItems.Add(item);
+                }
+            }
+            
+            // Map sang domain model
+            return Result<ShoppingCart?>.Success(Mapper.Map<ShoppingCart>(cartWithItems));
         }
         catch (Exception ex)
         {
