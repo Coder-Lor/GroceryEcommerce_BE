@@ -14,9 +14,6 @@ public sealed class
     IUserRepository userRepository,
     IPasswordHashService passwordHashService,
     ITokenService tokenService,
-    ICacheService cacheService,
-    IUnitOfWorkService unitOfWorkService,
-    IMapper mapper,
     ILogger<LoginCommandHandler> logger)
     : IRequestHandler<LoginCommand, Result<LoginResponse>>
 {
@@ -67,7 +64,7 @@ public sealed class
         {
             UserId = user.UserId.ToString(),
             Username = user.Username,
-            Role = userRoles.Data.FirstOrDefault() ?? "User",
+            Role = userRoles.Data.FirstOrDefault() ?? "Admin",
             Email = user.Email,
             Token = accessToken,
             RefreshToken = refreshToken,

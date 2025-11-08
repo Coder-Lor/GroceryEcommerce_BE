@@ -34,6 +34,7 @@ public class UpdateCategoryCommandHandler(
             existingCategory.Name = request.Name;
             existingCategory.Slug = request.Slug;
             existingCategory.Description = request.Description;
+            existingCategory.ImageUrl = request.ImageUrl;
             existingCategory.MetaTitle = request.MetaTitle;
             existingCategory.MetaDescription = request.MetaDescription;
             existingCategory.ParentCategoryId = request.ParentCategoryId;

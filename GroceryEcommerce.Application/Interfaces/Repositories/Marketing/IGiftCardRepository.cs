@@ -17,9 +17,9 @@ public interface IGiftCardRepository
     // Gift card management operations
     Task<Result<bool>> ExistsAsync(string code, CancellationToken cancellationToken = default);
     Task<Result<bool>> ExistsAsync(Guid giftCardId, CancellationToken cancellationToken = default);
-    Task<Result<List<GiftCard>>> GetActiveGiftCardsAsync(CancellationToken cancellationToken = default);
-    Task<Result<List<GiftCard>>> GetExpiredGiftCardsAsync(CancellationToken cancellationToken = default);
-    Task<Result<List<GiftCard>>> GetGiftCardsByUserAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<GiftCard>>> GetActiveGiftCardsAsync(PagedRequest request, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<GiftCard>>> GetExpiredGiftCardsAsync(PagedRequest request, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<GiftCard>>> GetGiftCardsByUserAsync(PagedRequest request, Guid userId, CancellationToken cancellationToken = default);
     Task<Result<bool>> IsGiftCardValidAsync(string code, CancellationToken cancellationToken = default);
     Task<Result<decimal>> GetRemainingBalanceAsync(string code, CancellationToken cancellationToken = default);
     Task<Result<bool>> RedeemGiftCardAsync(string code, decimal amount, CancellationToken cancellationToken = default);

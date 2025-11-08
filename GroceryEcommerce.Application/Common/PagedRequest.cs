@@ -173,4 +173,23 @@ public static class PagedRequestExtensions
         request.AddFilter(fieldName, value, op);
         return request;
     }
+
+    // Overloads to improve clarity with Guid and bool values
+    public static PagedRequest WithFilter(this PagedRequest request, string fieldName, Guid value)
+    {
+        request.AddFilter(fieldName, value, FilterOperator.Equals);
+        return request;
+    }
+
+    public static PagedRequest WithFilter(this PagedRequest request, string fieldName, bool value)
+    {
+        request.AddFilter(fieldName, value, FilterOperator.Equals);
+        return request;
+    }
+
+    public static PagedRequest WithFilter(this PagedRequest request, string fieldName, object value)
+    {
+        request.AddFilter(fieldName, value, FilterOperator.Equals);
+        return request;
+    }
 }

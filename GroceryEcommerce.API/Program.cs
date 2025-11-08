@@ -10,11 +10,14 @@ using Npgsql;
 using Scalar.AspNetCore;
 using SD.LLBLGen.Pro.DQE.PostgreSql;
 using SD.LLBLGen.Pro.ORMSupportClasses;
+using SD.Tools.OrmProfiler.Interceptor;
 using Microsoft.AspNetCore.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using NSwag.AspNetCore;
 using Microsoft.AspNetCore.OpenApi;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 internal class Program
 {
@@ -22,9 +25,28 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         
-        builder.Services.AddControllers();
+        builder.Services.AddControllers(options =>
+        {
+            var policy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+            options.Filters.Add(new AuthorizeFilter(policy));
+        });
         // builder.Services.AddOpenApi();
-        builder.Services.AddOpenApiDocument();
+        builder.Services.AddOpenApiDocument(config =>
+        {
+            config.AddSecurity("JWT", Enumerable.Empty<string>(), new NSwag.OpenApiSecurityScheme
+            {
+                Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
+                Name = "Authorization",
+                In = NSwag.OpenApiSecurityApiKeyLocation.Header,
+                Description = "Nhập JWT Bearer token vào đây. Ví dụ: Bearer {token}"
+            });
+
+            config.OperationProcessors.Add(
+                new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor("JWT")
+            );
+        });
 
 
 
@@ -49,18 +71,23 @@ internal class Program
             options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50MB
         });
 
+        //    Bọc DbProviderFactory gốc bằng Interceptor
+        //    Đặt tên app tuỳ bạn
+        var wrappedFactoryType = InterceptorCore.Initialize("GroceryEcommerce.API", typeof(NpgsqlFactory));
+
         // Đăng ký DbProviderFactory với .NET
         DbProviderFactories.RegisterFactory("Npgsql", NpgsqlFactory.Instance);
 
         // ⚡ Cấu hình LLBLGen DQE cho PostgreSQL (RuntimeConfiguration)
         RuntimeConfiguration.ConfigureDQE<PostgreSqlDQEConfiguration>(c =>
         {
-            c.AddDbProviderFactory(typeof(NpgsqlFactory)); // dùng provider Npgsql
+            c.AddDbProviderFactory(wrappedFactoryType); // dùng provider Npgsql
             c.SetTraceLevel(TraceLevel.Verbose); // bật log (optional)
         });
-        
-        
 
+        //RuntimeConfiguration.Tracing
+        //    .SetTraceLevel("ORMPersistenceExecution", TraceLevel.Verbose)
+        //    .SetTraceLevel("ORMPlainSQLQueryExecution", TraceLevel.Verbose);
 
         // Clean Architecture layers
         builder.Services.AddInfrastructure(builder.Configuration);
@@ -120,9 +147,10 @@ internal class Program
 
                 options.Events = new JwtBearerEvents
                 {
-                    OnAuthenticationFailed = context =>
+                    OnMessageReceived = context =>
                     {
-                        Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                        if (context.Request.Cookies.TryGetValue("accessToken", out var token))
+                            context.Token = token;
                         return Task.CompletedTask;
                     }
                 };

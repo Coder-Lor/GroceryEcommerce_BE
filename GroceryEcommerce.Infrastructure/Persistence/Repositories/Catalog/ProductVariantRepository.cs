@@ -166,7 +166,7 @@ public class ProductVariantRepository(
     public async Task<Result<PagedResult<ProductVariant>>> GetBySkuAsync(PagedRequest request, string sku, CancellationToken cancellationToken = default)
         => await GetPagedConfiguredAsync(request, (r) => r.WithFilter("Sku", sku), "Sku", SortDirection.Ascending, cancellationToken);
 
-    public async Task<Result<ProductVariant>> CreateAsync(ProductVariant variant, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> CreateAsync(ProductVariant variant, CancellationToken cancellationToken = default)
     {
         try {
             var entity = Mapper.Map<ProductVariantEntity>(variant);
@@ -179,14 +179,15 @@ public class ProductVariantRepository(
                 await CacheService.RemoveAsync($"ProductVariants_ByProduct_{entity.ProductId}", cancellationToken);
                 await CacheService.RemoveAsync($"ProductVariants_BySku_{entity.Sku}", cancellationToken);
                 logger.LogInformation("Product variant created: {Variant}", variant);
-                return Result<ProductVariant>.Success(Mapper.Map<ProductVariant>(entity));
+                
+                return Result<bool>.Success(true);
             }
             logger.LogWarning("Product variant not created: {Variant}", variant);
-            return Result<ProductVariant>.Failure("Product variant not created.");
+            return Result<bool>.Failure("Product variant not created.");
         }
         catch (Exception ex){
             logger.LogError(ex, "Error creating product variant");
-            return Result<ProductVariant>.Failure("An error occurred while creating product variant.", ex.Message);
+            return Result<bool>.Failure("An error occurred while creating product variant.", ex.Message);
         }
     }
 

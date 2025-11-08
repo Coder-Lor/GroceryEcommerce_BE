@@ -6,7 +6,6 @@ using GroceryEcommerce.Application.Features.Catalog.Category.Commands;
 using GroceryEcommerce.Application.Features.Catalog.Category.Queries;
 using GroceryEcommerce.Application.Models.Catalog;
 
-
 namespace GroceryEcommerce.API.Controllers;
 
 [ApiController]
@@ -95,34 +94,53 @@ public class CategoryController(IMediator mediator) : ControllerBase
     }
     
     [HttpPost]
-    public async Task<ActionResult<Result<CategoryDto>>> CreateCategory([FromBody] CreateCategoryCommand request)
-    {
-        var result = await mediator.Send(request);
-        return Ok(result);
-    }
-    
-    [HttpPut("{categoryId}")]
-    public async Task<ActionResult<Result<CategoryDto>>> UpdateCategory([FromRoute] Guid categoryId, [FromBody] UpdateCategoryCommand request)
-    {
-        var result = await mediator.Send(request);
-        return Ok(result);
-    }
-    
-    [HttpDelete("{categoryId}")]
-    public async Task<ActionResult<Result<CategoryDto>>> DeleteCategory([FromRoute] Guid categoryId)
-    {
-        var result = await mediator.Send(new DeleteCategoryCommand(categoryId));
-        return Ok(result);
-    }
-    
-    [HttpPut("status/{categoryId}")]
-    public async Task<ActionResult<Result<CategoryDto>>> UpdateCategoryStatus([FromRoute] Guid categoryId, [FromBody] UpdateCategoryStatusCommand request)
+    public async Task<ActionResult<Result<CreateCategoryResponse>>> CreateCategory([FromBody] CreateCategoryCommand request)
     {
         var result = await mediator.Send(request);
         return Ok(result);
     }
 
-    [HttpGet]
+    [HttpPost("create-with-file")]
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<Result<CreateCategoryResponse>>> CreateCategoryWithFile(
+        [FromForm] CreateCategoryCommand command,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(command, cancellationToken);
+        return Ok(result);
+    }
+    
+    [HttpPut("update")]
+    public async Task<ActionResult<Result<UpdateCategoryResponse>>> UpdateCategory([FromBody] UpdateCategoryCommand request)
+    {
+        var result = await mediator.Send(request);
+        return Ok(result);
+    }
+    [HttpPut("update-with-file")]
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<Result<bool>>> UpdateCategoryWithFile(
+        [FromForm] UpdateCategoryWithFileCommand command,
+        CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(command, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpDelete("{categoryId}")]
+    public async Task<ActionResult<Result<bool>>> DeleteCategory([FromRoute] Guid categoryId)
+    {
+      var result = await mediator.Send(new DeleteCategoryCommand(categoryId));
+        return Ok(result);
+    }
+    
+    [HttpPut("status/{categoryId}")]
+    public async Task<ActionResult<Result<bool>>> UpdateCategoryStatus([FromRoute] Guid categoryId, [FromBody] UpdateCategoryStatusCommand request)
+    {
+        var result = await mediator.Send(request);
+      return Ok(result);
+    }
+
+    [HttpGet("exists/{categoryId}")]
     public async Task<ActionResult<Result<bool>>> CheckCategoryExistsById([FromRoute] Guid categoryId)
     {
         var query = new CheckCategoryExistsByIdQuery(categoryId);

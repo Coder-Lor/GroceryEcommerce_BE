@@ -4,6 +4,6 @@ using MediatR;
 
 namespace GroceryEcommerce.Application.Features.Cart.ShoppingCart.Queries;
 
-public record GetShoppingCartByUserIdQuery(Guid UserId) : IRequest<Result<ShoppingCartDto>>;
+public record GetShoppingCartByUserIdQuery(Guid? UserId) : IRequest<Result<ShoppingCartDto>>;
 
 

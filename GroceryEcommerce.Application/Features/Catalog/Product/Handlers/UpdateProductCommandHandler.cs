@@ -12,9 +12,9 @@ public class UpdateProductCommandHandler(
     IProductRepository repository,
     IMapper mapper,
     ILogger<UpdateProductCommandHandler> logger
-) : IRequestHandler<UpdateProductCommand, Result<UpdateProductResponse>>
+) : IRequestHandler<UpdateProductCommand, Result<bool>>
 {
-    public async Task<Result<UpdateProductResponse>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Handling UpdateProductCommand for product: {ProductId}", request.ProductId);
 
@@ -23,7 +23,7 @@ public class UpdateProductCommandHandler(
         if (!existingProductResult.IsSuccess || existingProductResult.Data is null)
         {
             logger.LogWarning("Product not found: {ProductId}", request.ProductId);
-            return Result<UpdateProductResponse>.Failure("Product not found");
+            return Result<bool>.Failure("Product not found");
         }
 
         var existingProduct = existingProductResult.Data;
@@ -55,11 +55,10 @@ public class UpdateProductCommandHandler(
         if (!updateResult.IsSuccess)
         {
             logger.LogError("Failed to update product: {ProductId}", request.ProductId);
-            return Result<UpdateProductResponse>.Failure(updateResult.ErrorMessage ?? "Failed to update product.");
+            return Result<bool>.Failure(updateResult.ErrorMessage ?? "Failed to update product.");
         }
 
-        var response = mapper.Map<UpdateProductResponse>(updateResult.Data);
         logger.LogInformation("Product updated successfully: {ProductId}", request.ProductId);
-        return Result<UpdateProductResponse>.Success(response);
+        return Result<bool>.Success(updateResult.Data);
     }
 }

@@ -25,6 +25,12 @@ public class CatalogProfile : Profile
         CreateMap<UpdateCategoryRequest, Category>()
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
+        CreateMap<Category, CreateCategoryResponse>()
+            .IncludeBase<Category, CategoryDto>();
+
+        CreateMap<Category, UpdateCategoryResponse>()
+                .IncludeBase<Category, CategoryDto>();
+
         // Brand mappings
         CreateMap<Brand, BrandDto>()
             .ForMember(dest => dest.ProductCount, opt => opt.MapFrom(src => src.Products.Count))
@@ -99,6 +105,9 @@ public class CatalogProfile : Profile
             .ForMember(dest => dest.Questions, opt => opt.MapFrom(src => src.ProductQuestions ?? new List<ProductQuestion>()))
             .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews ?? new List<Domain.Entities.Reviews.ProductReview>()));
 
+        CreateMap<Product, GetProductByIdResponse>()
+            .IncludeBase<Product, ProductBaseResponse>();
+
 
         CreateMap<Category, CreateCategoryResponse>()
             .IncludeBase<Category, CategoryDto>()
@@ -134,7 +143,15 @@ public class CatalogProfile : Profile
 
         // Product Variant mappings
         CreateMap<ProductVariant, ProductVariantDto>()
+            .ForMember(dest => dest.ProductVariantId, opt => opt.MapFrom(src => src.VariantId))
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.VariantAttributeValues));
+
+        // Add these mappings for response types
+        CreateMap<ProductVariant, CreateProductVariantResponse>()
+            .IncludeBase<ProductVariant, ProductVariantDto>();
+
+        CreateMap<ProductVariant, UpdateProductVariantResponse>()
+            .IncludeBase<ProductVariant, ProductVariantDto>();
 
         CreateMap<CreateProductVariantRequest, ProductVariant>()
             .ForMember(dest => dest.VariantId, opt => opt.MapFrom(src => Guid.NewGuid()))
