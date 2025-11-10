@@ -2,16 +2,17 @@ using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Features.Auth.UserRoleAssignments.Commands;
 using GroceryEcommerce.Application.Features.Auth.UserRoleAssignments.Queries;
 using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
+using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Domain.Entities.Auth;
 using MediatR;
 
 namespace GroceryEcommerce.Application.Features.Auth.UserRoleAssignments.Handlers;
 
-public sealed class AssignUserRoleCommandHandler(IUserRoleAssignmentRepository repository)
+public sealed class AssignUserRoleCommandHandler(IUserRoleAssignmentRepository repository, ICurrentUserService currentUserService)
     : IRequestHandler<AssignUserRoleCommand, Result<bool>>
 {
     public Task<Result<bool>> Handle(AssignUserRoleCommand request, CancellationToken cancellationToken)
-        => repository.AssignRoleToUserAsync(request.UserId, request.RoleId, request.AssignedBy, cancellationToken);
+        => repository.AssignRoleToUserAsync(request.UserId, request.RoleId, currentUserService.GetCurrentUserId() ?? request.AssignedBy, cancellationToken);
 }
 
 public sealed class RemoveUserRoleCommandHandler(IUserRoleAssignmentRepository repository)
