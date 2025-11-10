@@ -9,9 +9,9 @@ public interface IPurchaseOrderItemRepository
     Task<Result<PurchaseOrderItem?>> GetByIdAsync(Guid poiId, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<PurchaseOrderItem>>> GetByPurchaseOrderIdAsync(Guid purchaseOrderId, PagedRequest pagedRequest, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<PurchaseOrderItem>>> GetByProductIdAsync(Guid productId, PagedRequest pagedRequest, CancellationToken cancellationToken = default);
-    Task<Result<PurchaseOrderItem>> CreateAsync(PurchaseOrderItem item, CancellationToken cancellationToken = default);
-    Task<Result<bool>> UpdateAsync(PurchaseOrderItem item, CancellationToken cancellationToken = default);
-    Task<Result<bool>> DeleteAsync(Guid poiId, CancellationToken cancellationToken = default);
+    Task<bool> CreateAsync(PurchaseOrderItem item, CancellationToken cancellationToken = default);
+    Task<bool> UpdateAsync(PurchaseOrderItem item, CancellationToken cancellationToken = default);
+    Task<bool> DeleteAsync(Guid poiId, CancellationToken cancellationToken = default);
     
     // Purchase order item management operations
     Task<Result<bool>> ExistsAsync(Guid poiId, CancellationToken cancellationToken = default);

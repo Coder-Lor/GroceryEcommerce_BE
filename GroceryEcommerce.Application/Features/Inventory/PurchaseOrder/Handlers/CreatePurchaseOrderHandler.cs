@@ -46,13 +46,20 @@ public class CreatePurchaseOrderHandler(
                 CreatedAt = DateTime.UtcNow
             };
 
-            var createResult = await repository.CreateAsync(purchaseOrder, cancellationToken);
-            if (!createResult.IsSuccess)
+            var createSuccess = await repository.CreateAsync(purchaseOrder, cancellationToken);
+            if (!createSuccess)
             {
-                return Result<PurchaseOrderDto>.Failure(createResult.ErrorMessage);
+                return Result<PurchaseOrderDto>.Failure("Failed to create purchase order");
             }
 
-            var dto = mapper.Map<PurchaseOrderDto>(createResult.Data);
+            // Get the created purchase order to include all data
+            var getResult = await repository.GetByIdAsync(purchaseOrder.PurchaseOrderId, cancellationToken);
+            if (!getResult.IsSuccess || getResult.Data == null)
+            {
+                return Result<PurchaseOrderDto>.Failure("Purchase order was created but could not be retrieved");
+            }
+
+            var dto = mapper.Map<PurchaseOrderDto>(getResult.Data);
             return Result<PurchaseOrderDto>.Success(dto);
         }
         catch (Exception ex)
