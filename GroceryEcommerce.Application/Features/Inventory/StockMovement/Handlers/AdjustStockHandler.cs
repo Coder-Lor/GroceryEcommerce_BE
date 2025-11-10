@@ -25,7 +25,7 @@ public class AdjustStockHandler(
 
         const short adjustmentMovementType = 3;
 
-        var currentStockResult = await repository.GetCurrentStockAsync(request.ProductId, request.WarehouseId ?? Guid.Empty, cancellationToken);
+        var currentStockResult = await repository.GetCurrentStockAsync(request.ProductId, cancellationToken);
         var currentStock = currentStockResult.IsSuccess ? (int)currentStockResult.Data : 0;
         var newStock = currentStock + request.Quantity;
 
@@ -33,7 +33,6 @@ public class AdjustStockHandler(
         {
             MovementId = Guid.NewGuid(),
             ProductId = request.ProductId,
-            WarehouseId = request.WarehouseId,
             MovementType = adjustmentMovementType,
             Quantity = Math.Abs(request.Quantity),
             PreviousStock = currentStock,

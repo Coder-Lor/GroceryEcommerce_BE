@@ -6,8 +6,6 @@ public class StockMovementDto
     public Guid ProductId { get; set; }
     public string ProductName { get; set; } = string.Empty;
     public string ProductSku { get; set; } = string.Empty;
-    public Guid? WarehouseId { get; set; }
-    public string? WarehouseName { get; set; }
     public short MovementType { get; set; }
     public string MovementTypeName { get; set; } = string.Empty;
     public int Quantity { get; set; }
@@ -24,7 +22,6 @@ public class StockMovementDto
 public class CreateStockMovementRequest
 {
     public Guid ProductId { get; set; }
-    public Guid? WarehouseId { get; set; }
     public short MovementType { get; set; }
     public int Quantity { get; set; }
     public string Reason { get; set; } = string.Empty;
@@ -35,7 +32,6 @@ public class CreateStockMovementRequest
 public class StockAdjustmentRequest
 {
     public Guid ProductId { get; set; }
-    public Guid? WarehouseId { get; set; }
     public int Quantity { get; set; }
     public string Reason { get; set; } = string.Empty;
 }

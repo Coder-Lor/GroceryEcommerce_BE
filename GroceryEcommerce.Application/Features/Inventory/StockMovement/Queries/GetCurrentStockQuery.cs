@@ -3,6 +3,6 @@ using MediatR;
 
 namespace GroceryEcommerce.Application.Features.Inventory.StockMovement.Queries;
 
-public record GetCurrentStockQuery(Guid ProductId, Guid? WarehouseId) : IRequest<Result<int>>;
+public record GetCurrentStockQuery(Guid ProductId) : IRequest<Result<int>>;
 
 

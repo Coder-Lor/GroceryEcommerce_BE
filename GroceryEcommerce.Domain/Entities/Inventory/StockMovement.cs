@@ -13,8 +13,6 @@ public class StockMovement
     
     public Guid? ProductVariantId { get; set; }
     
-    public Guid? WarehouseId { get; set; }
-    
     public short MovementType { get; set; } // 1: In, 2: Out, 3: Adjustment
     
     public int Quantity { get; set; }
@@ -37,6 +35,5 @@ public class StockMovement
     // Navigation properties
     public Product Product { get; set; } = null!;
     public ProductVariant? ProductVariant { get; set; }
-    public Warehouse? Warehouse { get; set; }
     public User CreatedByUser { get; set; } = null!;
 }

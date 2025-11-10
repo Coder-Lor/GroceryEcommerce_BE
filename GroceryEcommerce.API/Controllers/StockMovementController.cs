@@ -32,9 +32,9 @@ public class StockMovementController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet("current-stock")]
-    public async Task<IActionResult> GetCurrentStock([FromQuery] Guid productId, [FromQuery] Guid? warehouseId)
+    public async Task<IActionResult> GetCurrentStock([FromQuery] Guid productId)
     {
-        var result = await mediator.Send(new GetCurrentStockQuery(productId, warehouseId));
+        var result = await mediator.Send(new GetCurrentStockQuery(productId));
         return Ok(result);
     }
 

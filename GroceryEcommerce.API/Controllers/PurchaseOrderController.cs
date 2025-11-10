@@ -24,13 +24,6 @@ public class PurchaseOrderController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("supplier/{supplierId}/paging")]
-    public async Task<IActionResult> GetPurchaseOrdersBySupplier([FromRoute] Guid supplierId, [FromQuery] PagedRequest request)
-    {
-        var result = await mediator.Send(new GetPurchaseOrdersBySupplierQuery(supplierId, request));
-        return Ok(result);
-    }
-
     [HttpGet("status/{status}/paging")]
     public async Task<IActionResult> GetPurchaseOrdersByStatus([FromRoute] short status, [FromQuery] PagedRequest request)
     {

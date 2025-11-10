@@ -18,7 +18,7 @@ public class CreatePurchaseOrderHandler(
 {
     public async Task<Result<PurchaseOrderDto>> Handle(CreatePurchaseOrderCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Creating purchase order for supplier: {SupplierId}", request.SupplierId);
+        logger.LogInformation("Creating purchase order");
 
         var currentUserId = currentUserService.GetCurrentUserId();
         if (currentUserId == null)
@@ -35,8 +35,6 @@ public class CreatePurchaseOrderHandler(
         var purchaseOrder = new Domain.Entities.Inventory.PurchaseOrder
         {
             PurchaseOrderId = Guid.NewGuid(),
-            SupplierId = request.SupplierId,
-            WarehouseId = request.WarehouseId,
             OrderNumber = orderNumberResult.Data!,
             OrderDate = DateTime.UtcNow,
             ExpectedDate = request.ExpectedDate,

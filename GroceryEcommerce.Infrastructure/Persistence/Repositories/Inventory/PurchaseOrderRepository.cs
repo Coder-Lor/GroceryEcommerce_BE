@@ -28,8 +28,6 @@ public class PurchaseOrderRepository(
         return new List<SearchableField>
         {
             new SearchableField("OrderNumber", typeof(string)),
-            new SearchableField("SupplierId", typeof(Guid)),
-            new SearchableField("WarehouseId", typeof(Guid)),
             new SearchableField("Status", typeof(short)),
             new SearchableField("OrderDate", typeof(DateTime)),
             new SearchableField("ExpectedDate", typeof(DateTime)),
@@ -48,8 +46,6 @@ public class PurchaseOrderRepository(
         return new List<FieldMapping>
         {
             new FieldMapping { FieldName = "OrderNumber", FieldType = typeof(string), IsSearchable = true, IsSortable = true, IsFilterable = true },
-            new FieldMapping { FieldName = "SupplierId", FieldType = typeof(Guid), IsSearchable = false, IsSortable = false, IsFilterable = true },
-            new FieldMapping { FieldName = "WarehouseId", FieldType = typeof(Guid), IsSearchable = false, IsSortable = false, IsFilterable = true },
             new FieldMapping { FieldName = "Status", FieldType = typeof(short), IsSearchable = false, IsSortable = true, IsFilterable = true },
             new FieldMapping { FieldName = "OrderDate", FieldType = typeof(DateTime), IsSearchable = false, IsSortable = true, IsFilterable = true },
             new FieldMapping { FieldName = "ExpectedDate", FieldType = typeof(DateTime), IsSearchable = false, IsSortable = true, IsFilterable = true },
@@ -63,8 +59,6 @@ public class PurchaseOrderRepository(
         return new Dictionary<string, EntityField2>(StringComparer.OrdinalIgnoreCase)
         {
             { "OrderNumber", PurchaseOrderFields.OrderNumber },
-            { "SupplierId", PurchaseOrderFields.SupplierId },
-            { "WarehouseId", PurchaseOrderFields.WarehouseId },
             { "Status", PurchaseOrderFields.Status },
             { "OrderDate", PurchaseOrderFields.OrderDate },
             { "ExpectedDate", PurchaseOrderFields.ExpectedDate },
@@ -125,17 +119,6 @@ public class PurchaseOrderRepository(
     public async Task<Result<PurchaseOrder?>> GetByNumberAsync(string orderNumber, CancellationToken cancellationToken = default)
     {
         return await GetSingleAsync(PurchaseOrderFields.OrderNumber, orderNumber, "PurchaseOrder_Number", TimeSpan.FromMinutes(15), cancellationToken);
-    }
-
-    public async Task<Result<PagedResult<PurchaseOrder>>> GetBySupplierIdAsync(Guid supplierId, PagedRequest pagedRequest, CancellationToken cancellationToken = default)
-    {
-        return await GetPagedConfiguredAsync(
-            pagedRequest,
-            req => req.WithFilter("SupplierId", supplierId),
-            PurchaseOrderFields.OrderDate.Name,
-            SortDirection.Descending,
-            cancellationToken
-        );
     }
 
     public async Task<Result<PurchaseOrder>> CreateAsync(PurchaseOrder purchaseOrder, CancellationToken cancellationToken = default)
@@ -308,26 +291,5 @@ public class PurchaseOrderRepository(
         );
     }
 
-    public async Task<Result<decimal>> GetTotalValueBySupplierAsync(Guid supplierId, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var adapter = GetAdapter();
-            var qf = new QueryFactory();
-            var query = qf.Create<PurchaseOrderEntity>()
-                .Where(PurchaseOrderFields.SupplierId == supplierId)
-                .Select(() => PurchaseOrderFields.TotalAmount.Sum().As("TotalValue"));
-            
-            var total = await adapter.FetchScalarAsync<decimal?>(query, cancellationToken);
-            
-            Logger.LogInformation("Total purchase value for supplier {SupplierId}: {Total}", supplierId, total ?? 0);
-            return Result<decimal>.Success(total ?? 0);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error getting total value by supplier: {SupplierId}", supplierId);
-            return Result<decimal>.Failure("An error occurred while getting total value.");
-        }
-    }
 }
 

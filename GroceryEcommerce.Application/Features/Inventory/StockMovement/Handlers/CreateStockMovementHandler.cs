@@ -26,8 +26,7 @@ public class CreateStockMovementHandler(
             return Result<StockMovementDto>.Failure("Unable to identify current user");
         }
 
-        var currentStockResult = await repository.GetCurrentStockAsync(request.ProductId, 
-            request.WarehouseId ?? Guid.Empty, cancellationToken);
+        var currentStockResult = await repository.GetCurrentStockAsync(request.ProductId, cancellationToken);
         
         var currentStock = currentStockResult.IsSuccess ? (int)currentStockResult.Data : 0;
         var newStock = currentStock + request.Quantity;
@@ -36,7 +35,6 @@ public class CreateStockMovementHandler(
         {
             MovementId = Guid.NewGuid(),
             ProductId = request.ProductId,
-            WarehouseId = request.WarehouseId,
             MovementType = request.MovementType,
             Quantity = Math.Abs(request.Quantity),
             PreviousStock = currentStock,

@@ -13,10 +13,10 @@ public class GetCurrentStockHandler(
 {
     public async Task<Result<int>> Handle(GetCurrentStockQuery request, CancellationToken cancellationToken)
     {
-        var result = await repository.GetCurrentStockAsync(request.ProductId, request.WarehouseId ?? Guid.Empty, cancellationToken);
+        var result = await repository.GetCurrentStockAsync(request.ProductId, cancellationToken);
         if (!result.IsSuccess)
         {
-            logger.LogWarning("Failed to get current stock for product {ProductId} in warehouse {WarehouseId}: {Error}", request.ProductId, request.WarehouseId, result.ErrorMessage);
+            logger.LogWarning("Failed to get current stock for product {ProductId}: {Error}", request.ProductId, result.ErrorMessage);
             return Result<int>.Failure(result.ErrorMessage ?? "Failed to get current stock");
         }
 

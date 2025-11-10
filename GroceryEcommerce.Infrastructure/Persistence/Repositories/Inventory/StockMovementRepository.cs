@@ -29,7 +29,6 @@ public class StockMovementRepository(
         {
             new SearchableField("ProductId", typeof(Guid)),
             new SearchableField("ProductVariantId", typeof(Guid)),
-            new SearchableField("WarehouseId", typeof(Guid)),
             new SearchableField("MovementType", typeof(short)),
             new SearchableField("Quantity", typeof(int)),
             new SearchableField("Reason", typeof(string)),
@@ -49,7 +48,6 @@ public class StockMovementRepository(
         {
             new FieldMapping { FieldName = "ProductId", FieldType = typeof(Guid), IsSearchable = false, IsSortable = false, IsFilterable = true },
             new FieldMapping { FieldName = "ProductVariantId", FieldType = typeof(Guid), IsSearchable = false, IsSortable = false, IsFilterable = true },
-            new FieldMapping { FieldName = "WarehouseId", FieldType = typeof(Guid), IsSearchable = false, IsSortable = false, IsFilterable = true },
             new FieldMapping { FieldName = "MovementType", FieldType = typeof(short), IsSearchable = false, IsSortable = true, IsFilterable = true },
             new FieldMapping { FieldName = "Quantity", FieldType = typeof(int), IsSearchable = false, IsSortable = true, IsFilterable = true },
             new FieldMapping { FieldName = "Reason", FieldType = typeof(string), IsSearchable = true, IsSortable = false, IsFilterable = true },
@@ -64,7 +62,6 @@ public class StockMovementRepository(
         {
             { "ProductId", StockMovementFields.ProductId },
             { "ProductVariantId", StockMovementFields.ProductVariantId },
-            { "WarehouseId", StockMovementFields.WarehouseId },
             { "MovementType", StockMovementFields.MovementType },
             { "Quantity", StockMovementFields.Quantity },
             { "Reason", StockMovementFields.Reason },
@@ -125,17 +122,6 @@ public class StockMovementRepository(
         return await GetPagedConfiguredAsync(
             pagedRequest,
             req => req.WithFilter("ProductId", productId),
-            StockMovementFields.CreatedAt.Name,
-            SortDirection.Descending,
-            cancellationToken
-        );
-    }
-
-    public async Task<Result<PagedResult<StockMovement>>> GetByWarehouseIdAsync(Guid warehouseId, PagedRequest pagedRequest, CancellationToken cancellationToken = default)
-    {
-        return await GetPagedConfiguredAsync(
-            pagedRequest,
-            req => req.WithFilter("WarehouseId", warehouseId),
             StockMovementFields.CreatedAt.Name,
             SortDirection.Descending,
             cancellationToken
@@ -233,19 +219,7 @@ public class StockMovementRepository(
         );
     }
 
-    public async Task<Result<PagedResult<StockMovement>>> GetByProductAndWarehouseAsync(Guid productId, Guid warehouseId, PagedRequest pagedRequest, CancellationToken cancellationToken = default)
-    {
-        return await GetPagedConfiguredAsync(
-            pagedRequest,
-            req => req.WithFilter("ProductId", productId)
-                      .WithFilter("WarehouseId", warehouseId),
-            StockMovementFields.CreatedAt.Name,
-            SortDirection.Descending,
-            cancellationToken
-        );
-    }
-
-    public async Task<Result<decimal>> GetCurrentStockAsync(Guid productId, Guid warehouseId, CancellationToken cancellationToken = default)
+    public async Task<Result<decimal>> GetCurrentStockAsync(Guid productId, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -253,20 +227,20 @@ public class StockMovementRepository(
             var qf = new QueryFactory();
             
             var query = qf.Create<StockMovementEntity>()
-                .Where(StockMovementFields.ProductId == productId & StockMovementFields.WarehouseId == warehouseId)
+                .Where(StockMovementFields.ProductId == productId)
                 .OrderBy(StockMovementFields.CreatedAt.Descending())
                 .Limit(1);
             
             var lastMovement = await adapter.FetchFirstAsync(query, cancellationToken);
             
             var currentStock = lastMovement?.NewStock ?? 0;
-            Logger.LogInformation("Current stock for product {ProductId} in warehouse {WarehouseId}: {Stock}", productId, warehouseId, currentStock);
+            Logger.LogInformation("Current stock for product {ProductId}: {Stock}", productId, currentStock);
             
             return Result<decimal>.Success(currentStock);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error getting current stock for product: {ProductId}, warehouse: {WarehouseId}", productId, warehouseId);
+            Logger.LogError(ex, "Error getting current stock for product: {ProductId}", productId);
             return Result<decimal>.Failure("An error occurred while getting current stock.");
         }
     }
