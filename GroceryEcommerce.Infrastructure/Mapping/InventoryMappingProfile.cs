@@ -27,16 +27,5 @@ public class InventoryMappingProfile : Profile
             .ForMember(dest => dest.PurchaseOrder, opt => opt.Ignore())
             .ForMember(dest => dest.Product, opt => opt.Ignore())
             .ForMember(dest => dest.ProductVariant, opt => opt.Ignore());
-
-        // StockMovement mapping - AutoMapper tự động map các thuộc tính có tên giống nhau
-        CreateMap<StockMovement, StockMovementEntity>()
-            .ForMember(dest => dest.Product, opt => opt.Ignore())
-            .ForMember(dest => dest.ProductVariant, opt => opt.Ignore())
-            .ForMember(dest => dest.User, opt => opt.Ignore());
-
-        CreateMap<StockMovementEntity, StockMovement>()
-            .ForMember(dest => dest.Product, opt => opt.Ignore())
-            .ForMember(dest => dest.ProductVariant, opt => opt.Ignore())
-            .ForMember(dest => dest.CreatedByUser, opt => opt.Ignore());
     }
 }

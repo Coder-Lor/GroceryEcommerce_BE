@@ -193,6 +193,24 @@ public class ProductRepository(
         return prefetchPath;
     }
 
+    protected IReadOnlyList<IPrefetchPathElement2> BuildProductPrefetchPathElements()
+    {
+        var prefetchPaths = new List<IPrefetchPathElement2>();
+
+        // Thêm prefetch cho ProductImages
+        prefetchPaths.Add(ProductEntity.PrefetchPathProductImages);
+
+        // Thêm prefetch cho ProductVariants
+        prefetchPaths.Add(ProductEntity.PrefetchPathProductVariants);
+
+        // Thêm prefetch cho ProductTagAssignments và nested ProductTag
+        var productTagAssignmentsPath = ProductEntity.PrefetchPathProductTagAssignments;
+        productTagAssignmentsPath.SubPath.Add(ProductTagAssignmentEntity.PrefetchPathProductTag);
+        prefetchPaths.Add(productTagAssignmentsPath);
+
+        return prefetchPaths;
+    }
+
     protected override EntityField2? GetPrimaryKeyField()
     {
         return ProductFields.ProductId;
@@ -230,10 +248,13 @@ public class ProductRepository(
             var adapter = GetAdapter();
             var qf = new QueryFactory();
             
-            // Prefetch ProductImages để có thể lấy danh sách ảnh và ảnh chính
             var query = qf.Create<ProductEntity>()
-                .Where(ProductFields.ProductId == productId)
-                .WithPath(ProductEntity.PrefetchPathProductImages);
+                .Where(ProductFields.ProductId == productId);
+
+            foreach (var path in BuildProductPrefetchPathElements())
+            {
+                query = query.WithPath(path);
+            }
                 
             var entity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (entity == null)
@@ -275,10 +296,13 @@ public class ProductRepository(
             var adapter = GetAdapter();
             var qf = new QueryFactory();
             
-            // Prefetch ProductImages để có thể lấy danh sách ảnh và ảnh chính
             var query = qf.Create<ProductEntity>()
-                .Where(ProductFields.Sku == sku)
-                .WithPath(ProductEntity.PrefetchPathProductImages);
+                .Where(ProductFields.Sku == sku);
+
+            foreach (var path in BuildProductPrefetchPathElements())
+            {
+                query = query.WithPath(path);
+            }
                 
             var entity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (entity == null)
@@ -309,21 +333,24 @@ public class ProductRepository(
         
         try
         {
-            var cacheKey = $"Product_Slug_{slug}";
-            var cached = await CacheService.GetAsync<Product>(cacheKey, cancellationToken);
-            if (cached != null)
-            {
-                logger.LogInformation("Product fetched from cache by slug: {Slug}", slug);
-                return Result<Product?>.Success(cached);
-            }
+            //var cacheKey = $"Product_Slug_{slug}";
+            //var cached = await CacheService.GetAsync<Product>(cacheKey, cancellationToken);
+            //if (cached != null)
+            //{
+            //    logger.LogInformation("Product fetched from cache by slug: {Slug}", slug);
+            //    return Result<Product?>.Success(cached);
+            //}
 
             var adapter = GetAdapter();
             var qf = new QueryFactory();
             
-            // Prefetch ProductImages để có thể lấy danh sách ảnh và ảnh chính
             var query = qf.Create<ProductEntity>()
-                .Where(ProductFields.Slug == slug)
-                .WithPath(ProductEntity.PrefetchPathProductImages);
+                .Where(ProductFields.Slug == slug);
+
+            foreach (var path in BuildProductPrefetchPathElements())
+            {
+                query = query.WithPath(path);
+            }
                 
             var entity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (entity == null)
@@ -333,7 +360,7 @@ public class ProductRepository(
             }
 
             var domainEntity = Mapper.Map<Product>(entity);
-            await CacheService.SetAsync(cacheKey, domainEntity, TimeSpan.FromHours(1), cancellationToken);
+            //await CacheService.SetAsync(cacheKey, domainEntity, TimeSpan.FromHours(1), cancellationToken);
             logger.LogInformation("Product fetched from database and cached by slug: {Slug}", slug);
             return Result<Product?>.Success(domainEntity);
         }

@@ -36,5 +36,4 @@ public class Warehouse
     // Navigation properties
     public ICollection<PurchaseOrder> PurchaseOrders { get; set; } = new List<PurchaseOrder>();
     public ICollection<OrderShipment> OrderShipments { get; set; } = new List<OrderShipment>();
-    public ICollection<StockMovement> StockMovements { get; set; } = new List<StockMovement>();
 }

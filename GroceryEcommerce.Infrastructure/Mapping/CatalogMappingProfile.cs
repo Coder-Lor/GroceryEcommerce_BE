@@ -23,7 +23,6 @@ public class CatalogMappingProfile : Profile
             .ForMember(dest => dest.ProductTagAssignments, opt => opt.Ignore())
             .ForMember(dest => dest.ProductVariants, opt => opt.Ignore())
             .ForMember(dest => dest.PurchaseOrderItems, opt => opt.Ignore())
-            .ForMember(dest => dest.StockMovements, opt => opt.Ignore())
             .ForMember(dest => dest.ProductReviews, opt => opt.Ignore())
             .ForMember(dest => dest.OrderItems, opt => opt.Ignore());
 
@@ -32,13 +31,12 @@ public class CatalogMappingProfile : Profile
             .ForMember(dest => dest.Brand, opt => opt.Ignore())
             .ForMember(dest => dest.CreatedByUser, opt => opt.Ignore())
             .ForMember(dest => dest.UpdatedByUser, opt => opt.Ignore())
-            .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(src => src.ProductImages.ToList()))
-            .ForMember(dest => dest.ProductAttributeValues, opt => opt.MapFrom(src => src.ProductAttributeValues.ToList()))
-            .ForMember(dest => dest.ProductVariants, opt => opt.MapFrom(src => src.ProductVariants.ToList()))
+            .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(src => src.ProductImages.ToList() ?? new List<ProductImageEntity>()))
+            .ForMember(dest => dest.ProductAttributeValues, opt => opt.MapFrom(src => src.ProductAttributeValues.ToList() ?? new List<ProductAttributeValueEntity>()))
+            .ForMember(dest => dest.ProductVariants, opt => opt.MapFrom(src => src.ProductVariants.ToList() ?? new List<ProductVariantEntity>()))
             .ForMember(dest => dest.ProductTagAssignments, opt => opt.Ignore())
             .ForMember(dest => dest.ProductQuestions, opt => opt.Ignore())
-            .ForMember(dest => dest.Reviews, opt => opt.Ignore())
-            .ForMember(dest => dest.StockMovements, opt => opt.Ignore());
+            .ForMember(dest => dest.Reviews, opt => opt.Ignore());
 
         // Category mapping - AutoMapper tự động map các thuộc tính có tên giống nhau
         CreateMap<CategoryEntity, Category>()
@@ -82,7 +80,6 @@ public class CatalogMappingProfile : Profile
             .ForMember(dest => dest.ShoppingCartItems, opt => opt.Ignore())
             .ForMember(dest => dest.WishlistItems, opt => opt.Ignore())
             .ForMember(dest => dest.PurchaseOrderItems, opt => opt.Ignore())
-            .ForMember(dest => dest.StockMovements, opt => opt.Ignore())
             .ForMember(dest => dest.OrderItems, opt => opt.Ignore());
 
         CreateMap<ProductVariantEntity, ProductVariant>()

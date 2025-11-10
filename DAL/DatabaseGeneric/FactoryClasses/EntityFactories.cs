@@ -304,36 +304,6 @@ namespace GroceryEcommerce.FactoryClasses
 		protected override IEntity2 CreateImpl(IEntityFields2 fields) { return new PurchaseOrderItemEntity(fields); }
 	}
 
-	/// <summary>Factory to create new, empty StockMovementEntity objects.</summary>
-	[Serializable]
-	public partial class StockMovementEntityFactory : EntityFactoryBase2<StockMovementEntity> 
-	{
-		/// <summary>CTor</summary>
-		public StockMovementEntityFactory() : base("StockMovementEntity", GroceryEcommerce.EntityType.StockMovementEntity, false) { }
-		/// <inheritdoc/>
-		protected override IEntity2 CreateImpl(IEntityFields2 fields) { return new StockMovementEntity(fields); }
-	}
-
-	/// <summary>Factory to create new, empty SupplierEntity objects.</summary>
-	[Serializable]
-	public partial class SupplierEntityFactory : EntityFactoryBase2<SupplierEntity> 
-	{
-		/// <summary>CTor</summary>
-		public SupplierEntityFactory() : base("SupplierEntity", GroceryEcommerce.EntityType.SupplierEntity, false) { }
-		/// <inheritdoc/>
-		protected override IEntity2 CreateImpl(IEntityFields2 fields) { return new SupplierEntity(fields); }
-	}
-
-	/// <summary>Factory to create new, empty WarehouseEntity objects.</summary>
-	[Serializable]
-	public partial class WarehouseEntityFactory : EntityFactoryBase2<WarehouseEntity> 
-	{
-		/// <summary>CTor</summary>
-		public WarehouseEntityFactory() : base("WarehouseEntity", GroceryEcommerce.EntityType.WarehouseEntity, false) { }
-		/// <inheritdoc/>
-		protected override IEntity2 CreateImpl(IEntityFields2 fields) { return new WarehouseEntity(fields); }
-	}
-
 	/// <summary>Factory to create new, empty CouponEntity objects.</summary>
 	[Serializable]
 	public partial class CouponEntityFactory : EntityFactoryBase2<CouponEntity> 
@@ -619,12 +589,6 @@ namespace GroceryEcommerce.FactoryClasses
 					return new PurchaseOrderEntityFactory();
 				case GroceryEcommerce.EntityType.PurchaseOrderItemEntity:
 					return new PurchaseOrderItemEntityFactory();
-				case GroceryEcommerce.EntityType.StockMovementEntity:
-					return new StockMovementEntityFactory();
-				case GroceryEcommerce.EntityType.SupplierEntity:
-					return new SupplierEntityFactory();
-				case GroceryEcommerce.EntityType.WarehouseEntity:
-					return new WarehouseEntityFactory();
 				case GroceryEcommerce.EntityType.CouponEntity:
 					return new CouponEntityFactory();
 				case GroceryEcommerce.EntityType.CouponUsageEntity:
@@ -689,9 +653,6 @@ namespace GroceryEcommerce.FactoryClasses
 		
 		/// <inheritdoc/>
 		public override IInheritanceInfoProvider ObtainInheritanceInfoProviderInstance() { return ModelInfoProviderSingleton.GetInstance(); }
-
-		/// <inheritdoc/>
-		public override IEntityFieldsCore GetTypedViewFields(int typedViewTypeEnumValue) { return ModelInfoProviderSingleton.GetInstance().GetTypedViewFields(((TypedViewType)typedViewTypeEnumValue).ToString()); }
 
 		/// <inheritdoc/>
 		public override IDynamicRelation CreateDynamicRelation(DerivedTableDefinition leftOperand) { return new DynamicRelation(leftOperand); }

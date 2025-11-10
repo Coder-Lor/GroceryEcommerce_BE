@@ -34,17 +34,6 @@ public class InventoryProfile : Profile
             // .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
         CreateMap<UpdatePurchaseOrderItemRequest, PurchaseOrderItem>();
-
-        // Stock Movement mappings
-        CreateMap<StockMovement, StockMovementDto>()
-            .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
-            .ForMember(dest => dest.ProductSku, opt => opt.MapFrom(src => src.Product.Sku))
-            .ForMember(dest => dest.MovementTypeName, opt => opt.MapFrom(src => GetMovementTypeName(src.MovementType)))
-            .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedByUser != null ? $"{src.CreatedByUser.FirstName} {src.CreatedByUser.LastName}".Trim() : null));
-
-        CreateMap<CreateStockMovementRequest, StockMovement>()
-            .ForMember(dest => dest.MovementId, opt => opt.MapFrom(src => Guid.NewGuid()))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
     }
 
     private static string GetPurchaseOrderStatusName(short status)
@@ -62,20 +51,5 @@ public class InventoryProfile : Profile
         };
     }
 
-    private static string GetMovementTypeName(short movementType)
-    {
-        return movementType switch
-        {
-            1 => "Purchase",
-            2 => "Sale",
-            3 => "Adjustment",
-            4 => "Transfer In",
-            5 => "Transfer Out",
-            6 => "Return",
-            7 => "Damage",
-            8 => "Expiry",
-            _ => "Unknown"
-        };
-    }
 }
 

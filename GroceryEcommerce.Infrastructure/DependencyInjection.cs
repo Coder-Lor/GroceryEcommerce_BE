@@ -297,15 +297,6 @@ public static class DependencyInjection
             return new PurchaseOrderItemRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
-        services.AddScoped<IStockMovementRepository>(provider => {
-            var adapter = provider.GetRequiredService<DataAccessAdapter>();
-            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
-            var mapper = provider.GetRequiredService<IMapper>();
-            var cacheService = provider.GetRequiredService<ICacheService>();
-            var logger = provider.GetRequiredService<ILogger<StockMovementRepository>>();
-            return new StockMovementRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
-        });
-        
         // Register existing services
         services.AddMemoryCache();
         services.AddHttpContextAccessor();

@@ -24,6 +24,8 @@ public class ProductVariant
     
     public int StockQuantity { get; set; } = 0;
     
+    public int MinStockLevel { get; set; } = 0;
+    
     public decimal? Weight { get; set; }
     
     [StringLength(500)]

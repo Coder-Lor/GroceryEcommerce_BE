@@ -74,7 +74,6 @@ public class SalesProfile : Profile
         CreateMap<OrderShipment, OrderShipmentDto>()
             .ForMember(dest => dest.OrderNumber, opt => opt.MapFrom(src => src.Order.OrderNumber))
             .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => GetShipmentStatusName(src.Status)))
-            .ForMember(dest => dest.ShippedByName, opt => opt.MapFrom(src => src.ShippedByUser != null ? $"{src.ShippedByUser.FirstName} {src.ShippedByUser.LastName}".Trim() : null))
             .ForMember(dest => dest.ShippingAddress, opt => opt.MapFrom(src => $"{src.Order.ShippingAddress}, {src.Order.ShippingCity}, {src.Order.ShippingState} {src.Order.ShippingZipCode}, {src.Order.ShippingCountry}"));
 
         CreateMap<CreateOrderShipmentRequest, OrderShipment>()
