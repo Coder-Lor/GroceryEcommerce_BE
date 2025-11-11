@@ -145,6 +145,39 @@ public class ProductImageRepository(
     public async Task<Result<PagedResult<ProductImage>>> GetByProductIdAsync(PagedRequest request, Guid productId, CancellationToken cancellationToken = default)
         => await GetPagedConfiguredAsync(request, request => request.WithFilter("productid", productId, FilterOperator.Equals), "imageid", SortDirection.Ascending, cancellationToken);
 
+    public async Task<Result<List<string>>> GetImageUrlsByProductAsync(Guid productId, CancellationToken cancellationToken = default)
+    {
+        if (productId == Guid.Empty)
+        {
+            logger.LogWarning("Product id is required");
+            return Result<List<string>>.Failure("Invalid product ID.");
+        }
+
+        try
+        {
+            var qf = new QueryFactory();
+            var query = qf.ProductImage
+                .Where(ProductImageFields.ProductId == productId)
+                // Ưu tiên ảnh chính trước, sau đó theo thứ tự hiển thị
+                .OrderBy(
+                    ProductImageFields.IsPrimary.Descending(),
+                    ProductImageFields.DisplayOrder.Ascending(),
+                    ProductImageFields.ImageId.Ascending()
+                );
+
+            var adapter = GetAdapter();
+            var entities = new EntityCollection<ProductImageEntity>();
+            await adapter.FetchQueryAsync(query, entities, cancellationToken);
+            var urls = entities.Select(e => e.ImageUrl).ToList();
+            return Result<List<string>>.Success(urls);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error fetching image urls for product: {ProductId}", productId);
+            return Result<List<string>>.Failure("An error occurred while fetching image urls.");
+        }
+    }
+
     public async Task<Result<ProductImage>> CreateAsync(ProductImage image, CancellationToken cancellationToken = default)
     {
         try {

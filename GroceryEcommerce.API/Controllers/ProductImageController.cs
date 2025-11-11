@@ -11,6 +11,14 @@ namespace GroceryEcommerce.API.Controllers;
 [Route("api/[controller]")]
 public class ProductImageController(IMediator mediator) : ControllerBase
 {
+    [HttpGet("urls/{productId}")]
+    public async Task<ActionResult<Result<List<string>>>> GetUrlsByProduct([FromRoute] Guid productId)
+    {
+        var query = new GetProductImageUrlsByProductQuery(productId);
+        var result = await mediator.Send(query);
+        return Ok(result);
+    }
+
     [HttpGet("by-id/{imageId}")]
     public async Task<ActionResult<Result<ProductImageDto>>> GetById([FromRoute] Guid imageId)
     {
