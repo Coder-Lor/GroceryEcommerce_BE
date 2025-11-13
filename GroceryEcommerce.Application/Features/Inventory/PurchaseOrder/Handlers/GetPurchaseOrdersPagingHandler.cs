@@ -22,7 +22,14 @@ public class GetPurchaseOrdersPagingHandler(
             return Result<PagedResult<PurchaseOrderDto>>.Failure(result.ErrorMessage);
         }
 
-        var dtoResult = mapper.Map<PagedResult<PurchaseOrderDto>>(result.Data);
+        var dtoItems = mapper.Map<List<PurchaseOrderDto>>(result.Data.Items);
+        var dtoResult = new PagedResult<PurchaseOrderDto>(
+            dtoItems,
+            result.Data.TotalCount,
+            result.Data.Page,
+            result.Data.PageSize
+        );
+
         return Result<PagedResult<PurchaseOrderDto>>.Success(dtoResult);
     }
 }
