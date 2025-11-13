@@ -333,13 +333,13 @@ public class ProductRepository(
         
         try
         {
-            //var cacheKey = $"Product_Slug_{slug}";
-            //var cached = await CacheService.GetAsync<Product>(cacheKey, cancellationToken);
-            //if (cached != null)
-            //{
-            //    logger.LogInformation("Product fetched from cache by slug: {Slug}", slug);
-            //    return Result<Product?>.Success(cached);
-            //}
+            var cacheKey = $"Product_Slug_{slug}";
+            var cached = await CacheService.GetAsync<Product>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                logger.LogInformation("Product fetched from cache by slug: {Slug}", slug);
+                return Result<Product?>.Success(cached);
+            }
 
             var adapter = GetAdapter();
             var qf = new QueryFactory();
