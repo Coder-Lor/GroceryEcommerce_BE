@@ -372,21 +372,43 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
 
         public async Task<Result<bool>> UpdateAsync(User user, CancellationToken cancellationToken = default) {
             try {
-                var query = new QueryFactory().User.Where(UserFields.UserId == user.UserId);
-
-                var entity = await GetAdapter().FetchFirstAsync(query, cancellationToken);
-                if (entity is null) {
+                var adapter = GetAdapter();
+                
+                // Verify user exists
+                var existingEntity = await adapter.FetchFirstAsync(
+                    new QueryFactory().User.Where(UserFields.UserId == user.UserId),
+                    cancellationToken);
+                if (existingEntity is null) {
                     logger.LogWarning("User not found for update: {UserId}", user.UserId);
                     return Result<bool>.Failure("User not found", "USER_UPDATE_001");
                 }
 
+                // Map User to new entity instance (similar to ProductRepository pattern)
+                var entity = Mapper.Map<UserEntity>(user);
+                
+                // Ensure entity is marked as existing (not new) to perform UPDATE instead of INSERT
+                entity.IsNew = false;
+                
+                // Explicitly set UpdatedAt to current timestamp
                 entity.UpdatedAt = DateTime.UtcNow;
-                entity = Mapper.Map(user, entity);
-                var saved = await GetAdapter().SaveEntityAsync(entity, cancellationToken);
+                
+                // Explicitly ensure PasswordHash is set (in case mapping missed it)
+                entity.PasswordHash = user.PasswordHash;
+                
+                logger.LogInformation("Updating user {UserId}, PasswordHash length: {PasswordHashLength}, IsNew: {IsNew}", 
+                    user.UserId, user.PasswordHash?.Length ?? 0, entity.IsNew);
+                
+                var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
                 if (!saved) {
                     logger.LogError("Failed to update user: {UserId}", user.UserId);
                     return Result<bool>.Failure("Failed to update user", "USER_UPDATE_001");
                 }
+                
+                // Clear cache for this user to ensure fresh data on next read
+                await CacheService.RemoveAsync($"User_ById_{user.UserId}", cancellationToken);
+                await CacheService.RemoveByPatternAsync($"User_ByEmail_*", cancellationToken);
+                await CacheService.RemoveByPatternAsync($"User_ByUsername_*", cancellationToken);
+                
                 logger.LogInformation("User updated successfully: {UserId}", user.UserId);
                 return Result<bool>.Success(true);
             }

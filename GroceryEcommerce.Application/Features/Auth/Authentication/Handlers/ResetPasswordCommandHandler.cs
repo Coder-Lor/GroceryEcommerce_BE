@@ -12,7 +12,6 @@ namespace GroceryEcommerce.Application.Features.Auth.Authentication.Handlers;
 public class ResetPasswordCommandHandler(
     IUserRepository userRepository,
     IPasswordHashService passwordHashService,
-    IUnitOfWorkService unitOfWorkService,
     IEmailService emailService,
     ILogger<ResetPasswordCommandHandler> logger)
     : IRequestHandler<ResetPasswordCommand, Result<ResetPasswordResponse>>
@@ -49,18 +48,24 @@ public class ResetPasswordCommandHandler(
             newPassword = request.NewPassword;
         }
 
-        user.PasswordHash = passwordHashService.HashPassword(newPassword);
-        await userRepository.UpdateAsync(user, cancellationToken);
-        var count =  await unitOfWorkService.SaveChangesAsync(cancellationToken);
-
-        if (count == 0)
+        var hashedPassword = passwordHashService.HashPassword(newPassword);
+        logger.LogInformation("Password hashed for user {Email}, hash length: {HashLength}", 
+            request.Email, hashedPassword.Length);
+        
+        user.PasswordHash = hashedPassword;
+        var updateResult = await userRepository.UpdateAsync(user, cancellationToken);
+        
+        if (!updateResult.IsSuccess)
         {
+            logger.LogError("Failed to update password for user {Email}: {Error}", 
+                request.Email, updateResult.ErrorMessage);
             return Result<ResetPasswordResponse>.Failure("Failed to update password");       
         }
         
+        logger.LogInformation("Password reset successful for user {Email}", request.Email);
         return Result<ResetPasswordResponse>.Success(new ResetPasswordResponse
         {
-            Message = $"Password reset successful. {count} records updated"
+            Message = "Password reset successful"
         });
     }
 

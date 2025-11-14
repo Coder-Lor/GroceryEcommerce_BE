@@ -16,7 +16,6 @@ public class OrderShipmentDto
     public string? Notes { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
-    public string? ShippedByName { get; set; }
     public required string ShippingAddress { get; set; }
     public List<ShipmentItemDto> Items { get; set; } = new();
 }

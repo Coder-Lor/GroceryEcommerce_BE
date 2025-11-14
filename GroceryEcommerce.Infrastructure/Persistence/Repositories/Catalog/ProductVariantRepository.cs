@@ -175,11 +175,11 @@ public class ProductVariantRepository(
             var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (saved) {
                 await CacheService.RemoveAsync("All_ProductVariants", cancellationToken);
-                await CacheService.RemoveAsync($"ProductVariant_{entity.VariantId}", cancellationToken);
-                await CacheService.RemoveAsync($"ProductVariants_ByProduct_{entity.ProductId}", cancellationToken);
-                await CacheService.RemoveAsync($"ProductVariants_BySku_{entity.Sku}", cancellationToken);
+                await CacheService.RemoveAsync($"ProductVariant_{variant.VariantId}", cancellationToken);
+                await CacheService.RemoveAsync($"ProductVariants_ByProduct_{variant.ProductId}", cancellationToken);
+                await CacheService.RemoveAsync($"ProductVariants_BySku_{variant.Sku}", cancellationToken);
                 logger.LogInformation("Product variant created: {Variant}", variant);
-                
+
                 return Result<bool>.Success(true);
             }
             logger.LogWarning("Product variant not created: {Variant}", variant);

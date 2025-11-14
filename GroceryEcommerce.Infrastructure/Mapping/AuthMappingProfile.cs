@@ -27,7 +27,6 @@ public class AuthMappingProfile : Profile
             .ForMember(dest => dest.ProductQuestions, opt => opt.Ignore())
             .ForMember(dest => dest.ProductQuestions1, opt => opt.Ignore())
             .ForMember(dest => dest.PurchaseOrders, opt => opt.Ignore())
-            .ForMember(dest => dest.StockMovements, opt => opt.Ignore())
             .ForMember(dest => dest.Coupons, opt => opt.Ignore())
             .ForMember(dest => dest.Coupons1, opt => opt.Ignore())
             .ForMember(dest => dest.CouponUsages, opt => opt.Ignore())

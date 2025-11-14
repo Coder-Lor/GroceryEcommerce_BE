@@ -92,12 +92,6 @@ namespace GroceryEcommerce.Linq
 					return this.PurchaseOrder;
 				case GroceryEcommerce.EntityType.PurchaseOrderItemEntity:
 					return this.PurchaseOrderItem;
-				case GroceryEcommerce.EntityType.StockMovementEntity:
-					return this.StockMovement;
-				case GroceryEcommerce.EntityType.SupplierEntity:
-					return this.Supplier;
-				case GroceryEcommerce.EntityType.WarehouseEntity:
-					return this.Warehouse;
 				case GroceryEcommerce.EntityType.CouponEntity:
 					return this.Coupon;
 				case GroceryEcommerce.EntityType.CouponUsageEntity:
@@ -233,15 +227,6 @@ namespace GroceryEcommerce.Linq
 		
 		/// <summary>returns the datasource to use in a Linq query when targeting PurchaseOrderItemEntity instances in the database.</summary>
 		public DataSource2<PurchaseOrderItemEntity> PurchaseOrderItem {	get { return new DataSource2<PurchaseOrderItemEntity>(this.AdapterToUse, new ElementCreator(), this.CustomFunctionMappings, this.ContextToUse); } }
-		
-		/// <summary>returns the datasource to use in a Linq query when targeting StockMovementEntity instances in the database.</summary>
-		public DataSource2<StockMovementEntity> StockMovement {	get { return new DataSource2<StockMovementEntity>(this.AdapterToUse, new ElementCreator(), this.CustomFunctionMappings, this.ContextToUse); } }
-		
-		/// <summary>returns the datasource to use in a Linq query when targeting SupplierEntity instances in the database.</summary>
-		public DataSource2<SupplierEntity> Supplier {	get { return new DataSource2<SupplierEntity>(this.AdapterToUse, new ElementCreator(), this.CustomFunctionMappings, this.ContextToUse); } }
-		
-		/// <summary>returns the datasource to use in a Linq query when targeting WarehouseEntity instances in the database.</summary>
-		public DataSource2<WarehouseEntity> Warehouse {	get { return new DataSource2<WarehouseEntity>(this.AdapterToUse, new ElementCreator(), this.CustomFunctionMappings, this.ContextToUse); } }
 		
 		/// <summary>returns the datasource to use in a Linq query when targeting CouponEntity instances in the database.</summary>
 		public DataSource2<CouponEntity> Coupon {	get { return new DataSource2<CouponEntity>(this.AdapterToUse, new ElementCreator(), this.CustomFunctionMappings, this.ContextToUse); } }

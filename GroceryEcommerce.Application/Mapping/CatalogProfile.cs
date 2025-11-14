@@ -99,6 +99,9 @@ public class CatalogProfile : Profile
         CreateMap<Product, CreateProductResponse>()
             .IncludeBase<Product, ProductBaseResponse>();
 
+        CreateMap<Product, GetProductBySlugResponse>()
+            .IncludeBase<Product, ProductBaseResponse>();
+
         CreateMap<Product, ProductDetailDto>()
             .IncludeBase<Product, ProductDto>()
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.ProductAttributeValues ?? new List<ProductAttributeValue>()))

@@ -4,8 +4,6 @@ public class PurchaseOrderDto
 {
     public Guid PurchaseOrderId { get; set; }
     public string OrderNumber { get; set; } = string.Empty;
-    public Guid SupplierId { get; set; }
-    public string SupplierName { get; set; } = string.Empty;
     public DateTime OrderDate { get; set; }
     public DateTime? ExpectedDeliveryDate { get; set; }
     public DateTime? ActualDeliveryDate { get; set; }
@@ -39,7 +37,6 @@ public class PurchaseOrderItemDto
 
 public class CreatePurchaseOrderRequest
 {
-    public Guid SupplierId { get; set; }
     public DateTime? ExpectedDeliveryDate { get; set; }
     public decimal SubTotal { get; set; }
     public decimal TaxAmount { get; set; }
@@ -51,7 +48,6 @@ public class CreatePurchaseOrderRequest
 
 public class UpdatePurchaseOrderRequest
 {
-    public Guid SupplierId { get; set; }
     public DateTime? ExpectedDeliveryDate { get; set; }
     public decimal SubTotal { get; set; }
     public decimal TaxAmount { get; set; }

@@ -18,42 +18,54 @@ public class CreatePurchaseOrderHandler(
 {
     public async Task<Result<PurchaseOrderDto>> Handle(CreatePurchaseOrderCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Creating purchase order for supplier: {SupplierId}", request.SupplierId);
-
-        var currentUserId = currentUserService.GetCurrentUserId();
-        if (currentUserId == null)
+        try
         {
-            return Result<PurchaseOrderDto>.Failure("Unable to identify current user");
+            logger.LogInformation("Creating purchase order");
+
+            var currentUserId = currentUserService.GetCurrentUserId();
+            if (currentUserId == null)
+            {
+                return Result<PurchaseOrderDto>.Failure("Unable to identify current user");
+            }
+
+            var orderNumberResult = await repository.GenerateOrderNumberAsync(cancellationToken);
+            if (!orderNumberResult.IsSuccess)
+            {
+                return Result<PurchaseOrderDto>.Failure("Failed to generate order number");
+            }
+
+            var purchaseOrder = new Domain.Entities.Inventory.PurchaseOrder
+            {
+                PurchaseOrderId = Guid.NewGuid(),
+                OrderNumber = orderNumberResult.Data!,
+                OrderDate = DateTime.UtcNow,
+                ExpectedDate = request.ExpectedDate,
+                Status = 1,
+                TotalAmount = request.Items.Sum(i => i.UnitCost * i.Quantity),
+                CreatedBy = currentUserId.Value,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var createSuccess = await repository.CreateAsync(purchaseOrder, cancellationToken);
+            if (!createSuccess)
+            {
+                return Result<PurchaseOrderDto>.Failure("Failed to create purchase order");
+            }
+
+            // Get the created purchase order to include all data
+            var getResult = await repository.GetByIdAsync(purchaseOrder.PurchaseOrderId, cancellationToken);
+            if (!getResult.IsSuccess || getResult.Data == null)
+            {
+                return Result<PurchaseOrderDto>.Failure("Purchase order was created but could not be retrieved");
+            }
+
+            var dto = mapper.Map<PurchaseOrderDto>(getResult.Data);
+            return Result<PurchaseOrderDto>.Success(dto);
         }
-
-        var orderNumberResult = await repository.GenerateOrderNumberAsync(cancellationToken);
-        if (!orderNumberResult.IsSuccess)
+        catch (Exception ex)
         {
-            return Result<PurchaseOrderDto>.Failure("Failed to generate order number");
+            return Result<PurchaseOrderDto>.Failure("Faield to create purchase product " + ex.Message);
         }
-
-        var purchaseOrder = new Domain.Entities.Inventory.PurchaseOrder
-        {
-            PurchaseOrderId = Guid.NewGuid(),
-            SupplierId = request.SupplierId,
-            WarehouseId = request.WarehouseId,
-            OrderNumber = orderNumberResult.Data!,
-            OrderDate = DateTime.UtcNow,
-            ExpectedDate = request.ExpectedDate,
-            Status = 1,
-            TotalAmount = request.Items.Sum(i => i.UnitCost * i.Quantity),
-            CreatedBy = currentUserId.Value,
-            CreatedAt = DateTime.UtcNow
-        };
-
-        var createResult = await repository.CreateAsync(purchaseOrder, cancellationToken);
-        if (!createResult.IsSuccess)
-        {
-            return Result<PurchaseOrderDto>.Failure(createResult.ErrorMessage);
-        }
-
-        var dto = mapper.Map<PurchaseOrderDto>(createResult.Data);
-        return Result<PurchaseOrderDto>.Success(dto);
     }
 }
 

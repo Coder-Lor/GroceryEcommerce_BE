@@ -11,8 +11,8 @@ namespace GroceryEcommerce.API.Controllers;
 [Route("api/[controller]")]
 public class UserRoleController(IMediator mediator) : ControllerBase
 {
-    [HttpPost("paged")]
-    public async Task<ActionResult<Result<PagedResult<UserRole>>>> GetPaged([FromBody] PagedRequest request)
+    [HttpGet("paging")]
+    public async Task<ActionResult<Result<PagedResult<UserRole>>>> GetPaging([FromQuery] PagedRequest request)
     {
         var result = await mediator.Send(new GetUserRolesPagedQuery(request));
         if (!result.IsSuccess) return BadRequest(result);

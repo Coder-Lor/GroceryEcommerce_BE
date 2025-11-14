@@ -135,7 +135,7 @@ public class PurchaseOrderItemRepository(
         );
     }
 
-    public async Task<Result<PurchaseOrderItem>> CreateAsync(PurchaseOrderItem item, CancellationToken cancellationToken = default)
+    public async Task<bool> CreateAsync(PurchaseOrderItem item, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -144,20 +144,21 @@ public class PurchaseOrderItemRepository(
             
             await adapter.SaveEntityAsync(entity, cancellationToken: cancellationToken);
             
-            var domainEntity = Mapper.Map<PurchaseOrderItem>(entity);
+            // Update the item with the entity data
+            Mapper.Map(entity, item);
             await CacheService.RemoveByPatternAsync("PurchaseOrder*", cancellationToken);
             
             Logger.LogInformation("PurchaseOrderItem created: {PoiId}", entity.PoiId);
-            return Result<PurchaseOrderItem>.Success(domainEntity);
+            return true;
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error creating purchase order item");
-            return Result<PurchaseOrderItem>.Failure("An error occurred while creating the purchase order item.");
+            return false;
         }
     }
 
-    public async Task<Result<bool>> UpdateAsync(PurchaseOrderItem item, CancellationToken cancellationToken = default)
+    public async Task<bool> UpdateAsync(PurchaseOrderItem item, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -169,16 +170,16 @@ public class PurchaseOrderItemRepository(
             await CacheService.RemoveByPatternAsync("PurchaseOrder*", cancellationToken);
             
             Logger.LogInformation("PurchaseOrderItem updated: {PoiId}", entity.PoiId);
-            return Result<bool>.Success(true);
+            return true;
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error updating purchase order item: {PoiId}", item.PoiId);
-            return Result<bool>.Failure("An error occurred while updating the purchase order item.");
+            return false;
         }
     }
 
-    public async Task<Result<bool>> DeleteAsync(Guid poiId, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteAsync(Guid poiId, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -189,12 +190,12 @@ public class PurchaseOrderItemRepository(
             await CacheService.RemoveByPatternAsync("PurchaseOrder*", cancellationToken);
             
             Logger.LogInformation("PurchaseOrderItem deleted: {PoiId}", poiId);
-            return Result<bool>.Success(true);
+            return true;
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error deleting purchase order item: {PoiId}", poiId);
-            return Result<bool>.Failure("An error occurred while deleting the purchase order item.");
+            return false;
         }
     }
 

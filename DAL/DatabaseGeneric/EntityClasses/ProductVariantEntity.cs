@@ -29,7 +29,6 @@ namespace GroceryEcommerce.EntityClasses
 		private EntityCollection<ShoppingCartItemEntity> _shoppingCartItems;
 		private EntityCollection<WishlistItemEntity> _wishlistItems;
 		private EntityCollection<PurchaseOrderItemEntity> _purchaseOrderItems;
-		private EntityCollection<StockMovementEntity> _stockMovements;
 		private EntityCollection<OrderItemEntity> _orderItems;
 		private ProductEntity _product;
 
@@ -49,8 +48,6 @@ namespace GroceryEcommerce.EntityClasses
 			public static readonly string WishlistItems = "WishlistItems";
 			/// <summary>Member name PurchaseOrderItems</summary>
 			public static readonly string PurchaseOrderItems = "PurchaseOrderItems";
-			/// <summary>Member name StockMovements</summary>
-			public static readonly string StockMovements = "StockMovements";
 			/// <summary>Member name OrderItems</summary>
 			public static readonly string OrderItems = "OrderItems";
 		}
@@ -64,7 +61,6 @@ namespace GroceryEcommerce.EntityClasses
 				AddNavigatorMetaData<ProductVariantEntity, EntityCollection<ShoppingCartItemEntity>>("ShoppingCartItems", a => a._shoppingCartItems, (a, b) => a._shoppingCartItems = b, a => a.ShoppingCartItems, () => new ProductVariantRelations().ShoppingCartItemEntityUsingProductVariantId, typeof(ShoppingCartItemEntity), (int)GroceryEcommerce.EntityType.ShoppingCartItemEntity);
 				AddNavigatorMetaData<ProductVariantEntity, EntityCollection<WishlistItemEntity>>("WishlistItems", a => a._wishlistItems, (a, b) => a._wishlistItems = b, a => a.WishlistItems, () => new ProductVariantRelations().WishlistItemEntityUsingProductVariantId, typeof(WishlistItemEntity), (int)GroceryEcommerce.EntityType.WishlistItemEntity);
 				AddNavigatorMetaData<ProductVariantEntity, EntityCollection<PurchaseOrderItemEntity>>("PurchaseOrderItems", a => a._purchaseOrderItems, (a, b) => a._purchaseOrderItems = b, a => a.PurchaseOrderItems, () => new ProductVariantRelations().PurchaseOrderItemEntityUsingVariantId, typeof(PurchaseOrderItemEntity), (int)GroceryEcommerce.EntityType.PurchaseOrderItemEntity);
-				AddNavigatorMetaData<ProductVariantEntity, EntityCollection<StockMovementEntity>>("StockMovements", a => a._stockMovements, (a, b) => a._stockMovements = b, a => a.StockMovements, () => new ProductVariantRelations().StockMovementEntityUsingProductVariantId, typeof(StockMovementEntity), (int)GroceryEcommerce.EntityType.StockMovementEntity);
 				AddNavigatorMetaData<ProductVariantEntity, EntityCollection<OrderItemEntity>>("OrderItems", a => a._orderItems, (a, b) => a._orderItems = b, a => a.OrderItems, () => new ProductVariantRelations().OrderItemEntityUsingProductVariantId, typeof(OrderItemEntity), (int)GroceryEcommerce.EntityType.OrderItemEntity);
 				AddNavigatorMetaData<ProductVariantEntity, ProductEntity>("Product", "ProductVariants", (a, b) => a._product = b, a => a._product, (a, b) => a.Product = b, GroceryEcommerce.RelationClasses.StaticProductVariantRelations.ProductEntityUsingProductIdStatic, ()=>new ProductVariantRelations().ProductEntityUsingProductId, null, new int[] { (int)ProductVariantFieldIndex.ProductId }, null, true, (int)GroceryEcommerce.EntityType.ProductEntity);
 			}
@@ -140,10 +136,6 @@ namespace GroceryEcommerce.EntityClasses
 		/// <returns></returns>
 		public virtual IRelationPredicateBucket GetRelationInfoPurchaseOrderItems() { return CreateRelationInfoForNavigator("PurchaseOrderItems"); }
 
-		/// <summary>Creates a new IRelationPredicateBucket object which contains the predicate expression and relation collection to fetch the related entities of type 'StockMovement' to this entity.</summary>
-		/// <returns></returns>
-		public virtual IRelationPredicateBucket GetRelationInfoStockMovements() { return CreateRelationInfoForNavigator("StockMovements"); }
-
 		/// <summary>Creates a new IRelationPredicateBucket object which contains the predicate expression and relation collection to fetch the related entities of type 'OrderItem' to this entity.</summary>
 		/// <returns></returns>
 		public virtual IRelationPredicateBucket GetRelationInfoOrderItems() { return CreateRelationInfoForNavigator("OrderItems"); }
@@ -194,10 +186,6 @@ namespace GroceryEcommerce.EntityClasses
 		/// <returns>Ready to use IPrefetchPathElement2 implementation.</returns>
 		public static IPrefetchPathElement2 PrefetchPathPurchaseOrderItems { get { return _staticMetaData.GetPrefetchPathElement("PurchaseOrderItems", CommonEntityBase.CreateEntityCollection<PurchaseOrderItemEntity>()); } }
 
-		/// <summary>Creates a new PrefetchPathElement2 object which contains all the information to prefetch the related entities of type 'StockMovement' for this entity.</summary>
-		/// <returns>Ready to use IPrefetchPathElement2 implementation.</returns>
-		public static IPrefetchPathElement2 PrefetchPathStockMovements { get { return _staticMetaData.GetPrefetchPathElement("StockMovements", CommonEntityBase.CreateEntityCollection<StockMovementEntity>()); } }
-
 		/// <summary>Creates a new PrefetchPathElement2 object which contains all the information to prefetch the related entities of type 'OrderItem' for this entity.</summary>
 		/// <returns>Ready to use IPrefetchPathElement2 implementation.</returns>
 		public static IPrefetchPathElement2 PrefetchPathOrderItems { get { return _staticMetaData.GetPrefetchPathElement("OrderItems", CommonEntityBase.CreateEntityCollection<OrderItemEntity>()); } }
@@ -228,6 +216,14 @@ namespace GroceryEcommerce.EntityClasses
 		{
 			get { return (System.String)GetValue((int)ProductVariantFieldIndex.ImageUrl, true); }
 			set { SetValue((int)ProductVariantFieldIndex.ImageUrl, value); }
+		}
+
+		/// <summary>The MinStockLevel property of the Entity ProductVariant<br/><br/></summary>
+		/// <remarks>Mapped on  table field: "product_variants"."min_stock_level".<br/>Table field type characteristics (type, precision, scale, length): Integer, 10, 0, 0.<br/>Table field behavior characteristics (is nullable, is PK, is identity): false, false, false</remarks>
+		public virtual System.Int32 MinStockLevel
+		{
+			get { return (System.Int32)GetValue((int)ProductVariantFieldIndex.MinStockLevel, true); }
+			set { SetValue((int)ProductVariantFieldIndex.MinStockLevel, value); }
 		}
 
 		/// <summary>The Name property of the Entity ProductVariant<br/><br/></summary>
@@ -314,10 +310,6 @@ namespace GroceryEcommerce.EntityClasses
 		[TypeContainedAttribute(typeof(PurchaseOrderItemEntity))]
 		public virtual EntityCollection<PurchaseOrderItemEntity> PurchaseOrderItems { get { return GetOrCreateEntityCollection<PurchaseOrderItemEntity, PurchaseOrderItemEntityFactory>("ProductVariant", true, false, ref _purchaseOrderItems); } }
 
-		/// <summary>Gets the EntityCollection with the related entities of type 'StockMovementEntity' which are related to this entity via a relation of type '1:n'. If the EntityCollection hasn't been fetched yet, the collection returned will be empty.<br/><br/></summary>
-		[TypeContainedAttribute(typeof(StockMovementEntity))]
-		public virtual EntityCollection<StockMovementEntity> StockMovements { get { return GetOrCreateEntityCollection<StockMovementEntity, StockMovementEntityFactory>("ProductVariant", true, false, ref _stockMovements); } }
-
 		/// <summary>Gets the EntityCollection with the related entities of type 'OrderItemEntity' which are related to this entity via a relation of type '1:n'. If the EntityCollection hasn't been fetched yet, the collection returned will be empty.<br/><br/></summary>
 		[TypeContainedAttribute(typeof(OrderItemEntity))]
 		public virtual EntityCollection<OrderItemEntity> OrderItems { get { return GetOrCreateEntityCollection<OrderItemEntity, OrderItemEntityFactory>("ProductVariant", true, false, ref _orderItems); } }
@@ -346,6 +338,8 @@ namespace GroceryEcommerce
 		DiscountPrice,
 		///<summary>ImageUrl. </summary>
 		ImageUrl,
+		///<summary>MinStockLevel. </summary>
+		MinStockLevel,
 		///<summary>Name. </summary>
 		Name,
 		///<summary>Price. </summary>
@@ -392,12 +386,6 @@ namespace GroceryEcommerce.RelationClasses
 			get { return ModelInfoProviderSingleton.GetInstance().CreateRelation(RelationType.OneToMany, "PurchaseOrderItems", true, new[] { ProductVariantFields.VariantId, PurchaseOrderItemFields.VariantId }); }
 		}
 
-		/// <summary>Returns a new IEntityRelation object, between ProductVariantEntity and StockMovementEntity over the 1:n relation they have, using the relation between the fields: ProductVariant.VariantId - StockMovement.ProductVariantId</summary>
-		public virtual IEntityRelation StockMovementEntityUsingProductVariantId
-		{
-			get { return ModelInfoProviderSingleton.GetInstance().CreateRelation(RelationType.OneToMany, "StockMovements", true, new[] { ProductVariantFields.VariantId, StockMovementFields.ProductVariantId }); }
-		}
-
 		/// <summary>Returns a new IEntityRelation object, between ProductVariantEntity and OrderItemEntity over the 1:n relation they have, using the relation between the fields: ProductVariant.VariantId - OrderItem.ProductVariantId</summary>
 		public virtual IEntityRelation OrderItemEntityUsingProductVariantId
 		{
@@ -418,7 +406,6 @@ namespace GroceryEcommerce.RelationClasses
 		internal static readonly IEntityRelation ShoppingCartItemEntityUsingProductVariantIdStatic = new ProductVariantRelations().ShoppingCartItemEntityUsingProductVariantId;
 		internal static readonly IEntityRelation WishlistItemEntityUsingProductVariantIdStatic = new ProductVariantRelations().WishlistItemEntityUsingProductVariantId;
 		internal static readonly IEntityRelation PurchaseOrderItemEntityUsingVariantIdStatic = new ProductVariantRelations().PurchaseOrderItemEntityUsingVariantId;
-		internal static readonly IEntityRelation StockMovementEntityUsingProductVariantIdStatic = new ProductVariantRelations().StockMovementEntityUsingProductVariantId;
 		internal static readonly IEntityRelation OrderItemEntityUsingProductVariantIdStatic = new ProductVariantRelations().OrderItemEntityUsingProductVariantId;
 		internal static readonly IEntityRelation ProductEntityUsingProductIdStatic = new ProductVariantRelations().ProductEntityUsingProductId;
 

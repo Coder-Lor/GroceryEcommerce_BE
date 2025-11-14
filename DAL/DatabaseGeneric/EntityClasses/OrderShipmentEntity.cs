@@ -27,7 +27,6 @@ namespace GroceryEcommerce.EntityClasses
 		// __LLBLGENPRO_USER_CODE_REGION_END	
 	{
 		private EntityCollection<ShipmentItemEntity> _shipmentItems;
-		private WarehouseEntity _warehouse;
 		private OrderEntity _order;
 		private ShipmentCarrierEntity _shipmentCarrier;
 
@@ -39,8 +38,6 @@ namespace GroceryEcommerce.EntityClasses
 		/// <summary>All names of fields mapped onto a relation. Usable for in-memory filtering</summary>
 		public static partial class MemberNames
 		{
-			/// <summary>Member name Warehouse</summary>
-			public static readonly string Warehouse = "Warehouse";
 			/// <summary>Member name Order</summary>
 			public static readonly string Order = "Order";
 			/// <summary>Member name ShipmentCarrier</summary>
@@ -56,7 +53,6 @@ namespace GroceryEcommerce.EntityClasses
 			{
 				SetEntityCoreInfo("OrderShipmentEntity", InheritanceHierarchyType.None, false, (int)GroceryEcommerce.EntityType.OrderShipmentEntity, typeof(OrderShipmentEntity), typeof(OrderShipmentEntityFactory), false);
 				AddNavigatorMetaData<OrderShipmentEntity, EntityCollection<ShipmentItemEntity>>("ShipmentItems", a => a._shipmentItems, (a, b) => a._shipmentItems = b, a => a.ShipmentItems, () => new OrderShipmentRelations().ShipmentItemEntityUsingShipmentId, typeof(ShipmentItemEntity), (int)GroceryEcommerce.EntityType.ShipmentItemEntity);
-				AddNavigatorMetaData<OrderShipmentEntity, WarehouseEntity>("Warehouse", "OrderShipments", (a, b) => a._warehouse = b, a => a._warehouse, (a, b) => a.Warehouse = b, GroceryEcommerce.RelationClasses.StaticOrderShipmentRelations.WarehouseEntityUsingWarehouseIdStatic, ()=>new OrderShipmentRelations().WarehouseEntityUsingWarehouseId, null, new int[] { (int)OrderShipmentFieldIndex.WarehouseId }, null, true, (int)GroceryEcommerce.EntityType.WarehouseEntity);
 				AddNavigatorMetaData<OrderShipmentEntity, OrderEntity>("Order", "OrderShipments", (a, b) => a._order = b, a => a._order, (a, b) => a.Order = b, GroceryEcommerce.RelationClasses.StaticOrderShipmentRelations.OrderEntityUsingOrderIdStatic, ()=>new OrderShipmentRelations().OrderEntityUsingOrderId, null, new int[] { (int)OrderShipmentFieldIndex.OrderId }, null, true, (int)GroceryEcommerce.EntityType.OrderEntity);
 				AddNavigatorMetaData<OrderShipmentEntity, ShipmentCarrierEntity>("ShipmentCarrier", "OrderShipments", (a, b) => a._shipmentCarrier = b, a => a._shipmentCarrier, (a, b) => a.ShipmentCarrier = b, GroceryEcommerce.RelationClasses.StaticOrderShipmentRelations.ShipmentCarrierEntityUsingCarrierIdStatic, ()=>new OrderShipmentRelations().ShipmentCarrierEntityUsingCarrierId, null, new int[] { (int)OrderShipmentFieldIndex.CarrierId }, null, true, (int)GroceryEcommerce.EntityType.ShipmentCarrierEntity);
 			}
@@ -124,10 +120,6 @@ namespace GroceryEcommerce.EntityClasses
 		/// <returns></returns>
 		public virtual IRelationPredicateBucket GetRelationInfoShipmentItems() { return CreateRelationInfoForNavigator("ShipmentItems"); }
 
-		/// <summary>Creates a new IRelationPredicateBucket object which contains the predicate expression and relation collection to fetch the related entity of type 'Warehouse' to this entity.</summary>
-		/// <returns></returns>
-		public virtual IRelationPredicateBucket GetRelationInfoWarehouse() { return CreateRelationInfoForNavigator("Warehouse"); }
-
 		/// <summary>Creates a new IRelationPredicateBucket object which contains the predicate expression and relation collection to fetch the related entity of type 'Order' to this entity.</summary>
 		/// <returns></returns>
 		public virtual IRelationPredicateBucket GetRelationInfoOrder() { return CreateRelationInfoForNavigator("Order"); }
@@ -169,10 +161,6 @@ namespace GroceryEcommerce.EntityClasses
 		/// <summary>Creates a new PrefetchPathElement2 object which contains all the information to prefetch the related entities of type 'ShipmentItem' for this entity.</summary>
 		/// <returns>Ready to use IPrefetchPathElement2 implementation.</returns>
 		public static IPrefetchPathElement2 PrefetchPathShipmentItems { get { return _staticMetaData.GetPrefetchPathElement("ShipmentItems", CommonEntityBase.CreateEntityCollection<ShipmentItemEntity>()); } }
-
-		/// <summary>Creates a new PrefetchPathElement2 object which contains all the information to prefetch the related entities of type 'Warehouse' for this entity.</summary>
-		/// <returns>Ready to use IPrefetchPathElement2 implementation.</returns>
-		public static IPrefetchPathElement2 PrefetchPathWarehouse { get { return _staticMetaData.GetPrefetchPathElement("Warehouse", CommonEntityBase.CreateEntityCollection<WarehouseEntity>()); } }
 
 		/// <summary>Creates a new PrefetchPathElement2 object which contains all the information to prefetch the related entities of type 'Order' for this entity.</summary>
 		/// <returns>Ready to use IPrefetchPathElement2 implementation.</returns>
@@ -270,25 +258,9 @@ namespace GroceryEcommerce.EntityClasses
 			set { SetValue((int)OrderShipmentFieldIndex.UpdatedAt, value); }
 		}
 
-		/// <summary>The WarehouseId property of the Entity OrderShipment<br/><br/></summary>
-		/// <remarks>Mapped on  table field: "order_shipments"."warehouse_id".<br/>Table field type characteristics (type, precision, scale, length): Uuid, 0, 0, 0.<br/>Table field behavior characteristics (is nullable, is PK, is identity): true, false, false</remarks>
-		public virtual Nullable<System.Guid> WarehouseId
-		{
-			get { return (Nullable<System.Guid>)GetValue((int)OrderShipmentFieldIndex.WarehouseId, false); }
-			set { SetValue((int)OrderShipmentFieldIndex.WarehouseId, value); }
-		}
-
 		/// <summary>Gets the EntityCollection with the related entities of type 'ShipmentItemEntity' which are related to this entity via a relation of type '1:n'. If the EntityCollection hasn't been fetched yet, the collection returned will be empty.<br/><br/></summary>
 		[TypeContainedAttribute(typeof(ShipmentItemEntity))]
 		public virtual EntityCollection<ShipmentItemEntity> ShipmentItems { get { return GetOrCreateEntityCollection<ShipmentItemEntity, ShipmentItemEntityFactory>("OrderShipment", true, false, ref _shipmentItems); } }
-
-		/// <summary>Gets / sets related entity of type 'WarehouseEntity' which has to be set using a fetch action earlier. If no related entity is set for this property, null is returned..<br/><br/></summary>
-		[Browsable(false)]
-		public virtual WarehouseEntity Warehouse
-		{
-			get { return _warehouse; }
-			set { SetSingleRelatedEntityNavigator(value, "Warehouse"); }
-		}
 
 		/// <summary>Gets / sets related entity of type 'OrderEntity' which has to be set using a fetch action earlier. If no related entity is set for this property, null is returned..<br/><br/></summary>
 		[Browsable(false)]
@@ -338,8 +310,6 @@ namespace GroceryEcommerce
 		TrackingNumber,
 		///<summary>UpdatedAt. </summary>
 		UpdatedAt,
-		///<summary>WarehouseId. </summary>
-		WarehouseId,
 		/// <summary></summary>
 		AmountOfFields
 	}
@@ -354,12 +324,6 @@ namespace GroceryEcommerce.RelationClasses
 		public virtual IEntityRelation ShipmentItemEntityUsingShipmentId
 		{
 			get { return ModelInfoProviderSingleton.GetInstance().CreateRelation(RelationType.OneToMany, "ShipmentItems", true, new[] { OrderShipmentFields.ShipmentId, ShipmentItemFields.ShipmentId }); }
-		}
-
-		/// <summary>Returns a new IEntityRelation object, between OrderShipmentEntity and WarehouseEntity over the m:1 relation they have, using the relation between the fields: OrderShipment.WarehouseId - Warehouse.WarehouseId</summary>
-		public virtual IEntityRelation WarehouseEntityUsingWarehouseId
-		{
-			get	{ return ModelInfoProviderSingleton.GetInstance().CreateRelation(RelationType.ManyToOne, "Warehouse", false, new[] { WarehouseFields.WarehouseId, OrderShipmentFields.WarehouseId }); }
 		}
 
 		/// <summary>Returns a new IEntityRelation object, between OrderShipmentEntity and OrderEntity over the m:1 relation they have, using the relation between the fields: OrderShipment.OrderId - Order.OrderId</summary>
@@ -380,7 +344,6 @@ namespace GroceryEcommerce.RelationClasses
 	internal static class StaticOrderShipmentRelations
 	{
 		internal static readonly IEntityRelation ShipmentItemEntityUsingShipmentIdStatic = new OrderShipmentRelations().ShipmentItemEntityUsingShipmentId;
-		internal static readonly IEntityRelation WarehouseEntityUsingWarehouseIdStatic = new OrderShipmentRelations().WarehouseEntityUsingWarehouseId;
 		internal static readonly IEntityRelation OrderEntityUsingOrderIdStatic = new OrderShipmentRelations().OrderEntityUsingOrderId;
 		internal static readonly IEntityRelation ShipmentCarrierEntityUsingCarrierIdStatic = new OrderShipmentRelations().ShipmentCarrierEntityUsingCarrierId;
 

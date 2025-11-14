@@ -279,24 +279,6 @@ public static class DependencyInjection
         });
 
         // Inventory Repositories
-        services.AddScoped<IWarehouseRepository>(provider => {
-            var adapter = provider.GetRequiredService<DataAccessAdapter>();
-            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
-            var mapper = provider.GetRequiredService<IMapper>();
-            var cacheService = provider.GetRequiredService<ICacheService>();
-            var logger = provider.GetRequiredService<ILogger<WarehouseRepository>>();
-            return new WarehouseRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
-        });
-
-        services.AddScoped<ISupplierRepository>(provider => {
-            var adapter = provider.GetRequiredService<DataAccessAdapter>();
-            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
-            var mapper = provider.GetRequiredService<IMapper>();
-            var cacheService = provider.GetRequiredService<ICacheService>();
-            var logger = provider.GetRequiredService<ILogger<SupplierRepository>>();
-            return new SupplierRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
-        });
-
         services.AddScoped<IPurchaseOrderRepository>(provider => {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
             var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
@@ -315,15 +297,6 @@ public static class DependencyInjection
             return new PurchaseOrderItemRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
-        services.AddScoped<IStockMovementRepository>(provider => {
-            var adapter = provider.GetRequiredService<DataAccessAdapter>();
-            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
-            var mapper = provider.GetRequiredService<IMapper>();
-            var cacheService = provider.GetRequiredService<ICacheService>();
-            var logger = provider.GetRequiredService<ILogger<StockMovementRepository>>();
-            return new StockMovementRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
-        });
-        
         // Register existing services
         services.AddMemoryCache();
         services.AddHttpContextAccessor();

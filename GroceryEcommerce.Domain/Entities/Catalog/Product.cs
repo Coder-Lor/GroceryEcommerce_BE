@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using GroceryEcommerce.Domain.Entities.Auth;
-using GroceryEcommerce.Domain.Entities.Inventory;
 
 namespace GroceryEcommerce.Domain.Entities.Catalog;
 
@@ -75,5 +74,4 @@ public class Product
     public ICollection<ProductTagAssignment> ProductTagAssignments { get; set; } = new List<ProductTagAssignment>();
     public ICollection<ProductQuestion> ProductQuestions { get; set; } = new List<ProductQuestion>();
     public ICollection<Reviews.ProductReview> Reviews { get; set; } = new List<Reviews.ProductReview>();
-    public ICollection<StockMovement> StockMovements { get; set; } = new List<StockMovement>();
 }

@@ -28,8 +28,6 @@ namespace GroceryEcommerce.EntityClasses
 	{
 		private EntityCollection<PurchaseOrderItemEntity> _purchaseOrderItems;
 		private UserEntity _user;
-		private SupplierEntity _supplier;
-		private WarehouseEntity _warehouse;
 
 		// __LLBLGENPRO_USER_CODE_REGION_START PrivateMembers
 		// __LLBLGENPRO_USER_CODE_REGION_END
@@ -41,10 +39,6 @@ namespace GroceryEcommerce.EntityClasses
 		{
 			/// <summary>Member name User</summary>
 			public static readonly string User = "User";
-			/// <summary>Member name Supplier</summary>
-			public static readonly string Supplier = "Supplier";
-			/// <summary>Member name Warehouse</summary>
-			public static readonly string Warehouse = "Warehouse";
 			/// <summary>Member name PurchaseOrderItems</summary>
 			public static readonly string PurchaseOrderItems = "PurchaseOrderItems";
 		}
@@ -57,8 +51,6 @@ namespace GroceryEcommerce.EntityClasses
 				SetEntityCoreInfo("PurchaseOrderEntity", InheritanceHierarchyType.None, false, (int)GroceryEcommerce.EntityType.PurchaseOrderEntity, typeof(PurchaseOrderEntity), typeof(PurchaseOrderEntityFactory), false);
 				AddNavigatorMetaData<PurchaseOrderEntity, EntityCollection<PurchaseOrderItemEntity>>("PurchaseOrderItems", a => a._purchaseOrderItems, (a, b) => a._purchaseOrderItems = b, a => a.PurchaseOrderItems, () => new PurchaseOrderRelations().PurchaseOrderItemEntityUsingPurchaseOrderId, typeof(PurchaseOrderItemEntity), (int)GroceryEcommerce.EntityType.PurchaseOrderItemEntity);
 				AddNavigatorMetaData<PurchaseOrderEntity, UserEntity>("User", "PurchaseOrders", (a, b) => a._user = b, a => a._user, (a, b) => a.User = b, GroceryEcommerce.RelationClasses.StaticPurchaseOrderRelations.UserEntityUsingCreatedByStatic, ()=>new PurchaseOrderRelations().UserEntityUsingCreatedBy, null, new int[] { (int)PurchaseOrderFieldIndex.CreatedBy }, null, true, (int)GroceryEcommerce.EntityType.UserEntity);
-				AddNavigatorMetaData<PurchaseOrderEntity, SupplierEntity>("Supplier", "PurchaseOrders", (a, b) => a._supplier = b, a => a._supplier, (a, b) => a.Supplier = b, GroceryEcommerce.RelationClasses.StaticPurchaseOrderRelations.SupplierEntityUsingSupplierIdStatic, ()=>new PurchaseOrderRelations().SupplierEntityUsingSupplierId, null, new int[] { (int)PurchaseOrderFieldIndex.SupplierId }, null, true, (int)GroceryEcommerce.EntityType.SupplierEntity);
-				AddNavigatorMetaData<PurchaseOrderEntity, WarehouseEntity>("Warehouse", "PurchaseOrders", (a, b) => a._warehouse = b, a => a._warehouse, (a, b) => a.Warehouse = b, GroceryEcommerce.RelationClasses.StaticPurchaseOrderRelations.WarehouseEntityUsingWarehouseIdStatic, ()=>new PurchaseOrderRelations().WarehouseEntityUsingWarehouseId, null, new int[] { (int)PurchaseOrderFieldIndex.WarehouseId }, null, true, (int)GroceryEcommerce.EntityType.WarehouseEntity);
 			}
 		}
 
@@ -127,14 +119,6 @@ namespace GroceryEcommerce.EntityClasses
 		/// <summary>Creates a new IRelationPredicateBucket object which contains the predicate expression and relation collection to fetch the related entity of type 'User' to this entity.</summary>
 		/// <returns></returns>
 		public virtual IRelationPredicateBucket GetRelationInfoUser() { return CreateRelationInfoForNavigator("User"); }
-
-		/// <summary>Creates a new IRelationPredicateBucket object which contains the predicate expression and relation collection to fetch the related entity of type 'Supplier' to this entity.</summary>
-		/// <returns></returns>
-		public virtual IRelationPredicateBucket GetRelationInfoSupplier() { return CreateRelationInfoForNavigator("Supplier"); }
-
-		/// <summary>Creates a new IRelationPredicateBucket object which contains the predicate expression and relation collection to fetch the related entity of type 'Warehouse' to this entity.</summary>
-		/// <returns></returns>
-		public virtual IRelationPredicateBucket GetRelationInfoWarehouse() { return CreateRelationInfoForNavigator("Warehouse"); }
 		
 		/// <inheritdoc/>
 		protected override EntityStaticMetaDataBase GetEntityStaticMetaData() {	return _staticMetaData; }
@@ -173,14 +157,6 @@ namespace GroceryEcommerce.EntityClasses
 		/// <summary>Creates a new PrefetchPathElement2 object which contains all the information to prefetch the related entities of type 'User' for this entity.</summary>
 		/// <returns>Ready to use IPrefetchPathElement2 implementation.</returns>
 		public static IPrefetchPathElement2 PrefetchPathUser { get { return _staticMetaData.GetPrefetchPathElement("User", CommonEntityBase.CreateEntityCollection<UserEntity>()); } }
-
-		/// <summary>Creates a new PrefetchPathElement2 object which contains all the information to prefetch the related entities of type 'Supplier' for this entity.</summary>
-		/// <returns>Ready to use IPrefetchPathElement2 implementation.</returns>
-		public static IPrefetchPathElement2 PrefetchPathSupplier { get { return _staticMetaData.GetPrefetchPathElement("Supplier", CommonEntityBase.CreateEntityCollection<SupplierEntity>()); } }
-
-		/// <summary>Creates a new PrefetchPathElement2 object which contains all the information to prefetch the related entities of type 'Warehouse' for this entity.</summary>
-		/// <returns>Ready to use IPrefetchPathElement2 implementation.</returns>
-		public static IPrefetchPathElement2 PrefetchPathWarehouse { get { return _staticMetaData.GetPrefetchPathElement("Warehouse", CommonEntityBase.CreateEntityCollection<WarehouseEntity>()); } }
 
 		/// <summary>The CreatedAt property of the Entity PurchaseOrder<br/><br/></summary>
 		/// <remarks>Mapped on  table field: "purchase_orders"."created_at".<br/>Table field type characteristics (type, precision, scale, length): TimestampTz, 0, 0, 0.<br/>Table field behavior characteristics (is nullable, is PK, is identity): false, false, false</remarks>
@@ -238,14 +214,6 @@ namespace GroceryEcommerce.EntityClasses
 			set { SetValue((int)PurchaseOrderFieldIndex.Status, value); }
 		}
 
-		/// <summary>The SupplierId property of the Entity PurchaseOrder<br/><br/></summary>
-		/// <remarks>Mapped on  table field: "purchase_orders"."supplier_id".<br/>Table field type characteristics (type, precision, scale, length): Uuid, 0, 0, 0.<br/>Table field behavior characteristics (is nullable, is PK, is identity): false, false, false</remarks>
-		public virtual System.Guid SupplierId
-		{
-			get { return (System.Guid)GetValue((int)PurchaseOrderFieldIndex.SupplierId, true); }
-			set { SetValue((int)PurchaseOrderFieldIndex.SupplierId, value); }
-		}
-
 		/// <summary>The TotalAmount property of the Entity PurchaseOrder<br/><br/></summary>
 		/// <remarks>Mapped on  table field: "purchase_orders"."total_amount".<br/>Table field type characteristics (type, precision, scale, length): Numeric, 18, 2, 0.<br/>Table field behavior characteristics (is nullable, is PK, is identity): false, false, false</remarks>
 		public virtual System.Decimal TotalAmount
@@ -262,14 +230,6 @@ namespace GroceryEcommerce.EntityClasses
 			set { SetValue((int)PurchaseOrderFieldIndex.UpdatedAt, value); }
 		}
 
-		/// <summary>The WarehouseId property of the Entity PurchaseOrder<br/><br/></summary>
-		/// <remarks>Mapped on  table field: "purchase_orders"."warehouse_id".<br/>Table field type characteristics (type, precision, scale, length): Uuid, 0, 0, 0.<br/>Table field behavior characteristics (is nullable, is PK, is identity): true, false, false</remarks>
-		public virtual Nullable<System.Guid> WarehouseId
-		{
-			get { return (Nullable<System.Guid>)GetValue((int)PurchaseOrderFieldIndex.WarehouseId, false); }
-			set { SetValue((int)PurchaseOrderFieldIndex.WarehouseId, value); }
-		}
-
 		/// <summary>Gets the EntityCollection with the related entities of type 'PurchaseOrderItemEntity' which are related to this entity via a relation of type '1:n'. If the EntityCollection hasn't been fetched yet, the collection returned will be empty.<br/><br/></summary>
 		[TypeContainedAttribute(typeof(PurchaseOrderItemEntity))]
 		public virtual EntityCollection<PurchaseOrderItemEntity> PurchaseOrderItems { get { return GetOrCreateEntityCollection<PurchaseOrderItemEntity, PurchaseOrderItemEntityFactory>("PurchaseOrder", true, false, ref _purchaseOrderItems); } }
@@ -280,22 +240,6 @@ namespace GroceryEcommerce.EntityClasses
 		{
 			get { return _user; }
 			set { SetSingleRelatedEntityNavigator(value, "User"); }
-		}
-
-		/// <summary>Gets / sets related entity of type 'SupplierEntity' which has to be set using a fetch action earlier. If no related entity is set for this property, null is returned..<br/><br/></summary>
-		[Browsable(false)]
-		public virtual SupplierEntity Supplier
-		{
-			get { return _supplier; }
-			set { SetSingleRelatedEntityNavigator(value, "Supplier"); }
-		}
-
-		/// <summary>Gets / sets related entity of type 'WarehouseEntity' which has to be set using a fetch action earlier. If no related entity is set for this property, null is returned..<br/><br/></summary>
-		[Browsable(false)]
-		public virtual WarehouseEntity Warehouse
-		{
-			get { return _warehouse; }
-			set { SetSingleRelatedEntityNavigator(value, "Warehouse"); }
 		}
 
 		// __LLBLGENPRO_USER_CODE_REGION_START CustomEntityCode
@@ -322,14 +266,10 @@ namespace GroceryEcommerce
 		PurchaseOrderId,
 		///<summary>Status. </summary>
 		Status,
-		///<summary>SupplierId. </summary>
-		SupplierId,
 		///<summary>TotalAmount. </summary>
 		TotalAmount,
 		///<summary>UpdatedAt. </summary>
 		UpdatedAt,
-		///<summary>WarehouseId. </summary>
-		WarehouseId,
 		/// <summary></summary>
 		AmountOfFields
 	}
@@ -352,18 +292,6 @@ namespace GroceryEcommerce.RelationClasses
 			get	{ return ModelInfoProviderSingleton.GetInstance().CreateRelation(RelationType.ManyToOne, "User", false, new[] { UserFields.UserId, PurchaseOrderFields.CreatedBy }); }
 		}
 
-		/// <summary>Returns a new IEntityRelation object, between PurchaseOrderEntity and SupplierEntity over the m:1 relation they have, using the relation between the fields: PurchaseOrder.SupplierId - Supplier.SupplierId</summary>
-		public virtual IEntityRelation SupplierEntityUsingSupplierId
-		{
-			get	{ return ModelInfoProviderSingleton.GetInstance().CreateRelation(RelationType.ManyToOne, "Supplier", false, new[] { SupplierFields.SupplierId, PurchaseOrderFields.SupplierId }); }
-		}
-
-		/// <summary>Returns a new IEntityRelation object, between PurchaseOrderEntity and WarehouseEntity over the m:1 relation they have, using the relation between the fields: PurchaseOrder.WarehouseId - Warehouse.WarehouseId</summary>
-		public virtual IEntityRelation WarehouseEntityUsingWarehouseId
-		{
-			get	{ return ModelInfoProviderSingleton.GetInstance().CreateRelation(RelationType.ManyToOne, "Warehouse", false, new[] { WarehouseFields.WarehouseId, PurchaseOrderFields.WarehouseId }); }
-		}
-
 	}
 	
 	/// <summary>Static class which is used for providing relationship instances which are re-used internally for syncing</summary>
@@ -371,8 +299,6 @@ namespace GroceryEcommerce.RelationClasses
 	{
 		internal static readonly IEntityRelation PurchaseOrderItemEntityUsingPurchaseOrderIdStatic = new PurchaseOrderRelations().PurchaseOrderItemEntityUsingPurchaseOrderId;
 		internal static readonly IEntityRelation UserEntityUsingCreatedByStatic = new PurchaseOrderRelations().UserEntityUsingCreatedBy;
-		internal static readonly IEntityRelation SupplierEntityUsingSupplierIdStatic = new PurchaseOrderRelations().SupplierEntityUsingSupplierId;
-		internal static readonly IEntityRelation WarehouseEntityUsingWarehouseIdStatic = new PurchaseOrderRelations().WarehouseEntityUsingWarehouseId;
 
 		/// <summary>CTor</summary>
 		static StaticPurchaseOrderRelations() { }

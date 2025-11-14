@@ -199,12 +199,10 @@ public class SalesMappingProfile : Profile
             .ForMember(dest => dest.DeliveredAt, opt => opt.MapFrom(src => src.DeliveredAt))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
             .ForMember(dest => dest.ShippingCost, opt => opt.MapFrom(src => src.ShippingCost))
-            .ForMember(dest => dest.WarehouseId, opt => opt.MapFrom(src => src.WarehouseId))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
             .ForMember(dest => dest.Order, opt => opt.Ignore())
             .ForMember(dest => dest.ShipmentCarrier, opt => opt.Ignore())
-            .ForMember(dest => dest.Warehouse, opt => opt.Ignore())
             .ForMember(dest => dest.ShipmentItems, opt => opt.Ignore());
 
         CreateMap<OrderShipmentEntity, OrderShipment>()
@@ -217,12 +215,10 @@ public class SalesMappingProfile : Profile
             .ForMember(dest => dest.DeliveredAt, opt => opt.MapFrom(src => src.DeliveredAt))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
             .ForMember(dest => dest.ShippingCost, opt => opt.MapFrom(src => src.ShippingCost))
-            .ForMember(dest => dest.WarehouseId, opt => opt.MapFrom(src => src.WarehouseId))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
             .ForMember(dest => dest.Order, opt => opt.Ignore())
             .ForMember(dest => dest.ShipmentCarrier, opt => opt.Ignore())
-            .ForMember(dest => dest.Warehouse, opt => opt.Ignore())
             .ForMember(dest => dest.ShipmentItems, opt => opt.Ignore());
 
         // OrderStatusHistory mapping

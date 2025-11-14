@@ -1,0 +1,2790 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--LLBLGen Pro v5.12 project file. Do not manually edit this file. Incorrect references could lead to an unloadable project file.-->
+<Project Version="5.12" TargetFrameworkName="LLBLGen Pro Runtime Framework" UseLegacyDefaults="false">
+  <Properties>
+    <Abbreviations />
+    <Property Name="AdditionalTaskPerformerFolder" Value="" />
+    <Property Name="AdditionalTasksFolder" Value="" />
+    <Property Name="AdditionalTemplatesFolder" Value="" />
+    <Property Name="AdditionalTypeConverterFolder" Value="" />
+    <Property Name="AddNewElementsAfterRefresh_v5" Value="false" />
+    <Property Name="AddNewElementsAfterRelationalModelDataSync_v5" Value="false" />
+    <Property Name="AddNewFieldsAfterRefresh_v5" Value="true" />
+    <Property Name="AddNewFieldsAfterRelationalModelDataSync_v5" Value="true" />
+    <Property Name="AddNewViewsAsEntitiesAfterRefresh_v5" Value="false" />
+    <Property Name="AddNewViewsAsEntitiesAfterRelationalModelDataSync_v5" Value="false" />
+    <Property Name="AutoAddManyToManyRelationships" Value="false" />
+    <Property Name="AutoAssignSequencesToIntegerPks" Value="true" />
+    <Property Name="AutoAssignTypeConverterToFieldMapping" Value="true" />
+    <Property Name="AutomaticallyGenerateSourceCodeOnProjectSave" Value="true" />
+    <Property Name="ConnectionStringKeyNamePattern" Value="ConnectionString.{$ProviderName}" />
+    <Property Name="DefaultDDLSQLScriptDestinationFolder" Value=".\DDLSQLScripts" />
+    <Property Name="DefaultDeleteRuleAction" Value="1" />
+    <Property Name="DefaultSourceCodeDestinationFolder" Value=".\Code" />
+    <Property Name="DefaultUpdateRuleAction" Value="0" />
+    <Property Name="DeleteObsoleteFiles" Value="true" />
+    <Property Name="ElementNamePrefixPattern" Value="{$SchemaName}" />
+    <Property Name="ElementNamePrefixPatternIsAppliedWhen" Value="1" />
+    <Property Name="EncodingToUse" Value="0" />
+    <Property Name="EntityActionCombinationDefaultForTable" Value="0" />
+    <Property Name="EntityActionCombinationDefaultForView" Value="4" />
+    <Property Name="EntityFieldNameStripPattern" Value="{}{}" />
+    <Property Name="EntityNameStripPattern" Value="{tbl_}{}" />
+    <Property Name="ExcludableOrphanedElementDetectedAction" Value="3" />
+    <Property Name="FailCodeGenerationOnWriteError" Value="false" />
+    <Property Name="FieldMappedOntoRelatedFieldPattern" Value="{$RelatedFieldName}" />
+    <Property Name="FkFieldsAreNamedAfterTargetField" Value="true" />
+    <Property Name="ForeignKeyConstraintPattern" Value="FK_{$Guid}" />
+    <Property Name="ForeignKeyFieldPattern" Value="{$NavigatorName}{$RelatedFieldName}" />
+    <Property Name="GroupUsage" Value="0" />
+    <Property Name="IdentifyingFieldsFollowDBPrimaryKeyConstraints_v5" Value="true" />
+    <Property Name="InsertUnderscoreAtWordBreakCaseInsensitiveDBs" Value="false" />
+    <Property Name="InsertUnderscoreAtWordBreakCaseSensitiveDBs" Value="false" />
+    <Property Name="LengthPrecisionScaleFollowDBLengthPrecisionScale_v5" Value="true" />
+    <Property Name="MakeElementNamePascalCasing" Value="true" />
+    <Property Name="NavigatorMappedOntoManyToManyPattern" Value="{$EndEntityName}CollectionVia{$IntermediateEntityName$S}" />
+    <Property Name="NavigatorMappedOntoOneManyToOnePattern" Value="{$EndEntityName$S}" />
+    <Property Name="NavigatorMappedOntoOneToManyPattern" Value="{$EndEntityName$P}" />
+    <Property Name="NonExcludableOrphanedElementDetectedAction" Value="3" />
+    <Property Name="PreferDecimalOverCurrencyTypes" Value="true" />
+    <Property Name="PreferNaturalCharacterTypes" Value="true" />
+    <Property Name="PreferSystemSequencesOverSchemaSequencesIfApplicable" Value="true" />
+    <Property Name="PreferVariableLengthTypes" Value="true" />
+    <Property Name="PrimaryKeyConstraintPattern" Value="PK_{$Guid}" />
+    <Property Name="ProjectCreator" Value="TranThang" />
+    <Property Name="ProjectName" Value="GroceryEcommerce" />
+    <Property Name="ReflectNullabilityOfElementFieldInTargetField_v5" Value="false" />
+    <Property Name="ReflectTypeOfElementFieldInTargetField_v5" Value="true" />
+    <Property Name="RelationalModelDataElementNameCasingCaseInsensitiveDBs" Value="3" />
+    <Property Name="RelationalModelDataElementNameCasingCaseSensitiveDBs" Value="3" />
+    <Property Name="RelationshipsFollowDBForeignKeyConstraints_v5" Value="true" />
+    <Property Name="RemoveUnderscoresFromElementName" Value="true" />
+    <Property Name="RemoveUnmappedElementsAfterRefresh_v5" Value="false" />
+    <Property Name="RemoveUnmappedElementsAfterRelationalModelDataSync_v5" Value="false" />
+    <Property Name="ResetFieldOrderBasedOnTargetOrderAtRefresh" Value="false" />
+    <Property Name="ResetFieldOrderBasedOnTargetOrderAtRelationalModelDataSync" Value="false" />
+    <Property Name="RetrieveDBCustomProperties" Value="false" />
+    <Property Name="RootNamespace" Value="" />
+    <Property Name="SequenceNameMatchingPattern" Value="SEQ_{$TableName}" />
+    <Property Name="SequencePattern" Value="SEQ_{$EntityName}" />
+    <Property Name="SetGroupNameAfterSchemaName" Value="true" />
+    <Property Name="SetSchemaNameAfterGroupName" Value="true" />
+    <Property Name="SingularizeElementNames" Value="true" />
+    <Property Name="StoredProcNameStripPattern" Value="{pr_, sp_}{}" />
+    <Property Name="StoreTimeLastGeneratedIntoProject" Value="false" />
+    <Property Name="StoreTimeLastSyncIntoProject" Value="true" />
+    <Property Name="SyncCustomFieldOrderingWithTableFieldIndex" Value="false" />
+    <Property Name="SyncMappedElementNamesAfterRefresh_v5" Value="false" />
+    <Property Name="SyncMappedElementNamesAfterRelationalModelDataSync_v5" Value="false" />
+    <Property Name="SyncRelationalModelDataElementNameWithModelElementName_v5" Value="false" />
+    <Property Name="SyncRenamedMappedElementNamesAfterRefresh_v5" Value="false" />
+    <Property Name="SyncRenamedMappedElementNamesAfterRelationalModelDataSync_v5" Value="false" />
+    <Property Name="TableValuedFunctionNameStripPattern" Value="{fn_, pr_, sp_}{}" />
+    <Property Name="TargetPerEntityEdgesRequireBackingFkConstraint" Value="true" />
+    <Property Name="TypedViewFieldNameStripPattern" Value="{}{}" />
+    <Property Name="TypedViewMappedOnResultsetPattern" Value="{$ProcFunctionName}{$ResultsetName}Result" />
+    <Property Name="TypedViewNameStripPattern" Value="{vw_}{}" />
+    <Property Name="UniqueConstraintPattern" Value="UC_{$Guid}" />
+    <Property Name="UniqueConstraintsFollowDBUniqueConstraints_v5" Value="true" />
+    <Property Name="UpdateCustomPropertiesAfterRefresh_v5" Value="false" />
+    <Property Name="UpdateCustomPropertiesAfterRelationalModelDataSync_v5" Value="false" />
+    <Property Name="UseCustomFieldOrderingOnNewElements" Value="false" />
+  </Properties>
+  <TypeShortcuts />
+  <IgnoredWarnings />
+  <SavedSearchQueries />
+  <CodeGenerationCyclePreferences>
+    <OutputType Value="3">
+      <LastUsedPreferences>
+        <DestinationRootFolder Value="C:\Users\Admin\source\repos\ThangIT2k4\GroceryEcommerce_BE\DAL" />
+        <FrameworkName Value="LLBLGen Pro Runtime Framework" />
+        <LanguageName Value="C#" />
+        <PlatformName Value=".NET 9" />
+        <PresetName Value="SD.Presets.Adapter.General.Netstandard" />
+        <RootNamespace Value="GroceryEcommerce" />
+        <TemplateGroup Value="Adapter" />
+        <TemplateBindings>
+          <Binding Name="SD.TemplateBindings.PostgreSqlSpecific" />
+          <Binding Name="SD.TemplateBindings.SharedTemplates.Net9" />
+          <Binding Name="SD.TemplateBindings.SharedTemplates" />
+          <Binding Name="SD.TemplateBindings.General" />
+        </TemplateBindings>
+        <AdhocTemplateSets />
+      </LastUsedPreferences>
+    </OutputType>
+  </CodeGenerationCyclePreferences>
+  <CodeGenerationMetaDataDefaults>
+    <TargetElement Type="256">
+      <Defaults>
+        <Attributes>
+          <Attribute Value="Browsable($false)" />
+        </Attributes>
+      </Defaults>
+    </TargetElement>
+  </CodeGenerationMetaDataDefaults>
+  <EntityModel>
+    <ValueTypeDefinitions />
+    <EntityDefinitions>
+      <EntityDefinition Name="AuditLog" GroupName="Auth" ObjectID="45a6cf00-b207-461a-a58e-768b74cdfcf1">
+        <Fields>
+          <Field Name="Action" Type="string" MaxLength="200" />
+          <Field Name="AuditId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="Detail" Type="string" IsOptional="true" />
+          <Field Name="Entity" Type="string" IsOptional="true" MaxLength="100" />
+          <Field Name="EntityId" Type="guid" IsOptional="true" />
+          <Field Name="UserId" Type="guid" IsOptional="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="RefreshToken" GroupName="Auth" ObjectID="637eb7ae-0818-4fc7-aa09-96661f76f04b">
+        <Fields>
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="CreatedByIp" Type="string" IsOptional="true" MaxLength="45" />
+          <Field Name="ExpiresAt" Type="datetime" />
+          <Field Name="RefreshToken" Type="string" MaxLength="512" />
+          <Field Name="ReplacedByToken" Type="string" IsOptional="true" MaxLength="512" />
+          <Field Name="Revoked" Type="bool" />
+          <Field Name="TokenId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="UserId" Type="guid" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="RefreshTokensRefreshTokenKey">
+            <Field Name="RefreshToken" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="User" GroupName="Auth" ObjectID="08542595-e585-4a22-9136-6847be3863e0">
+        <Fields>
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="DateOfBirth" Type="datetime" IsOptional="true" />
+          <Field Name="Email" Type="string" MaxLength="255" />
+          <Field Name="EmailVerified" Type="bool" />
+          <Field Name="FailedLoginAttempts" Type="int" Precision="10" />
+          <Field Name="FirstName" Type="string" IsOptional="true" MaxLength="100" />
+          <Field Name="LastFailedLogin" Type="datetime" IsOptional="true" />
+          <Field Name="LastLoginAt" Type="datetime" IsOptional="true" />
+          <Field Name="LastName" Type="string" IsOptional="true" MaxLength="100" />
+          <Field Name="LockedUntil" Type="datetime" IsOptional="true" />
+          <Field Name="PasswordHash" Type="string" MaxLength="500" />
+          <Field Name="PhoneNumber" Type="string" IsOptional="true" MaxLength="20" />
+          <Field Name="PhoneVerified" Type="bool" />
+          <Field Name="Status" Type="short" Precision="5" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+          <Field Name="UserId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="Username" Type="string" MaxLength="200" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="UsersEmailKey">
+            <Field Name="Email" />
+          </UniqueConstraint>
+          <UniqueConstraint Name="UsersUsernameUnique">
+            <Field Name="Username" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="UserAddress" GroupName="Auth" ObjectID="cedac4b8-e7ba-488b-b79d-60fee27bb1fb">
+        <Fields>
+          <Field Name="AddressId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="AddressLine1" Type="string" MaxLength="255" />
+          <Field Name="AddressLine2" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="AddressType" Type="short" Precision="5" />
+          <Field Name="City" Type="string" MaxLength="100" />
+          <Field Name="Country" Type="string" MaxLength="100" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="IsDefault" Type="bool" />
+          <Field Name="State" Type="string" MaxLength="100" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+          <Field Name="UserId" Type="guid" />
+          <Field Name="ZipCode" Type="string" MaxLength="20" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="UserRole" GroupName="Auth" ObjectID="1750038b-fd51-41bd-8f4c-60d4d16c195a">
+        <Fields>
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="Description" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="RoleId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="RoleName" Type="string" MaxLength="50" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="UserRolesRoleNameKey">
+            <Field Name="RoleName" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="UserRoleAssignment" GroupName="Auth" ObjectID="09026d96-6e86-4fd2-8b28-d77a90d700f8">
+        <Fields>
+          <Field Name="AssignedAt" Type="datetime" />
+          <Field Name="AssignedBy" Type="guid" />
+          <Field Name="RoleId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="UserId" Type="guid" IsPrimaryKey="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="UserSession" GroupName="Auth" ObjectID="e59c3456-e072-4d25-bfab-1ae6d848c6ad">
+        <Fields>
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="DeviceInfo" Type="string" IsOptional="true" MaxLength="1073741824" />
+          <Field Name="ExpiresAt" Type="datetime" IsOptional="true" />
+          <Field Name="IpAddress" Type="string" IsOptional="true" MaxLength="45" />
+          <Field Name="Revoked" Type="bool" />
+          <Field Name="SessionId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="SessionToken" Type="string" MaxLength="100" />
+          <Field Name="UserId" Type="guid" IsOptional="true" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="UserSessionsSessionTokenKey">
+            <Field Name="SessionToken" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="AbandonedCart" GroupName="Cart" ObjectID="2bec29a7-7fba-4bf9-ab57-cc9ca1208a03">
+        <Fields>
+          <Field Name="AbandonedAt" Type="datetime" />
+          <Field Name="AbandonedId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="CartId" Type="guid" />
+          <Field Name="Notified" Type="bool" />
+          <Field Name="UserId" Type="guid" IsOptional="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="ShoppingCart" GroupName="Cart" ObjectID="4a2fc92c-1a72-4da2-9e99-2e29880f900a">
+        <Fields>
+          <Field Name="CartId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="SessionId" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+          <Field Name="UserId" Type="guid" IsOptional="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="ShoppingCartItem" GroupName="Cart" ObjectID="76dadad8-c267-4760-ac92-9f68ef3878b5">
+        <Fields>
+          <Field Name="CartId" Type="guid" />
+          <Field Name="CartItemId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="ProductId" Type="guid" />
+          <Field Name="ProductVariantId" Type="guid" IsOptional="true" />
+          <Field Name="Quantity" Type="int" Precision="10" />
+          <Field Name="UnitPrice" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Wishlist" GroupName="Cart" ObjectID="a592c30c-81d4-42f3-a26e-a09bba1110fa">
+        <Fields>
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="IsDefault" Type="bool" />
+          <Field Name="IsPublic" Type="bool" />
+          <Field Name="Name" Type="string" MaxLength="255" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+          <Field Name="UserId" Type="guid" />
+          <Field Name="WishlistId" Type="guid" IsPrimaryKey="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="WishlistItem" GroupName="Cart" ObjectID="a7b4e695-5c38-4fdc-96b8-79d93af3a840">
+        <Fields>
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="ProductId" Type="guid" />
+          <Field Name="ProductVariantId" Type="guid" IsOptional="true" />
+          <Field Name="WishlistId" Type="guid" />
+          <Field Name="WishlistItemId" Type="guid" IsPrimaryKey="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Brand" GroupName="Catalog" ObjectID="dfee3c65-c2a5-4b8a-bbe6-21d1ebff7a8d">
+        <Fields>
+          <Field Name="BrandId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="CreatedBy" Type="guid" />
+          <Field Name="Description" Type="string" IsOptional="true" MaxLength="1073741824" />
+          <Field Name="LogoUrl" Type="string" IsOptional="true" MaxLength="500" />
+          <Field Name="Name" Type="string" MaxLength="255" />
+          <Field Name="Slug" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="Status" Type="short" Precision="5" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+          <Field Name="UpdatedBy" Type="guid" IsOptional="true" />
+          <Field Name="Website" Type="string" IsOptional="true" MaxLength="255" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="BrandsSlugKey">
+            <Field Name="Slug" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="Category" GroupName="Catalog" ObjectID="5252913c-4655-4fdb-b18c-b82488e0641d">
+        <Fields>
+          <Field Name="CategoryId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="CreatedBy" Type="guid" />
+          <Field Name="Description" Type="string" IsOptional="true" MaxLength="1073741824" />
+          <Field Name="DisplayOrder" Type="int" Precision="10" />
+          <Field Name="ImageUrl" Type="string" IsOptional="true" MaxLength="500" />
+          <Field Name="MetaDescription" Type="string" IsOptional="true" MaxLength="500" />
+          <Field Name="MetaTitle" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="Name" Type="string" MaxLength="255" />
+          <Field Name="ParentCategoryId" Type="guid" IsOptional="true" />
+          <Field Name="Slug" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="Status" Type="short" Precision="5" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+          <Field Name="UpdatedBy" Type="guid" IsOptional="true" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="CategoriesSlugKey">
+            <Field Name="Slug" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="Product" GroupName="Catalog" ObjectID="62d71314-8ac6-4f0d-a591-56cff5aae0ba">
+        <Fields>
+          <Field Name="BrandId" Type="guid" IsOptional="true" />
+          <Field Name="CategoryId" Type="guid" />
+          <Field Name="Cost" Type="decimal" IsOptional="true" Precision="18" Scale="2" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="CreatedBy" Type="guid" />
+          <Field Name="Description" Type="string" MaxLength="1073741824" />
+          <Field Name="Dimensions" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="DiscountPrice" Type="decimal" IsOptional="true" Precision="18" Scale="2" />
+          <Field Name="IsDigital" Type="bool" />
+          <Field Name="IsFeatured" Type="bool" />
+          <Field Name="MetaDescription" Type="string" IsOptional="true" MaxLength="500" />
+          <Field Name="MetaTitle" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="MinStockLevel" Type="int" Precision="10" />
+          <Field Name="Name" Type="string" MaxLength="255" />
+          <Field Name="Price" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="ProductId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="ShortDescription" Type="string" IsOptional="true" MaxLength="500" />
+          <Field Name="Sku" Type="string" MaxLength="100" />
+          <Field Name="Slug" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="Status" Type="short" Precision="5" />
+          <Field Name="StockQuantity" Type="int" Precision="10" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+          <Field Name="UpdatedBy" Type="guid" IsOptional="true" />
+          <Field Name="Weight" Type="decimal" IsOptional="true" Precision="10" Scale="3" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="ProductsSkuKey">
+            <Field Name="Sku" />
+          </UniqueConstraint>
+          <UniqueConstraint Name="ProductsSlugKey">
+            <Field Name="Slug" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="ProductAttribute" GroupName="Catalog" ObjectID="f47d3959-79e3-4fc6-a24f-6848e7aedb40">
+        <Fields>
+          <Field Name="AttributeId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="AttributeType" Type="short" Precision="5" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="DisplayName" Type="string" MaxLength="100" />
+          <Field Name="DisplayOrder" Type="int" Precision="10" />
+          <Field Name="IsRequired" Type="bool" />
+          <Field Name="Name" Type="string" MaxLength="100" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="ProductAttributeValue" GroupName="Catalog" ObjectID="2b0dd5c6-87f2-4bef-9302-2b6379e8c7f3">
+        <Fields>
+          <Field Name="AttributeId" Type="guid" />
+          <Field Name="ProductId" Type="guid" />
+          <Field Name="Value" Type="string" MaxLength="500" />
+          <Field Name="ValueId" Type="guid" IsPrimaryKey="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="ProductImage" GroupName="Catalog" ObjectID="981fb2e5-2c4c-4e09-87f7-af103be2fb2e">
+        <Fields>
+          <Field Name="AltText" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="DisplayOrder" Type="int" Precision="10" />
+          <Field Name="ImageId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="ImageUrl" Type="string" MaxLength="500" />
+          <Field Name="IsPrimary" Type="bool" />
+          <Field Name="ProductId" Type="guid" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="ProductQuestion" GroupName="Catalog" ObjectID="984c565f-7521-4fc2-8091-7cf1cc9ba9f0">
+        <Fields>
+          <Field Name="Answer" Type="string" IsOptional="true" MaxLength="1073741824" />
+          <Field Name="AnsweredBy" Type="guid" IsOptional="true" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="ProductId" Type="guid" />
+          <Field Name="Question" Type="string" MaxLength="1073741824" />
+          <Field Name="QuestionId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="Status" Type="short" Precision="5" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+          <Field Name="UserId" Type="guid" IsOptional="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="ProductTag" GroupName="Catalog" ObjectID="d5540ebc-2e8e-4af4-83ad-9b5c3ef7a88b">
+        <Fields>
+          <Field Name="Name" Type="string" MaxLength="100" />
+          <Field Name="Slug" Type="string" IsOptional="true" MaxLength="150" />
+          <Field Name="TagId" Type="guid" IsPrimaryKey="true" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="ProductTagsNameKey">
+            <Field Name="Name" />
+          </UniqueConstraint>
+          <UniqueConstraint Name="ProductTagsSlugKey">
+            <Field Name="Slug" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="ProductTagAssignment" GroupName="Catalog" ObjectID="a9206b88-1db3-4b6e-895c-f8b3ff3befa5">
+        <Fields>
+          <Field Name="ProductId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="TagId" Type="guid" IsPrimaryKey="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="ProductVariant" GroupName="Catalog" ObjectID="1084284e-b6eb-44ff-b4cb-c3a2d6722da4">
+        <Fields>
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="DiscountPrice" Type="decimal" IsOptional="true" Precision="18" Scale="2" />
+          <Field Name="ImageUrl" Type="string" IsOptional="true" MaxLength="500" />
+          <Field Name="MinStockLevel" Type="int" Precision="10" />
+          <Field Name="Name" Type="string" MaxLength="255" />
+          <Field Name="Price" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="ProductId" Type="guid" />
+          <Field Name="Sku" Type="string" MaxLength="100" />
+          <Field Name="Status" Type="short" Precision="5" />
+          <Field Name="StockQuantity" Type="int" Precision="10" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+          <Field Name="VariantId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="Weight" Type="decimal" IsOptional="true" Precision="10" Scale="3" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="ProductVariantsSkuKey">
+            <Field Name="Sku" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="PurchaseOrder" GroupName="Inventory" ObjectID="79545344-f2dd-4e5e-97a5-63c7da0df7dd">
+        <Fields>
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="CreatedBy" Type="guid" IsOptional="true" />
+          <Field Name="ExpectedDate" Type="datetime" IsOptional="true" />
+          <Field Name="OrderDate" Type="datetime" />
+          <Field Name="OrderNumber" Type="string" MaxLength="100" />
+          <Field Name="PurchaseOrderId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="Status" Type="short" Precision="5" />
+          <Field Name="TotalAmount" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="PurchaseOrdersOrderNumberKey">
+            <Field Name="OrderNumber" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="PurchaseOrderItem" GroupName="Inventory" ObjectID="2f32fe74-ccbc-458c-9031-37790aa1cc4e">
+        <Fields>
+          <Field Name="PoiId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="ProductId" Type="guid" />
+          <Field Name="PurchaseOrderId" Type="guid" />
+          <Field Name="Quantity" Type="int" Precision="10" />
+          <Field Name="TotalCost" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="UnitCost" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="VariantId" Type="guid" IsOptional="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Coupon" GroupName="Marketing" ObjectID="a87d7b0f-aa49-49c4-aaf2-12bd33151d8c">
+        <Fields>
+          <Field Name="Code" Type="string" MaxLength="50" />
+          <Field Name="CouponId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="CreatedBy" Type="guid" />
+          <Field Name="Description" Type="string" IsOptional="true" MaxLength="500" />
+          <Field Name="DiscountType" Type="short" Precision="5" />
+          <Field Name="DiscountValue" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="MaxDiscountAmount" Type="decimal" IsOptional="true" Precision="18" Scale="2" />
+          <Field Name="MinOrderAmount" Type="decimal" IsOptional="true" Precision="18" Scale="2" />
+          <Field Name="Name" Type="string" MaxLength="255" />
+          <Field Name="Status" Type="short" Precision="5" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+          <Field Name="UpdatedBy" Type="guid" IsOptional="true" />
+          <Field Name="UsageCount" Type="int" Precision="10" />
+          <Field Name="UsageLimit" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="UserUsageLimit" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="ValidFrom" Type="datetime" />
+          <Field Name="ValidTo" Type="datetime" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="CouponsCodeKey">
+            <Field Name="Code" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="CouponUsage" GroupName="Marketing" ObjectID="4bedf234-daaa-4058-9dcd-15d02ea8d095">
+        <Fields>
+          <Field Name="CouponId" Type="guid" />
+          <Field Name="DiscountAmount" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="OrderId" Type="guid" />
+          <Field Name="UsageId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="UsedAt" Type="datetime" />
+          <Field Name="UserId" Type="guid" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="GiftCard" GroupName="Marketing" ObjectID="1672ec7e-9c5d-4225-8e43-4cba18481b9d">
+        <Fields>
+          <Field Name="Balance" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="Code" Type="string" MaxLength="100" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="CreatedBy" Type="guid" IsOptional="true" />
+          <Field Name="ExpiresAt" Type="datetime" IsOptional="true" />
+          <Field Name="GiftCardId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="InitialAmount" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="IsActive" Type="bool" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="GiftCardsCodeKey">
+            <Field Name="Code" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="RewardPoint" GroupName="Marketing" ObjectID="59be12c8-039d-4899-b82d-0f569fd4884e">
+        <Fields>
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="ExpiresAt" Type="datetime" IsOptional="true" />
+          <Field Name="Points" Type="int" Precision="10" />
+          <Field Name="Reason" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="RewardId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="UserId" Type="guid" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="ProductReview" GroupName="Reviews" ObjectID="25f89a13-429e-45d6-8be9-19d6379840ee">
+        <Fields>
+          <Field Name="Content" Type="string" IsOptional="true" MaxLength="1073741824" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="IsVerifiedPurchase" Type="bool" />
+          <Field Name="OrderId" Type="guid" IsOptional="true" />
+          <Field Name="ProductId" Type="guid" />
+          <Field Name="Rating" Type="short" Precision="5" />
+          <Field Name="ReviewId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="Status" Type="short" Precision="5" />
+          <Field Name="Title" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+          <Field Name="UserId" Type="guid" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="ReviewImage" GroupName="Reviews" ObjectID="fd6bcfa1-c64f-4cf4-9860-716da0a53a6f">
+        <Fields>
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="ImageId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="ImageUrl" Type="string" MaxLength="500" />
+          <Field Name="ReviewId" Type="guid" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="ReviewReport" GroupName="Reviews" ObjectID="60c4d2d5-eb57-4a0b-95f0-f3c0000b8bfe">
+        <Fields>
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="Processed" Type="bool" />
+          <Field Name="ProcessedAt" Type="datetime" IsOptional="true" />
+          <Field Name="ProcessedBy" Type="guid" IsOptional="true" />
+          <Field Name="Reason" Type="string" IsOptional="true" MaxLength="500" />
+          <Field Name="ReportId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="ReviewId" Type="guid" />
+          <Field Name="UserId" Type="guid" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="ReviewVote" GroupName="Reviews" ObjectID="e599783b-d5e7-456f-b1be-0dd0f329013f">
+        <Fields>
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="Helpful" Type="bool" />
+          <Field Name="ReviewId" Type="guid" />
+          <Field Name="UserId" Type="guid" />
+          <Field Name="VoteId" Type="guid" IsPrimaryKey="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Order" GroupName="Sales" ObjectID="65da880c-28e0-4165-b4f4-aadb301d6716">
+        <Fields>
+          <Field Name="BillingAddress" Type="string" MaxLength="1073741824" />
+          <Field Name="BillingCity" Type="string" MaxLength="100" />
+          <Field Name="BillingCountry" Type="string" MaxLength="100" />
+          <Field Name="BillingEmail" Type="string" MaxLength="255" />
+          <Field Name="BillingFirstName" Type="string" MaxLength="100" />
+          <Field Name="BillingLastName" Type="string" MaxLength="100" />
+          <Field Name="BillingPhone" Type="string" IsOptional="true" MaxLength="20" />
+          <Field Name="BillingState" Type="string" MaxLength="100" />
+          <Field Name="BillingZipCode" Type="string" MaxLength="20" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="CreatedBy" Type="guid" IsOptional="true" />
+          <Field Name="DeliveredAt" Type="datetime" IsOptional="true" />
+          <Field Name="DiscountAmount" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="EstimatedDeliveryDate" Type="datetime" IsOptional="true" />
+          <Field Name="Notes" Type="string" IsOptional="true" MaxLength="1073741824" />
+          <Field Name="OrderDate" Type="datetime" />
+          <Field Name="OrderId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="OrderNumber" Type="string" MaxLength="50" />
+          <Field Name="PaymentMethod" Type="short" Precision="5" />
+          <Field Name="PaymentStatus" Type="short" Precision="5" />
+          <Field Name="ShippingAddress" Type="string" MaxLength="1073741824" />
+          <Field Name="ShippingAmount" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="ShippingCity" Type="string" MaxLength="100" />
+          <Field Name="ShippingCountry" Type="string" MaxLength="100" />
+          <Field Name="ShippingEmail" Type="string" MaxLength="255" />
+          <Field Name="ShippingFirstName" Type="string" MaxLength="100" />
+          <Field Name="ShippingLastName" Type="string" MaxLength="100" />
+          <Field Name="ShippingPhone" Type="string" IsOptional="true" MaxLength="20" />
+          <Field Name="ShippingState" Type="string" MaxLength="100" />
+          <Field Name="ShippingZipCode" Type="string" MaxLength="20" />
+          <Field Name="Status" Type="short" Precision="5" />
+          <Field Name="SubTotal" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="TaxAmount" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="TotalAmount" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+          <Field Name="UserId" Type="guid" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="OrdersOrderNumberKey">
+            <Field Name="OrderNumber" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="OrderItem" GroupName="Sales" ObjectID="bd7dbb50-c0ec-42e0-9fbd-b18b02b84904">
+        <Fields>
+          <Field Name="OrderId" Type="guid" />
+          <Field Name="OrderItemId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="ProductId" Type="guid" />
+          <Field Name="ProductName" Type="string" MaxLength="255" />
+          <Field Name="ProductSku" Type="string" MaxLength="100" />
+          <Field Name="ProductVariantId" Type="guid" IsOptional="true" />
+          <Field Name="Quantity" Type="int" Precision="10" />
+          <Field Name="TotalPrice" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="UnitPrice" Type="decimal" Precision="18" Scale="2" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="OrderPayment" GroupName="Sales" ObjectID="5634a826-e3ec-4658-932c-0c3d75ceaae8">
+        <Fields>
+          <Field Name="Amount" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="Currency" Type="string" MaxLength="10" />
+          <Field Name="GatewayResponse" Type="string" IsOptional="true" />
+          <Field Name="OrderId" Type="guid" />
+          <Field Name="PaidAt" Type="datetime" IsOptional="true" />
+          <Field Name="PaymentId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="PaymentMethod" Type="short" Precision="5" />
+          <Field Name="Status" Type="short" Precision="5" />
+          <Field Name="TransactionId" Type="string" IsOptional="true" MaxLength="200" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="OrderRefund" GroupName="Sales" ObjectID="8b29c127-3ad7-4b4a-95e5-e5593e9f4c97">
+        <Fields>
+          <Field Name="Amount" Type="decimal" Precision="18" Scale="2" />
+          <Field Name="OrderId" Type="guid" />
+          <Field Name="PaymentId" Type="guid" IsOptional="true" />
+          <Field Name="ProcessedAt" Type="datetime" IsOptional="true" />
+          <Field Name="ProcessedBy" Type="guid" IsOptional="true" />
+          <Field Name="Reason" Type="string" IsOptional="true" MaxLength="500" />
+          <Field Name="RefundId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="RequestedAt" Type="datetime" />
+          <Field Name="Status" Type="short" Precision="5" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="OrderShipment" GroupName="Sales" ObjectID="2a5a4373-5065-4289-928b-86cd6191f9a2">
+        <Fields>
+          <Field Name="CarrierId" Type="guid" IsOptional="true" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="DeliveredAt" Type="datetime" IsOptional="true" />
+          <Field Name="OrderId" Type="guid" />
+          <Field Name="ShipmentId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="ShipmentNumber" Type="string" IsOptional="true" MaxLength="100" />
+          <Field Name="ShippedAt" Type="datetime" IsOptional="true" />
+          <Field Name="ShippingCost" Type="decimal" IsOptional="true" Precision="18" Scale="2" />
+          <Field Name="Status" Type="short" Precision="5" />
+          <Field Name="TrackingNumber" Type="string" IsOptional="true" MaxLength="200" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="OrderShipmentsShipmentNumberKey">
+            <Field Name="ShipmentNumber" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="OrderStatusHistory" GroupName="Sales" ObjectID="6856ae86-8558-4994-aff3-45e35a8e50b7">
+        <Fields>
+          <Field Name="Comment" Type="string" IsOptional="true" MaxLength="500" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="CreatedBy" Type="guid" />
+          <Field Name="FromStatus" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="HistoryId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="OrderId" Type="guid" />
+          <Field Name="ToStatus" Type="short" Precision="5" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="ShipmentCarrier" GroupName="Sales" ObjectID="08caceda-3823-4888-9940-7d9824972473">
+        <Fields>
+          <Field Name="CarrierId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="Code" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="Name" Type="string" MaxLength="255" />
+          <Field Name="Phone" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Website" Type="string" IsOptional="true" MaxLength="255" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="ShipmentCarriersCodeKey">
+            <Field Name="Code" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="ShipmentItem" GroupName="Sales" ObjectID="e8c25828-28f2-496a-add3-6204a2a186ba">
+        <Fields>
+          <Field Name="OrderItemId" Type="guid" />
+          <Field Name="Quantity" Type="int" Precision="10" />
+          <Field Name="ShipmentId" Type="guid" />
+          <Field Name="ShipmentItemId" Type="guid" IsPrimaryKey="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Currency" GroupName="System" ObjectID="06d1bcfa-fcb2-4bb1-ac6b-8a2e214d1f1e">
+        <Fields>
+          <Field Name="CurrencyCode" Type="string" MaxLength="10" IsPrimaryKey="true" />
+          <Field Name="ExchangeRate" Type="decimal" IsOptional="true" Precision="18" Scale="6" />
+          <Field Name="Name" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Symbol" Type="string" IsOptional="true" MaxLength="10" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="EmailTemplate" GroupName="System" ObjectID="73442997-59c1-4c38-bc96-5166268d6ffc">
+        <Fields>
+          <Field Name="Body" Type="string" IsOptional="true" MaxLength="1073741824" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="Language" Type="string" IsOptional="true" MaxLength="10" />
+          <Field Name="Name" Type="string" MaxLength="255" />
+          <Field Name="Subject" Type="string" IsOptional="true" MaxLength="500" />
+          <Field Name="TemplateId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="SystemSetting" GroupName="System" ObjectID="e15ac27b-768f-41e8-b9e4-4b72adae1276">
+        <Fields>
+          <Field Name="Category" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="Description" Type="string" IsOptional="true" MaxLength="500" />
+          <Field Name="IsPublic" Type="bool" />
+          <Field Name="SettingId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="SettingKey" Type="string" MaxLength="100" />
+          <Field Name="SettingType" Type="short" Precision="5" />
+          <Field Name="SettingValue" Type="string" IsOptional="true" MaxLength="1073741824" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+          <Field Name="UpdatedBy" Type="guid" IsOptional="true" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="SystemSettingsSettingKeyKey">
+            <Field Name="SettingKey" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+    </EntityDefinitions>
+    <Relationships>
+      <NormalRelationship Name="Auth.AuditLog.User-Auth.User.AuditLogs" Start="Auth:AuditLog" End="Auth:User" StartNavigator="User" EndNavigator="AuditLogs" Type="4" EndIsOptional="true" DeleteRuleAction="3">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UserId" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Auth.RefreshToken.User-Auth.User.RefreshTokens" Start="Auth:RefreshToken" End="Auth:User" StartNavigator="User" EndNavigator="RefreshTokens" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UserId" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Auth.UserAddress.User-Auth.User.UserAddresses" Start="Auth:UserAddress" End="Auth:User" StartNavigator="User" EndNavigator="UserAddresses" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UserId" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Auth.UserRoleAssignment.User-Auth.User.UserRoleAssignments" Start="Auth:UserRoleAssignment" End="Auth:User" StartNavigator="User" EndNavigator="UserRoleAssignments" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="AssignedBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Auth.UserRoleAssignment.User1-Auth.User.UserRoleAssignments1" Start="Auth:UserRoleAssignment" End="Auth:User" StartNavigator="User1" EndNavigator="UserRoleAssignments1" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UserId" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Auth.UserRoleAssignment.UserRole-Auth.UserRole.UserRoleAssignments" Start="Auth:UserRoleAssignment" End="Auth:UserRole" StartNavigator="UserRole" EndNavigator="UserRoleAssignments" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="RoleId" PkField="RoleId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Auth.UserSession.User-Auth.User.UserSessions" Start="Auth:UserSession" End="Auth:User" StartNavigator="User" EndNavigator="UserSessions" Type="4" EndIsOptional="true" DeleteRuleAction="3">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UserId" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Cart.AbandonedCart.ShoppingCart-Cart.ShoppingCart.AbandonedCarts" Start="Cart:AbandonedCart" End="Cart:ShoppingCart" StartNavigator="ShoppingCart" EndNavigator="AbandonedCarts" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CartId" PkField="CartId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Cart.AbandonedCart.User-Auth.User.AbandonedCarts" Start="Cart:AbandonedCart" End="Auth:User" StartNavigator="User" EndNavigator="AbandonedCarts" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UserId" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Cart.ShoppingCart.User-Auth.User.ShoppingCarts" Start="Cart:ShoppingCart" End="Auth:User" StartNavigator="User" EndNavigator="ShoppingCarts" Type="4" EndIsOptional="true" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UserId" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Cart.ShoppingCartItem.Product-Catalog.Product.ShoppingCartItems" Start="Cart:ShoppingCartItem" End="Catalog:Product" StartNavigator="Product" EndNavigator="ShoppingCartItems" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ProductId" PkField="ProductId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Cart.ShoppingCartItem.ProductVariant-Catalog.ProductVariant.ShoppingCartItems" Start="Cart:ShoppingCartItem" End="Catalog:ProductVariant" StartNavigator="ProductVariant" EndNavigator="ShoppingCartItems" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ProductVariantId" PkField="VariantId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Cart.ShoppingCartItem.ShoppingCart-Cart.ShoppingCart.ShoppingCartItems" Start="Cart:ShoppingCartItem" End="Cart:ShoppingCart" StartNavigator="ShoppingCart" EndNavigator="ShoppingCartItems" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CartId" PkField="CartId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Cart.Wishlist.User-Auth.User.Wishlists" Start="Cart:Wishlist" End="Auth:User" StartNavigator="User" EndNavigator="Wishlists" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UserId" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Cart.WishlistItem.Product-Catalog.Product.WishlistItems" Start="Cart:WishlistItem" End="Catalog:Product" StartNavigator="Product" EndNavigator="WishlistItems" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ProductId" PkField="ProductId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Cart.WishlistItem.ProductVariant-Catalog.ProductVariant.WishlistItems" Start="Cart:WishlistItem" End="Catalog:ProductVariant" StartNavigator="ProductVariant" EndNavigator="WishlistItems" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ProductVariantId" PkField="VariantId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Cart.WishlistItem.Wishlist-Cart.Wishlist.WishlistItems" Start="Cart:WishlistItem" End="Cart:Wishlist" StartNavigator="Wishlist" EndNavigator="WishlistItems" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="WishlistId" PkField="WishlistId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.Brand.User-Auth.User.Brands" Start="Catalog:Brand" End="Auth:User" StartNavigator="User" EndNavigator="Brands" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CreatedBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.Brand.User1-Auth.User.Brands1" Start="Catalog:Brand" End="Auth:User" StartNavigator="User1" EndNavigator="Brands1" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UpdatedBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.Category.Category-Catalog.Category.Categories" Start="Catalog:Category" End="Catalog:Category" StartNavigator="Category" EndNavigator="Categories" Type="4" EndIsOptional="true" DeleteRuleAction="3">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ParentCategoryId" PkField="CategoryId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.Category.User-Auth.User.Categories" Start="Catalog:Category" End="Auth:User" StartNavigator="User" EndNavigator="Categories" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CreatedBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.Category.User1-Auth.User.Categories1" Start="Catalog:Category" End="Auth:User" StartNavigator="User1" EndNavigator="Categories1" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UpdatedBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.Product.Brand-Catalog.Brand.Products" Start="Catalog:Product" End="Catalog:Brand" StartNavigator="Brand" EndNavigator="Products" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="BrandId" PkField="BrandId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.Product.Category-Catalog.Category.Products" Start="Catalog:Product" End="Catalog:Category" StartNavigator="Category" EndNavigator="Products" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CategoryId" PkField="CategoryId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.Product.User-Auth.User.Products" Start="Catalog:Product" End="Auth:User" StartNavigator="User" EndNavigator="Products" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CreatedBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.Product.User1-Auth.User.Products1" Start="Catalog:Product" End="Auth:User" StartNavigator="User1" EndNavigator="Products1" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UpdatedBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.ProductAttributeValue.Product-Catalog.Product.ProductAttributeValues" Start="Catalog:ProductAttributeValue" End="Catalog:Product" StartNavigator="Product" EndNavigator="ProductAttributeValues" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ProductId" PkField="ProductId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.ProductAttributeValue.ProductAttribute-Catalog.ProductAttribute.ProductAttributeValues" Start="Catalog:ProductAttributeValue" End="Catalog:ProductAttribute" StartNavigator="ProductAttribute" EndNavigator="ProductAttributeValues" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="AttributeId" PkField="AttributeId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.ProductImage.Product-Catalog.Product.ProductImages" Start="Catalog:ProductImage" End="Catalog:Product" StartNavigator="Product" EndNavigator="ProductImages" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ProductId" PkField="ProductId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.ProductQuestion.Product-Catalog.Product.ProductQuestions" Start="Catalog:ProductQuestion" End="Catalog:Product" StartNavigator="Product" EndNavigator="ProductQuestions" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ProductId" PkField="ProductId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.ProductQuestion.User-Auth.User.ProductQuestions" Start="Catalog:ProductQuestion" End="Auth:User" StartNavigator="User" EndNavigator="ProductQuestions" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="AnsweredBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.ProductQuestion.User1-Auth.User.ProductQuestions1" Start="Catalog:ProductQuestion" End="Auth:User" StartNavigator="User1" EndNavigator="ProductQuestions1" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UserId" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.ProductTagAssignment.Product-Catalog.Product.ProductTagAssignments" Start="Catalog:ProductTagAssignment" End="Catalog:Product" StartNavigator="Product" EndNavigator="ProductTagAssignments" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ProductId" PkField="ProductId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.ProductTagAssignment.ProductTag-Catalog.ProductTag.ProductTagAssignments" Start="Catalog:ProductTagAssignment" End="Catalog:ProductTag" StartNavigator="ProductTag" EndNavigator="ProductTagAssignments" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="TagId" PkField="TagId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.ProductVariant.Product-Catalog.Product.ProductVariants" Start="Catalog:ProductVariant" End="Catalog:Product" StartNavigator="Product" EndNavigator="ProductVariants" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ProductId" PkField="ProductId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Inventory.PurchaseOrder.User-Auth.User.PurchaseOrders" Start="Inventory:PurchaseOrder" End="Auth:User" StartNavigator="User" EndNavigator="PurchaseOrders" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CreatedBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Inventory.PurchaseOrderItem.Product-Catalog.Product.PurchaseOrderItems" Start="Inventory:PurchaseOrderItem" End="Catalog:Product" StartNavigator="Product" EndNavigator="PurchaseOrderItems" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ProductId" PkField="ProductId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Inventory.PurchaseOrderItem.ProductVariant-Catalog.ProductVariant.PurchaseOrderItems" Start="Inventory:PurchaseOrderItem" End="Catalog:ProductVariant" StartNavigator="ProductVariant" EndNavigator="PurchaseOrderItems" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="VariantId" PkField="VariantId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Inventory.PurchaseOrderItem.PurchaseOrder-Inventory.PurchaseOrder.PurchaseOrderItems" Start="Inventory:PurchaseOrderItem" End="Inventory:PurchaseOrder" StartNavigator="PurchaseOrder" EndNavigator="PurchaseOrderItems" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="PurchaseOrderId" PkField="PurchaseOrderId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Marketing.Coupon.User-Auth.User.Coupons" Start="Marketing:Coupon" End="Auth:User" StartNavigator="User" EndNavigator="Coupons" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CreatedBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Marketing.Coupon.User1-Auth.User.Coupons1" Start="Marketing:Coupon" End="Auth:User" StartNavigator="User1" EndNavigator="Coupons1" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UpdatedBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Marketing.CouponUsage.Coupon-Marketing.Coupon.CouponUsages" Start="Marketing:CouponUsage" End="Marketing:Coupon" StartNavigator="Coupon" EndNavigator="CouponUsages" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CouponId" PkField="CouponId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Marketing.CouponUsage.Order-Sales.Order.CouponUsages" Start="Marketing:CouponUsage" End="Sales:Order" StartNavigator="Order" EndNavigator="CouponUsages" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="OrderId" PkField="OrderId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Marketing.CouponUsage.User-Auth.User.CouponUsages" Start="Marketing:CouponUsage" End="Auth:User" StartNavigator="User" EndNavigator="CouponUsages" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UserId" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Marketing.GiftCard.User-Auth.User.GiftCards" Start="Marketing:GiftCard" End="Auth:User" StartNavigator="User" EndNavigator="GiftCards" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CreatedBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Marketing.RewardPoint.User-Auth.User.RewardPoints" Start="Marketing:RewardPoint" End="Auth:User" StartNavigator="User" EndNavigator="RewardPoints" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UserId" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Reviews.ProductReview.Order-Sales.Order.ProductReviews" Start="Reviews:ProductReview" End="Sales:Order" StartNavigator="Order" EndNavigator="ProductReviews" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="OrderId" PkField="OrderId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Reviews.ProductReview.Product-Catalog.Product.ProductReviews" Start="Reviews:ProductReview" End="Catalog:Product" StartNavigator="Product" EndNavigator="ProductReviews" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ProductId" PkField="ProductId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Reviews.ProductReview.User-Auth.User.ProductReviews" Start="Reviews:ProductReview" End="Auth:User" StartNavigator="User" EndNavigator="ProductReviews" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UserId" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Reviews.ReviewImage.ProductReview-Reviews.ProductReview.ReviewImages" Start="Reviews:ReviewImage" End="Reviews:ProductReview" StartNavigator="ProductReview" EndNavigator="ReviewImages" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ReviewId" PkField="ReviewId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Reviews.ReviewReport.ProductReview-Reviews.ProductReview.ReviewReports" Start="Reviews:ReviewReport" End="Reviews:ProductReview" StartNavigator="ProductReview" EndNavigator="ReviewReports" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ReviewId" PkField="ReviewId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Reviews.ReviewReport.User-Auth.User.ReviewReports" Start="Reviews:ReviewReport" End="Auth:User" StartNavigator="User" EndNavigator="ReviewReports" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ProcessedBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Reviews.ReviewReport.User1-Auth.User.ReviewReports1" Start="Reviews:ReviewReport" End="Auth:User" StartNavigator="User1" EndNavigator="ReviewReports1" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UserId" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Reviews.ReviewVote.ProductReview-Reviews.ProductReview.ReviewVotes" Start="Reviews:ReviewVote" End="Reviews:ProductReview" StartNavigator="ProductReview" EndNavigator="ReviewVotes" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ReviewId" PkField="ReviewId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Reviews.ReviewVote.User-Auth.User.ReviewVotes" Start="Reviews:ReviewVote" End="Auth:User" StartNavigator="User" EndNavigator="ReviewVotes" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UserId" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Sales.Order.User-Auth.User.Orders" Start="Sales:Order" End="Auth:User" StartNavigator="User" EndNavigator="Orders" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CreatedBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Sales.Order.User1-Auth.User.Orders1" Start="Sales:Order" End="Auth:User" StartNavigator="User1" EndNavigator="Orders1" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UserId" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Sales.OrderItem.Order-Sales.Order.OrderItems" Start="Sales:OrderItem" End="Sales:Order" StartNavigator="Order" EndNavigator="OrderItems" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="OrderId" PkField="OrderId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Sales.OrderItem.Product-Catalog.Product.OrderItems" Start="Sales:OrderItem" End="Catalog:Product" StartNavigator="Product" EndNavigator="OrderItems" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ProductId" PkField="ProductId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Sales.OrderItem.ProductVariant-Catalog.ProductVariant.OrderItems" Start="Sales:OrderItem" End="Catalog:ProductVariant" StartNavigator="ProductVariant" EndNavigator="OrderItems" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ProductVariantId" PkField="VariantId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Sales.OrderPayment.Order-Sales.Order.OrderPayments" Start="Sales:OrderPayment" End="Sales:Order" StartNavigator="Order" EndNavigator="OrderPayments" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="OrderId" PkField="OrderId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Sales.OrderRefund.Order-Sales.Order.OrderRefunds" Start="Sales:OrderRefund" End="Sales:Order" StartNavigator="Order" EndNavigator="OrderRefunds" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="OrderId" PkField="OrderId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Sales.OrderRefund.OrderPayment-Sales.OrderPayment.OrderRefunds" Start="Sales:OrderRefund" End="Sales:OrderPayment" StartNavigator="OrderPayment" EndNavigator="OrderRefunds" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="PaymentId" PkField="PaymentId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Sales.OrderRefund.User-Auth.User.OrderRefunds" Start="Sales:OrderRefund" End="Auth:User" StartNavigator="User" EndNavigator="OrderRefunds" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ProcessedBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Sales.OrderShipment.Order-Sales.Order.OrderShipments" Start="Sales:OrderShipment" End="Sales:Order" StartNavigator="Order" EndNavigator="OrderShipments" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="OrderId" PkField="OrderId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Sales.OrderShipment.ShipmentCarrier-Sales.ShipmentCarrier.OrderShipments" Start="Sales:OrderShipment" End="Sales:ShipmentCarrier" StartNavigator="ShipmentCarrier" EndNavigator="OrderShipments" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CarrierId" PkField="CarrierId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Sales.OrderStatusHistory.Order-Sales.Order.OrderStatusHistories" Start="Sales:OrderStatusHistory" End="Sales:Order" StartNavigator="Order" EndNavigator="OrderStatusHistories" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="OrderId" PkField="OrderId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Sales.OrderStatusHistory.User-Auth.User.OrderStatusHistories" Start="Sales:OrderStatusHistory" End="Auth:User" StartNavigator="User" EndNavigator="OrderStatusHistories" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CreatedBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Sales.ShipmentItem.OrderItem-Sales.OrderItem.ShipmentItems" Start="Sales:ShipmentItem" End="Sales:OrderItem" StartNavigator="OrderItem" EndNavigator="ShipmentItems" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="OrderItemId" PkField="OrderItemId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Sales.ShipmentItem.OrderShipment-Sales.OrderShipment.ShipmentItems" Start="Sales:ShipmentItem" End="Sales:OrderShipment" StartNavigator="OrderShipment" EndNavigator="ShipmentItems" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ShipmentId" PkField="ShipmentId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="System.SystemSetting.User-Auth.User.SystemSettings" Start="System:SystemSetting" End="Auth:User" StartNavigator="User" EndNavigator="SystemSettings" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="UpdatedBy" PkField="UserId" />
+        </FieldRelationships>
+      </NormalRelationship>
+    </Relationships>
+    <InheritanceHierarchies />
+  </EntityModel>
+  <TargetDatabases>
+    <TargetDatabase Type="88EBFD8C-CBDD-4452-88AF-1C99E41A123F" SyncSource="2">
+      <ConnectionElements>
+        <ConnectionElement Name="ServerName" Value="grocery-ecommerce24.postgres.database.azure.com" />
+        <ConnectionElement Name="CatalogName" Value="postgres" />
+        <ConnectionElement Name="UserID" Value="teoAdmin" />
+        <ConnectionElement Name="Password" Value="" />
+        <ConnectionElement Name="PortNumber" Value="5432" />
+        <ConnectionElement Name="SslMode" Value="Require" />
+        <ConnectionElement Name="CustomFragments" Value="Server=grocery-ecommerce24.postgres.database.azure.com;Database=postgres;Port=5432;User Id=teoAdmin;Password=abc123!@#;Ssl Mode=Require;" />
+      </ConnectionElements>
+      <SystemSequences>
+        <Sequence Name="SystemIdentity" />
+      </SystemSequences>
+      <Catalogs>
+        <Catalog Name="postgres" SyncSource="2">
+          <Schemas>
+            <Schema Name="auth" SyncSource="2" LastSyncWithDatabase="2025-11-10T11:51:46.9203251Z">
+              <Tables>
+                <Table Name="audit_logs">
+                  <PkConstraintName Name="audit_logs_pkey" />
+                  <Fields>
+                    <Field Name="audit_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="user_id" Ordinal="2" IsOptional="true" DbType="28" />
+                    <Field Name="action" Ordinal="3" DbType="24" Length="200" />
+                    <Field Name="entity" Ordinal="4" IsOptional="true" DbType="24" Length="100" />
+                    <Field Name="entity_id" Ordinal="5" IsOptional="true" DbType="28" />
+                    <Field Name="detail" Ordinal="6" IsOptional="true" DbType="30" />
+                    <Field Name="created_at" Ordinal="7" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                  </Fields>
+                </Table>
+                <Table Name="refresh_tokens">
+                  <PkConstraintName Name="refresh_tokens_pkey" />
+                  <Fields>
+                    <Field Name="token_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="user_id" Ordinal="2" DbType="28" />
+                    <Field Name="refresh_token" Ordinal="3" DbType="24" Length="512" />
+                    <Field Name="expires_at" Ordinal="4" DbType="23" />
+                    <Field Name="revoked" Ordinal="5" HasDefaultValue="true" DefaultValue="false" DbType="0" />
+                    <Field Name="created_at" Ordinal="6" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="created_by_ip" Ordinal="7" IsOptional="true" DbType="24" Length="45" />
+                    <Field Name="replaced_by_token" Ordinal="8" IsOptional="true" DbType="24" Length="512" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="refresh_tokens_refresh_token_key">
+                      <Field Name="refresh_token" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+                <Table Name="user_addresses">
+                  <PkConstraintName Name="user_addresses_pkey" />
+                  <Fields>
+                    <Field Name="address_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="user_id" Ordinal="2" DbType="28" />
+                    <Field Name="address_type" Ordinal="3" DbType="8" Precision="5" />
+                    <Field Name="address_line1" Ordinal="4" DbType="24" Length="255" />
+                    <Field Name="address_line2" Ordinal="5" IsOptional="true" DbType="24" Length="255" />
+                    <Field Name="city" Ordinal="6" DbType="24" Length="100" />
+                    <Field Name="state" Ordinal="7" DbType="24" Length="100" />
+                    <Field Name="zip_code" Ordinal="8" DbType="24" Length="20" />
+                    <Field Name="country" Ordinal="9" DbType="24" Length="100" />
+                    <Field Name="is_default" Ordinal="10" HasDefaultValue="true" DefaultValue="false" DbType="0" />
+                    <Field Name="created_at" Ordinal="11" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="12" IsOptional="true" DbType="23" />
+                  </Fields>
+                </Table>
+                <Table Name="user_role_assignments">
+                  <PkConstraintName Name="user_role_assignments_pkey" />
+                  <Fields>
+                    <Field Name="user_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="role_id" Ordinal="2" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="assigned_at" Ordinal="3" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="assigned_by" Ordinal="4" DbType="28" />
+                  </Fields>
+                </Table>
+                <Table Name="user_roles">
+                  <PkConstraintName Name="user_roles_pkey" />
+                  <Fields>
+                    <Field Name="role_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="role_name" Ordinal="2" DbType="24" Length="50" />
+                    <Field Name="description" Ordinal="3" IsOptional="true" DbType="24" Length="255" />
+                    <Field Name="created_at" Ordinal="4" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="user_roles_role_name_key">
+                      <Field Name="role_name" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+                <Table Name="user_sessions">
+                  <PkConstraintName Name="user_sessions_pkey" />
+                  <Fields>
+                    <Field Name="session_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="user_id" Ordinal="2" IsOptional="true" DbType="28" />
+                    <Field Name="session_token" Ordinal="3" DbType="24" Length="100" />
+                    <Field Name="device_info" Ordinal="4" IsOptional="true" DbType="19" Length="1073741824" />
+                    <Field Name="ip_address" Ordinal="5" IsOptional="true" DbType="24" Length="45" />
+                    <Field Name="created_at" Ordinal="6" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="expires_at" Ordinal="7" IsOptional="true" DbType="23" />
+                    <Field Name="revoked" Ordinal="8" HasDefaultValue="true" DefaultValue="false" DbType="0" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="user_sessions_session_token_key">
+                      <Field Name="session_token" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+                <Table Name="users">
+                  <PkConstraintName Name="users_pkey" />
+                  <Fields>
+                    <Field Name="user_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="email" Ordinal="2" DbType="24" Length="255" />
+                    <Field Name="password_hash" Ordinal="3" DbType="24" Length="500" />
+                    <Field Name="first_name" Ordinal="4" IsOptional="true" DbType="24" Length="100" />
+                    <Field Name="last_name" Ordinal="5" IsOptional="true" DbType="24" Length="100" />
+                    <Field Name="phone_number" Ordinal="6" IsOptional="true" DbType="24" Length="20" />
+                    <Field Name="date_of_birth" Ordinal="7" IsOptional="true" DbType="23" />
+                    <Field Name="status" Ordinal="8" HasDefaultValue="true" DefaultValue="1" DbType="8" Precision="5" />
+                    <Field Name="email_verified" Ordinal="9" HasDefaultValue="true" DefaultValue="false" DbType="0" />
+                    <Field Name="phone_verified" Ordinal="10" HasDefaultValue="true" DefaultValue="false" DbType="0" />
+                    <Field Name="created_at" Ordinal="11" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="12" IsOptional="true" DbType="23" />
+                    <Field Name="last_login_at" Ordinal="13" IsOptional="true" DbType="23" />
+                    <Field Name="username" Ordinal="14" DbType="24" Length="200" />
+                    <Field Name="failed_login_attempts" Ordinal="15" HasDefaultValue="true" DefaultValue="0" DbType="9" Precision="10" />
+                    <Field Name="last_failed_login" Ordinal="16" IsOptional="true" DbType="23" />
+                    <Field Name="locked_until" Ordinal="17" IsOptional="true" DbType="23" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="users_email_key">
+                      <Field Name="email" />
+                    </UniqueConstraint>
+                    <UniqueConstraint Name="users_username_unique">
+                      <Field Name="username" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+              </Tables>
+            </Schema>
+            <Schema Name="cart" SyncSource="2" LastSyncWithDatabase="2025-11-10T11:51:48.3246621Z">
+              <Tables>
+                <Table Name="abandoned_carts">
+                  <PkConstraintName Name="abandoned_carts_pkey" />
+                  <Fields>
+                    <Field Name="abandoned_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="cart_id" Ordinal="2" DbType="28" />
+                    <Field Name="user_id" Ordinal="3" IsOptional="true" DbType="28" />
+                    <Field Name="abandoned_at" Ordinal="4" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="notified" Ordinal="5" HasDefaultValue="true" DefaultValue="false" DbType="0" />
+                  </Fields>
+                </Table>
+                <Table Name="shopping_cart_items">
+                  <PkConstraintName Name="shopping_cart_items_pkey" />
+                  <Fields>
+                    <Field Name="cart_item_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="cart_id" Ordinal="2" DbType="28" />
+                    <Field Name="product_id" Ordinal="3" DbType="28" />
+                    <Field Name="product_variant_id" Ordinal="4" IsOptional="true" DbType="28" />
+                    <Field Name="quantity" Ordinal="5" DbType="9" Precision="10" />
+                    <Field Name="unit_price" Ordinal="6" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="created_at" Ordinal="7" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="8" IsOptional="true" DbType="23" />
+                  </Fields>
+                </Table>
+                <Table Name="shopping_carts">
+                  <PkConstraintName Name="shopping_carts_pkey" />
+                  <Fields>
+                    <Field Name="cart_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="user_id" Ordinal="2" IsOptional="true" DbType="28" />
+                    <Field Name="session_id" Ordinal="3" IsOptional="true" DbType="24" Length="255" />
+                    <Field Name="created_at" Ordinal="4" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="5" IsOptional="true" DbType="23" />
+                  </Fields>
+                </Table>
+                <Table Name="wishlist_items">
+                  <PkConstraintName Name="wishlist_items_pkey" />
+                  <Fields>
+                    <Field Name="wishlist_item_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="wishlist_id" Ordinal="2" DbType="28" />
+                    <Field Name="product_id" Ordinal="3" DbType="28" />
+                    <Field Name="product_variant_id" Ordinal="4" IsOptional="true" DbType="28" />
+                    <Field Name="created_at" Ordinal="5" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                  </Fields>
+                </Table>
+                <Table Name="wishlists">
+                  <PkConstraintName Name="wishlists_pkey" />
+                  <Fields>
+                    <Field Name="wishlist_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="user_id" Ordinal="2" DbType="28" />
+                    <Field Name="name" Ordinal="3" HasDefaultValue="true" DefaultValue="'My Wishlist'::character varying" DbType="24" Length="255" />
+                    <Field Name="is_default" Ordinal="4" HasDefaultValue="true" DefaultValue="true" DbType="0" />
+                    <Field Name="is_public" Ordinal="5" HasDefaultValue="true" DefaultValue="false" DbType="0" />
+                    <Field Name="created_at" Ordinal="6" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="7" IsOptional="true" DbType="23" />
+                  </Fields>
+                </Table>
+              </Tables>
+            </Schema>
+            <Schema Name="catalog" SyncSource="2" LastSyncWithDatabase="2025-11-10T11:51:49.4278026Z">
+              <Tables>
+                <Table Name="brands">
+                  <PkConstraintName Name="brands_pkey" />
+                  <Fields>
+                    <Field Name="brand_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="name" Ordinal="2" DbType="24" Length="255" />
+                    <Field Name="slug" Ordinal="3" IsOptional="true" DbType="24" Length="255" />
+                    <Field Name="description" Ordinal="4" IsOptional="true" DbType="19" Length="1073741824" />
+                    <Field Name="logo_url" Ordinal="5" IsOptional="true" DbType="24" Length="500" />
+                    <Field Name="website" Ordinal="6" IsOptional="true" DbType="24" Length="255" />
+                    <Field Name="status" Ordinal="7" HasDefaultValue="true" DefaultValue="1" DbType="8" Precision="5" />
+                    <Field Name="created_at" Ordinal="8" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="9" IsOptional="true" DbType="23" />
+                    <Field Name="created_by" Ordinal="10" DbType="28" />
+                    <Field Name="updated_by" Ordinal="11" IsOptional="true" DbType="28" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="brands_slug_key">
+                      <Field Name="slug" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+                <Table Name="categories">
+                  <PkConstraintName Name="categories_pkey" />
+                  <Fields>
+                    <Field Name="category_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="name" Ordinal="2" DbType="24" Length="255" />
+                    <Field Name="slug" Ordinal="3" IsOptional="true" DbType="24" Length="255" />
+                    <Field Name="description" Ordinal="4" IsOptional="true" DbType="19" Length="1073741824" />
+                    <Field Name="image_url" Ordinal="5" IsOptional="true" DbType="24" Length="500" />
+                    <Field Name="parent_category_id" Ordinal="6" IsOptional="true" DbType="28" />
+                    <Field Name="display_order" Ordinal="7" HasDefaultValue="true" DefaultValue="0" DbType="9" Precision="10" />
+                    <Field Name="status" Ordinal="8" HasDefaultValue="true" DefaultValue="1" DbType="8" Precision="5" />
+                    <Field Name="meta_title" Ordinal="9" IsOptional="true" DbType="24" Length="255" />
+                    <Field Name="meta_description" Ordinal="10" IsOptional="true" DbType="24" Length="500" />
+                    <Field Name="created_at" Ordinal="11" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="12" IsOptional="true" DbType="23" />
+                    <Field Name="created_by" Ordinal="13" DbType="28" />
+                    <Field Name="updated_by" Ordinal="14" IsOptional="true" DbType="28" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="categories_slug_key">
+                      <Field Name="slug" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+                <Table Name="product_attribute_values">
+                  <PkConstraintName Name="product_attribute_values_pkey" />
+                  <Fields>
+                    <Field Name="value_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="product_id" Ordinal="2" DbType="28" />
+                    <Field Name="attribute_id" Ordinal="3" DbType="28" />
+                    <Field Name="value" Ordinal="4" DbType="24" Length="500" />
+                  </Fields>
+                </Table>
+                <Table Name="product_attributes">
+                  <PkConstraintName Name="product_attributes_pkey" />
+                  <Fields>
+                    <Field Name="attribute_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="name" Ordinal="2" DbType="24" Length="100" />
+                    <Field Name="display_name" Ordinal="3" DbType="24" Length="100" />
+                    <Field Name="attribute_type" Ordinal="4" DbType="8" Precision="5" />
+                    <Field Name="is_required" Ordinal="5" HasDefaultValue="true" DefaultValue="false" DbType="0" />
+                    <Field Name="display_order" Ordinal="6" HasDefaultValue="true" DefaultValue="0" DbType="9" Precision="10" />
+                    <Field Name="created_at" Ordinal="7" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                  </Fields>
+                </Table>
+                <Table Name="product_images">
+                  <PkConstraintName Name="product_images_pkey" />
+                  <Fields>
+                    <Field Name="image_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="product_id" Ordinal="2" DbType="28" />
+                    <Field Name="image_url" Ordinal="3" DbType="24" Length="500" />
+                    <Field Name="alt_text" Ordinal="4" IsOptional="true" DbType="24" Length="255" />
+                    <Field Name="display_order" Ordinal="5" HasDefaultValue="true" DefaultValue="0" DbType="9" Precision="10" />
+                    <Field Name="is_primary" Ordinal="6" HasDefaultValue="true" DefaultValue="false" DbType="0" />
+                    <Field Name="created_at" Ordinal="7" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                  </Fields>
+                </Table>
+                <Table Name="product_questions">
+                  <PkConstraintName Name="product_questions_pkey" />
+                  <Fields>
+                    <Field Name="question_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="product_id" Ordinal="2" DbType="28" />
+                    <Field Name="user_id" Ordinal="3" IsOptional="true" DbType="28" />
+                    <Field Name="question" Ordinal="4" DbType="19" Length="1073741824" />
+                    <Field Name="answer" Ordinal="5" IsOptional="true" DbType="19" Length="1073741824" />
+                    <Field Name="answered_by" Ordinal="6" IsOptional="true" DbType="28" />
+                    <Field Name="status" Ordinal="7" HasDefaultValue="true" DefaultValue="1" DbType="8" Precision="5" />
+                    <Field Name="created_at" Ordinal="8" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="9" IsOptional="true" DbType="23" />
+                  </Fields>
+                </Table>
+                <Table Name="product_tag_assignments">
+                  <PkConstraintName Name="product_tag_assignments_pkey" />
+                  <Fields>
+                    <Field Name="product_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="tag_id" Ordinal="2" IsPrimaryKey="true" DbType="28" />
+                  </Fields>
+                </Table>
+                <Table Name="product_tags">
+                  <PkConstraintName Name="product_tags_pkey" />
+                  <Fields>
+                    <Field Name="tag_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="name" Ordinal="2" DbType="24" Length="100" />
+                    <Field Name="slug" Ordinal="3" IsOptional="true" DbType="24" Length="150" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="product_tags_name_key">
+                      <Field Name="name" />
+                    </UniqueConstraint>
+                    <UniqueConstraint Name="product_tags_slug_key">
+                      <Field Name="slug" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+                <Table Name="product_variants">
+                  <PkConstraintName Name="product_variants_pkey" />
+                  <Fields>
+                    <Field Name="variant_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="product_id" Ordinal="2" DbType="28" />
+                    <Field Name="sku" Ordinal="3" DbType="24" Length="100" />
+                    <Field Name="name" Ordinal="4" DbType="24" Length="255" />
+                    <Field Name="price" Ordinal="5" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="discount_price" Ordinal="6" IsOptional="true" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="stock_quantity" Ordinal="7" HasDefaultValue="true" DefaultValue="0" DbType="9" Precision="10" />
+                    <Field Name="weight" Ordinal="8" IsOptional="true" DbType="14" Precision="10" Scale="3" />
+                    <Field Name="image_url" Ordinal="9" IsOptional="true" DbType="24" Length="500" />
+                    <Field Name="status" Ordinal="10" HasDefaultValue="true" DefaultValue="1" DbType="8" Precision="5" />
+                    <Field Name="created_at" Ordinal="11" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="12" IsOptional="true" DbType="23" />
+                    <Field Name="min_stock_level" Ordinal="13" HasDefaultValue="true" DefaultValue="0" DbType="9" Precision="10" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="product_variants_sku_key">
+                      <Field Name="sku" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+                <Table Name="products">
+                  <PkConstraintName Name="products_pkey" />
+                  <Fields>
+                    <Field Name="product_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="name" Ordinal="2" DbType="24" Length="255" />
+                    <Field Name="slug" Ordinal="3" IsOptional="true" DbType="24" Length="255" />
+                    <Field Name="sku" Ordinal="4" DbType="24" Length="100" />
+                    <Field Name="description" Ordinal="5" DbType="19" Length="1073741824" />
+                    <Field Name="short_description" Ordinal="6" IsOptional="true" DbType="24" Length="500" />
+                    <Field Name="price" Ordinal="7" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="discount_price" Ordinal="8" IsOptional="true" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="cost" Ordinal="9" IsOptional="true" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="stock_quantity" Ordinal="10" HasDefaultValue="true" DefaultValue="0" DbType="9" Precision="10" />
+                    <Field Name="min_stock_level" Ordinal="11" HasDefaultValue="true" DefaultValue="0" DbType="9" Precision="10" />
+                    <Field Name="weight" Ordinal="12" IsOptional="true" DbType="14" Precision="10" Scale="3" />
+                    <Field Name="dimensions" Ordinal="13" IsOptional="true" DbType="24" Length="50" />
+                    <Field Name="category_id" Ordinal="14" DbType="28" />
+                    <Field Name="brand_id" Ordinal="15" IsOptional="true" DbType="28" />
+                    <Field Name="status" Ordinal="16" HasDefaultValue="true" DefaultValue="1" DbType="8" Precision="5" />
+                    <Field Name="is_featured" Ordinal="17" HasDefaultValue="true" DefaultValue="false" DbType="0" />
+                    <Field Name="is_digital" Ordinal="18" HasDefaultValue="true" DefaultValue="false" DbType="0" />
+                    <Field Name="meta_title" Ordinal="19" IsOptional="true" DbType="24" Length="255" />
+                    <Field Name="meta_description" Ordinal="20" IsOptional="true" DbType="24" Length="500" />
+                    <Field Name="created_at" Ordinal="21" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="22" IsOptional="true" DbType="23" />
+                    <Field Name="created_by" Ordinal="23" DbType="28" />
+                    <Field Name="updated_by" Ordinal="24" IsOptional="true" DbType="28" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="products_sku_key">
+                      <Field Name="sku" />
+                    </UniqueConstraint>
+                    <UniqueConstraint Name="products_slug_key">
+                      <Field Name="slug" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+              </Tables>
+              <StoredProcedures>
+                <StoredProcedure Name="validate_stock_quantity" />
+              </StoredProcedures>
+            </Schema>
+            <Schema Name="inventory" SyncSource="2" LastSyncWithDatabase="2025-11-10T11:51:51.5604966Z">
+              <Tables>
+                <Table Name="purchase_order_items">
+                  <PkConstraintName Name="purchase_order_items_pkey" />
+                  <Fields>
+                    <Field Name="poi_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="purchase_order_id" Ordinal="2" DbType="28" />
+                    <Field Name="product_id" Ordinal="3" DbType="28" />
+                    <Field Name="variant_id" Ordinal="4" IsOptional="true" DbType="28" />
+                    <Field Name="quantity" Ordinal="5" DbType="9" Precision="10" />
+                    <Field Name="unit_cost" Ordinal="6" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="total_cost" Ordinal="7" DbType="14" Precision="18" Scale="2" />
+                  </Fields>
+                </Table>
+                <Table Name="purchase_orders">
+                  <PkConstraintName Name="purchase_orders_pkey" />
+                  <Fields>
+                    <Field Name="purchase_order_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="order_number" Ordinal="4" DbType="24" Length="100" />
+                    <Field Name="order_date" Ordinal="5" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="expected_date" Ordinal="6" IsOptional="true" DbType="23" />
+                    <Field Name="status" Ordinal="7" HasDefaultValue="true" DefaultValue="1" DbType="8" Precision="5" />
+                    <Field Name="total_amount" Ordinal="8" HasDefaultValue="true" DefaultValue="0" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="created_by" Ordinal="9" IsOptional="true" DbType="28" />
+                    <Field Name="created_at" Ordinal="10" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="11" IsOptional="true" DbType="23" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="purchase_orders_order_number_key">
+                      <Field Name="order_number" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+              </Tables>
+            </Schema>
+            <Schema Name="marketing" SyncSource="2" LastSyncWithDatabase="2025-11-10T11:51:52.0246626Z">
+              <Tables>
+                <Table Name="coupon_usages">
+                  <PkConstraintName Name="coupon_usages_pkey" />
+                  <Fields>
+                    <Field Name="usage_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="coupon_id" Ordinal="2" DbType="28" />
+                    <Field Name="user_id" Ordinal="3" DbType="28" />
+                    <Field Name="order_id" Ordinal="4" DbType="28" />
+                    <Field Name="discount_amount" Ordinal="5" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="used_at" Ordinal="6" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                  </Fields>
+                </Table>
+                <Table Name="coupons">
+                  <PkConstraintName Name="coupons_pkey" />
+                  <Fields>
+                    <Field Name="coupon_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="code" Ordinal="2" DbType="24" Length="50" />
+                    <Field Name="name" Ordinal="3" DbType="24" Length="255" />
+                    <Field Name="description" Ordinal="4" IsOptional="true" DbType="24" Length="500" />
+                    <Field Name="discount_type" Ordinal="5" DbType="8" Precision="5" />
+                    <Field Name="discount_value" Ordinal="6" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="min_order_amount" Ordinal="7" IsOptional="true" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="max_discount_amount" Ordinal="8" IsOptional="true" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="usage_limit" Ordinal="9" IsOptional="true" DbType="9" Precision="10" />
+                    <Field Name="usage_count" Ordinal="10" HasDefaultValue="true" DefaultValue="0" DbType="9" Precision="10" />
+                    <Field Name="user_usage_limit" Ordinal="11" IsOptional="true" HasDefaultValue="true" DefaultValue="1" DbType="9" Precision="10" />
+                    <Field Name="valid_from" Ordinal="12" DbType="23" />
+                    <Field Name="valid_to" Ordinal="13" DbType="23" />
+                    <Field Name="status" Ordinal="14" HasDefaultValue="true" DefaultValue="1" DbType="8" Precision="5" />
+                    <Field Name="created_at" Ordinal="15" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="16" IsOptional="true" DbType="23" />
+                    <Field Name="created_by" Ordinal="17" DbType="28" />
+                    <Field Name="updated_by" Ordinal="18" IsOptional="true" DbType="28" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="coupons_code_key">
+                      <Field Name="code" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+                <Table Name="gift_cards">
+                  <PkConstraintName Name="gift_cards_pkey" />
+                  <Fields>
+                    <Field Name="gift_card_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="code" Ordinal="2" DbType="24" Length="100" />
+                    <Field Name="initial_amount" Ordinal="3" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="balance" Ordinal="4" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="expires_at" Ordinal="5" IsOptional="true" DbType="23" />
+                    <Field Name="is_active" Ordinal="6" HasDefaultValue="true" DefaultValue="true" DbType="0" />
+                    <Field Name="created_at" Ordinal="7" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="created_by" Ordinal="8" IsOptional="true" DbType="28" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="gift_cards_code_key">
+                      <Field Name="code" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+                <Table Name="reward_points">
+                  <PkConstraintName Name="reward_points_pkey" />
+                  <Fields>
+                    <Field Name="reward_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="user_id" Ordinal="2" DbType="28" />
+                    <Field Name="points" Ordinal="3" DbType="9" Precision="10" />
+                    <Field Name="reason" Ordinal="4" IsOptional="true" DbType="24" Length="255" />
+                    <Field Name="created_at" Ordinal="5" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="expires_at" Ordinal="6" IsOptional="true" DbType="23" />
+                  </Fields>
+                </Table>
+              </Tables>
+            </Schema>
+            <Schema Name="reviews" SyncSource="2" LastSyncWithDatabase="2025-11-10T11:51:52.8036357Z">
+              <Tables>
+                <Table Name="product_reviews">
+                  <PkConstraintName Name="product_reviews_pkey" />
+                  <Fields>
+                    <Field Name="review_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="product_id" Ordinal="2" DbType="28" />
+                    <Field Name="user_id" Ordinal="3" DbType="28" />
+                    <Field Name="order_id" Ordinal="4" IsOptional="true" DbType="28" />
+                    <Field Name="rating" Ordinal="5" DbType="8" Precision="5" />
+                    <Field Name="title" Ordinal="6" IsOptional="true" DbType="24" Length="255" />
+                    <Field Name="content" Ordinal="7" IsOptional="true" DbType="19" Length="1073741824" />
+                    <Field Name="is_verified_purchase" Ordinal="8" HasDefaultValue="true" DefaultValue="false" DbType="0" />
+                    <Field Name="status" Ordinal="9" HasDefaultValue="true" DefaultValue="1" DbType="8" Precision="5" />
+                    <Field Name="created_at" Ordinal="10" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="11" IsOptional="true" DbType="23" />
+                  </Fields>
+                </Table>
+                <Table Name="review_images">
+                  <PkConstraintName Name="review_images_pkey" />
+                  <Fields>
+                    <Field Name="image_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="review_id" Ordinal="2" DbType="28" />
+                    <Field Name="image_url" Ordinal="3" DbType="24" Length="500" />
+                    <Field Name="created_at" Ordinal="4" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                  </Fields>
+                </Table>
+                <Table Name="review_reports">
+                  <PkConstraintName Name="review_reports_pkey" />
+                  <Fields>
+                    <Field Name="report_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="review_id" Ordinal="2" DbType="28" />
+                    <Field Name="user_id" Ordinal="3" DbType="28" />
+                    <Field Name="reason" Ordinal="4" IsOptional="true" DbType="24" Length="500" />
+                    <Field Name="created_at" Ordinal="5" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="processed" Ordinal="6" HasDefaultValue="true" DefaultValue="false" DbType="0" />
+                    <Field Name="processed_at" Ordinal="7" IsOptional="true" DbType="23" />
+                    <Field Name="processed_by" Ordinal="8" IsOptional="true" DbType="28" />
+                  </Fields>
+                </Table>
+                <Table Name="review_votes">
+                  <PkConstraintName Name="review_votes_pkey" />
+                  <Fields>
+                    <Field Name="vote_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="review_id" Ordinal="2" DbType="28" />
+                    <Field Name="user_id" Ordinal="3" DbType="28" />
+                    <Field Name="helpful" Ordinal="4" DbType="0" />
+                    <Field Name="created_at" Ordinal="5" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                  </Fields>
+                </Table>
+              </Tables>
+            </Schema>
+            <Schema Name="sales" SyncSource="2" LastSyncWithDatabase="2025-11-10T11:51:53.5332336Z">
+              <Tables>
+                <Table Name="order_items">
+                  <PkConstraintName Name="order_items_pkey" />
+                  <Fields>
+                    <Field Name="order_item_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="order_id" Ordinal="2" DbType="28" />
+                    <Field Name="product_id" Ordinal="3" DbType="28" />
+                    <Field Name="product_variant_id" Ordinal="4" IsOptional="true" DbType="28" />
+                    <Field Name="product_name" Ordinal="5" DbType="24" Length="255" />
+                    <Field Name="product_sku" Ordinal="6" DbType="24" Length="100" />
+                    <Field Name="quantity" Ordinal="7" DbType="9" Precision="10" />
+                    <Field Name="unit_price" Ordinal="8" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="total_price" Ordinal="9" DbType="14" Precision="18" Scale="2" />
+                  </Fields>
+                </Table>
+                <Table Name="order_payments">
+                  <PkConstraintName Name="order_payments_pkey" />
+                  <Fields>
+                    <Field Name="payment_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="order_id" Ordinal="2" DbType="28" />
+                    <Field Name="payment_method" Ordinal="3" DbType="8" Precision="5" />
+                    <Field Name="transaction_id" Ordinal="4" IsOptional="true" DbType="24" Length="200" />
+                    <Field Name="gateway_response" Ordinal="5" IsOptional="true" DbType="30" />
+                    <Field Name="amount" Ordinal="6" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="currency" Ordinal="7" HasDefaultValue="true" DefaultValue="'USD'::character varying" DbType="24" Length="10" />
+                    <Field Name="status" Ordinal="8" HasDefaultValue="true" DefaultValue="1" DbType="8" Precision="5" />
+                    <Field Name="paid_at" Ordinal="9" IsOptional="true" DbType="23" />
+                    <Field Name="created_at" Ordinal="10" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                  </Fields>
+                </Table>
+                <Table Name="order_refunds">
+                  <PkConstraintName Name="order_refunds_pkey" />
+                  <Fields>
+                    <Field Name="refund_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="order_id" Ordinal="2" DbType="28" />
+                    <Field Name="payment_id" Ordinal="3" IsOptional="true" DbType="28" />
+                    <Field Name="amount" Ordinal="4" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="reason" Ordinal="5" IsOptional="true" DbType="24" Length="500" />
+                    <Field Name="status" Ordinal="6" HasDefaultValue="true" DefaultValue="1" DbType="8" Precision="5" />
+                    <Field Name="requested_at" Ordinal="7" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="processed_at" Ordinal="8" IsOptional="true" DbType="23" />
+                    <Field Name="processed_by" Ordinal="9" IsOptional="true" DbType="28" />
+                  </Fields>
+                </Table>
+                <Table Name="order_shipments">
+                  <PkConstraintName Name="order_shipments_pkey" />
+                  <Fields>
+                    <Field Name="shipment_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="order_id" Ordinal="2" DbType="28" />
+                    <Field Name="shipment_number" Ordinal="3" IsOptional="true" DbType="24" Length="100" />
+                    <Field Name="carrier_id" Ordinal="4" IsOptional="true" DbType="28" />
+                    <Field Name="tracking_number" Ordinal="5" IsOptional="true" DbType="24" Length="200" />
+                    <Field Name="shipped_at" Ordinal="6" IsOptional="true" DbType="23" />
+                    <Field Name="delivered_at" Ordinal="7" IsOptional="true" DbType="23" />
+                    <Field Name="status" Ordinal="8" HasDefaultValue="true" DefaultValue="1" DbType="8" Precision="5" />
+                    <Field Name="shipping_cost" Ordinal="9" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="created_at" Ordinal="11" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="12" IsOptional="true" DbType="23" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="order_shipments_shipment_number_key">
+                      <Field Name="shipment_number" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+                <Table Name="order_status_history">
+                  <PkConstraintName Name="order_status_history_pkey" />
+                  <Fields>
+                    <Field Name="history_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="order_id" Ordinal="2" DbType="28" />
+                    <Field Name="from_status" Ordinal="3" IsOptional="true" DbType="8" Precision="5" />
+                    <Field Name="to_status" Ordinal="4" DbType="8" Precision="5" />
+                    <Field Name="comment" Ordinal="5" IsOptional="true" DbType="24" Length="500" />
+                    <Field Name="created_at" Ordinal="6" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="created_by" Ordinal="7" DbType="28" />
+                  </Fields>
+                </Table>
+                <Table Name="orders">
+                  <PkConstraintName Name="orders_pkey" />
+                  <Fields>
+                    <Field Name="order_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="order_number" Ordinal="2" DbType="24" Length="50" />
+                    <Field Name="user_id" Ordinal="3" DbType="28" />
+                    <Field Name="order_date" Ordinal="4" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="sub_total" Ordinal="5" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="tax_amount" Ordinal="6" HasDefaultValue="true" DefaultValue="0" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="shipping_amount" Ordinal="7" HasDefaultValue="true" DefaultValue="0" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="discount_amount" Ordinal="8" HasDefaultValue="true" DefaultValue="0" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="total_amount" Ordinal="9" DbType="14" Precision="18" Scale="2" />
+                    <Field Name="status" Ordinal="10" HasDefaultValue="true" DefaultValue="1" DbType="8" Precision="5" />
+                    <Field Name="payment_status" Ordinal="11" HasDefaultValue="true" DefaultValue="1" DbType="8" Precision="5" />
+                    <Field Name="payment_method" Ordinal="12" DbType="8" Precision="5" />
+                    <Field Name="shipping_first_name" Ordinal="13" DbType="24" Length="100" />
+                    <Field Name="shipping_last_name" Ordinal="14" DbType="24" Length="100" />
+                    <Field Name="shipping_email" Ordinal="15" DbType="24" Length="255" />
+                    <Field Name="shipping_phone" Ordinal="16" IsOptional="true" DbType="24" Length="20" />
+                    <Field Name="shipping_address" Ordinal="17" DbType="19" Length="1073741824" />
+                    <Field Name="shipping_city" Ordinal="18" DbType="24" Length="100" />
+                    <Field Name="shipping_state" Ordinal="19" DbType="24" Length="100" />
+                    <Field Name="shipping_zip_code" Ordinal="20" DbType="24" Length="20" />
+                    <Field Name="shipping_country" Ordinal="21" DbType="24" Length="100" />
+                    <Field Name="billing_first_name" Ordinal="22" DbType="24" Length="100" />
+                    <Field Name="billing_last_name" Ordinal="23" DbType="24" Length="100" />
+                    <Field Name="billing_email" Ordinal="24" DbType="24" Length="255" />
+                    <Field Name="billing_phone" Ordinal="25" IsOptional="true" DbType="24" Length="20" />
+                    <Field Name="billing_address" Ordinal="26" DbType="19" Length="1073741824" />
+                    <Field Name="billing_city" Ordinal="27" DbType="24" Length="100" />
+                    <Field Name="billing_state" Ordinal="28" DbType="24" Length="100" />
+                    <Field Name="billing_zip_code" Ordinal="29" DbType="24" Length="20" />
+                    <Field Name="billing_country" Ordinal="30" DbType="24" Length="100" />
+                    <Field Name="notes" Ordinal="31" IsOptional="true" DbType="19" Length="1073741824" />
+                    <Field Name="estimated_delivery_date" Ordinal="32" IsOptional="true" DbType="23" />
+                    <Field Name="delivered_at" Ordinal="33" IsOptional="true" DbType="23" />
+                    <Field Name="created_at" Ordinal="34" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="35" IsOptional="true" DbType="23" />
+                    <Field Name="created_by" Ordinal="36" IsOptional="true" DbType="28" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="orders_order_number_key">
+                      <Field Name="order_number" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+                <Table Name="shipment_carriers">
+                  <PkConstraintName Name="shipment_carriers_pkey" />
+                  <Fields>
+                    <Field Name="carrier_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="name" Ordinal="2" DbType="24" Length="255" />
+                    <Field Name="code" Ordinal="3" IsOptional="true" DbType="24" Length="50" />
+                    <Field Name="website" Ordinal="4" IsOptional="true" DbType="24" Length="255" />
+                    <Field Name="phone" Ordinal="5" IsOptional="true" DbType="24" Length="50" />
+                    <Field Name="created_at" Ordinal="6" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="shipment_carriers_code_key">
+                      <Field Name="code" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+                <Table Name="shipment_items">
+                  <PkConstraintName Name="shipment_items_pkey" />
+                  <Fields>
+                    <Field Name="shipment_item_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="shipment_id" Ordinal="2" DbType="28" />
+                    <Field Name="order_item_id" Ordinal="3" DbType="28" />
+                    <Field Name="quantity" Ordinal="4" DbType="9" Precision="10" />
+                  </Fields>
+                </Table>
+              </Tables>
+            </Schema>
+            <Schema Name="system" SyncSource="2" LastSyncWithDatabase="2025-11-10T11:51:54.8184315Z">
+              <Tables>
+                <Table Name="currencies">
+                  <PkConstraintName Name="currencies_pkey" />
+                  <Fields>
+                    <Field Name="currency_code" Ordinal="1" IsPrimaryKey="true" DbType="24" Length="10" />
+                    <Field Name="symbol" Ordinal="2" IsOptional="true" DbType="24" Length="10" />
+                    <Field Name="name" Ordinal="3" IsOptional="true" DbType="24" Length="50" />
+                    <Field Name="exchange_rate" Ordinal="4" IsOptional="true" DbType="14" Precision="18" Scale="6" />
+                    <Field Name="updated_at" Ordinal="5" IsOptional="true" DbType="23" />
+                  </Fields>
+                </Table>
+                <Table Name="email_templates">
+                  <PkConstraintName Name="email_templates_pkey" />
+                  <Fields>
+                    <Field Name="template_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="name" Ordinal="2" DbType="24" Length="255" />
+                    <Field Name="subject" Ordinal="3" IsOptional="true" DbType="24" Length="500" />
+                    <Field Name="body" Ordinal="4" IsOptional="true" DbType="19" Length="1073741824" />
+                    <Field Name="language" Ordinal="5" IsOptional="true" HasDefaultValue="true" DefaultValue="'en'::character varying" DbType="24" Length="10" />
+                    <Field Name="created_at" Ordinal="6" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="7" IsOptional="true" DbType="23" />
+                  </Fields>
+                </Table>
+                <Table Name="system_settings">
+                  <PkConstraintName Name="system_settings_pkey" />
+                  <Fields>
+                    <Field Name="setting_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="setting_key" Ordinal="2" DbType="24" Length="100" />
+                    <Field Name="setting_value" Ordinal="3" IsOptional="true" DbType="19" Length="1073741824" />
+                    <Field Name="setting_type" Ordinal="4" DbType="8" Precision="5" />
+                    <Field Name="description" Ordinal="5" IsOptional="true" DbType="24" Length="500" />
+                    <Field Name="category" Ordinal="6" IsOptional="true" DbType="24" Length="50" />
+                    <Field Name="is_public" Ordinal="7" HasDefaultValue="true" DefaultValue="false" DbType="0" />
+                    <Field Name="created_at" Ordinal="8" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="9" IsOptional="true" DbType="23" />
+                    <Field Name="updated_by" Ordinal="10" IsOptional="true" DbType="28" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="system_settings_setting_key_key">
+                      <Field Name="setting_key" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+              </Tables>
+            </Schema>
+          </Schemas>
+          <ForeignKeyConstraints>
+            <ForeignKeyConstraint Name="auth:audit_logs:audit_logs_user_id_fkey" DeleteRuleAction="3">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="auth:audit_logs:user_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="auth:refresh_tokens:refresh_tokens_user_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="auth:refresh_tokens:user_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="auth:user_addresses:user_addresses_user_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="auth:user_addresses:user_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="auth:user_role_assignments:user_role_assignments_assigned_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="auth:user_role_assignments:assigned_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="auth:user_role_assignments:user_role_assignments_role_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="auth:user_roles:role_id" FkField="auth:user_role_assignments:role_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="auth:user_role_assignments:user_role_assignments_user_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="auth:user_role_assignments:user_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="auth:user_sessions:user_sessions_user_id_fkey" DeleteRuleAction="3">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="auth:user_sessions:user_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="cart:abandoned_carts:abandoned_carts_cart_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="cart:shopping_carts:cart_id" FkField="cart:abandoned_carts:cart_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="cart:abandoned_carts:abandoned_carts_user_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="cart:abandoned_carts:user_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="cart:shopping_cart_items:shopping_cart_items_cart_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="cart:shopping_carts:cart_id" FkField="cart:shopping_cart_items:cart_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="cart:shopping_cart_items:shopping_cart_items_product_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="catalog:products:product_id" FkField="cart:shopping_cart_items:product_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="cart:shopping_cart_items:shopping_cart_items_product_variant_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="catalog:product_variants:variant_id" FkField="cart:shopping_cart_items:product_variant_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="cart:shopping_carts:shopping_carts_user_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="cart:shopping_carts:user_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="cart:wishlist_items:wishlist_items_product_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="catalog:products:product_id" FkField="cart:wishlist_items:product_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="cart:wishlist_items:wishlist_items_product_variant_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="catalog:product_variants:variant_id" FkField="cart:wishlist_items:product_variant_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="cart:wishlist_items:wishlist_items_wishlist_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="cart:wishlists:wishlist_id" FkField="cart:wishlist_items:wishlist_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="cart:wishlists:wishlists_user_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="cart:wishlists:user_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:brands:brands_created_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="catalog:brands:created_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:brands:brands_updated_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="catalog:brands:updated_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:categories:categories_created_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="catalog:categories:created_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:categories:categories_parent_category_id_fkey" DeleteRuleAction="3">
+              <FieldPairs>
+                <FieldPair PkField="catalog:categories:category_id" FkField="catalog:categories:parent_category_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:categories:categories_updated_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="catalog:categories:updated_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:product_attribute_values:product_attribute_values_attribute_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="catalog:product_attributes:attribute_id" FkField="catalog:product_attribute_values:attribute_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:product_attribute_values:product_attribute_values_product_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="catalog:products:product_id" FkField="catalog:product_attribute_values:product_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:product_images:product_images_product_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="catalog:products:product_id" FkField="catalog:product_images:product_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:product_questions:product_questions_answered_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="catalog:product_questions:answered_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:product_questions:product_questions_product_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="catalog:products:product_id" FkField="catalog:product_questions:product_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:product_questions:product_questions_user_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="catalog:product_questions:user_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:product_tag_assignments:product_tag_assignments_product_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="catalog:products:product_id" FkField="catalog:product_tag_assignments:product_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:product_tag_assignments:product_tag_assignments_tag_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="catalog:product_tags:tag_id" FkField="catalog:product_tag_assignments:tag_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:product_variants:product_variants_product_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="catalog:products:product_id" FkField="catalog:product_variants:product_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:products:products_brand_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="catalog:brands:brand_id" FkField="catalog:products:brand_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:products:products_category_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="catalog:categories:category_id" FkField="catalog:products:category_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:products:products_created_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="catalog:products:created_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:products:products_updated_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="catalog:products:updated_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="inventory:purchase_order_items:purchase_order_items_product_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="catalog:products:product_id" FkField="inventory:purchase_order_items:product_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="inventory:purchase_order_items:purchase_order_items_purchase_order_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="inventory:purchase_orders:purchase_order_id" FkField="inventory:purchase_order_items:purchase_order_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="inventory:purchase_order_items:purchase_order_items_variant_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="catalog:product_variants:variant_id" FkField="inventory:purchase_order_items:variant_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="inventory:purchase_orders:purchase_orders_created_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="inventory:purchase_orders:created_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="marketing:coupon_usages:coupon_usages_coupon_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="marketing:coupons:coupon_id" FkField="marketing:coupon_usages:coupon_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="marketing:coupon_usages:coupon_usages_order_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="sales:orders:order_id" FkField="marketing:coupon_usages:order_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="marketing:coupon_usages:coupon_usages_user_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="marketing:coupon_usages:user_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="marketing:coupons:coupons_created_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="marketing:coupons:created_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="marketing:coupons:coupons_updated_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="marketing:coupons:updated_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="marketing:gift_cards:gift_cards_created_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="marketing:gift_cards:created_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="marketing:reward_points:reward_points_user_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="marketing:reward_points:user_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="reviews:product_reviews:product_reviews_order_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="sales:orders:order_id" FkField="reviews:product_reviews:order_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="reviews:product_reviews:product_reviews_product_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="catalog:products:product_id" FkField="reviews:product_reviews:product_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="reviews:product_reviews:product_reviews_user_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="reviews:product_reviews:user_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="reviews:review_images:review_images_review_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="reviews:product_reviews:review_id" FkField="reviews:review_images:review_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="reviews:review_reports:review_reports_processed_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="reviews:review_reports:processed_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="reviews:review_reports:review_reports_review_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="reviews:product_reviews:review_id" FkField="reviews:review_reports:review_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="reviews:review_reports:review_reports_user_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="reviews:review_reports:user_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="reviews:review_votes:review_votes_review_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="reviews:product_reviews:review_id" FkField="reviews:review_votes:review_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="reviews:review_votes:review_votes_user_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="reviews:review_votes:user_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="sales:order_items:order_items_order_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="sales:orders:order_id" FkField="sales:order_items:order_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="sales:order_items:order_items_product_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="catalog:products:product_id" FkField="sales:order_items:product_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="sales:order_items:order_items_product_variant_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="catalog:product_variants:variant_id" FkField="sales:order_items:product_variant_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="sales:order_payments:order_payments_order_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="sales:orders:order_id" FkField="sales:order_payments:order_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="sales:order_refunds:order_refunds_order_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="sales:orders:order_id" FkField="sales:order_refunds:order_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="sales:order_refunds:order_refunds_payment_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="sales:order_payments:payment_id" FkField="sales:order_refunds:payment_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="sales:order_refunds:order_refunds_processed_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="sales:order_refunds:processed_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="sales:order_shipments:order_shipments_carrier_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="sales:shipment_carriers:carrier_id" FkField="sales:order_shipments:carrier_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="sales:order_shipments:order_shipments_order_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="sales:orders:order_id" FkField="sales:order_shipments:order_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="sales:order_status_history:order_status_history_created_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="sales:order_status_history:created_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="sales:order_status_history:order_status_history_order_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="sales:orders:order_id" FkField="sales:order_status_history:order_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="sales:orders:orders_created_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="sales:orders:created_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="sales:orders:orders_user_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="sales:orders:user_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="sales:shipment_items:shipment_items_order_item_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="sales:order_items:order_item_id" FkField="sales:shipment_items:order_item_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="sales:shipment_items:shipment_items_shipment_id_fkey" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="sales:order_shipments:shipment_id" FkField="sales:shipment_items:shipment_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="system:system_settings:system_settings_updated_by_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="system:system_settings:updated_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+          </ForeignKeyConstraints>
+        </Catalog>
+      </Catalogs>
+    </TargetDatabase>
+  </TargetDatabases>
+  <MappingStores>
+    <MappingStore Type="88EBFD8C-CBDD-4452-88AF-1C99E41A123F">
+      <EntityMappings>
+        <EntityMapping EntityName="Auth:AuditLog" TargetName="postgres:auth:audit_logs">
+          <FieldMappings>
+            <FieldMapping FieldName="Action" TargetFieldName="action" />
+            <FieldMapping FieldName="AuditId" TargetFieldName="audit_id" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="Detail" TargetFieldName="detail" />
+            <FieldMapping FieldName="Entity" TargetFieldName="entity" />
+            <FieldMapping FieldName="EntityId" TargetFieldName="entity_id" />
+            <FieldMapping FieldName="UserId" TargetFieldName="user_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Auth:RefreshToken" TargetName="postgres:auth:refresh_tokens">
+          <FieldMappings>
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="CreatedByIp" TargetFieldName="created_by_ip" />
+            <FieldMapping FieldName="ExpiresAt" TargetFieldName="expires_at" />
+            <FieldMapping FieldName="RefreshToken" TargetFieldName="refresh_token" />
+            <FieldMapping FieldName="ReplacedByToken" TargetFieldName="replaced_by_token" />
+            <FieldMapping FieldName="Revoked" TargetFieldName="revoked" />
+            <FieldMapping FieldName="TokenId" TargetFieldName="token_id" />
+            <FieldMapping FieldName="UserId" TargetFieldName="user_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Auth:User" TargetName="postgres:auth:users">
+          <FieldMappings>
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="DateOfBirth" TargetFieldName="date_of_birth" />
+            <FieldMapping FieldName="Email" TargetFieldName="email" />
+            <FieldMapping FieldName="EmailVerified" TargetFieldName="email_verified" />
+            <FieldMapping FieldName="FailedLoginAttempts" TargetFieldName="failed_login_attempts" />
+            <FieldMapping FieldName="FirstName" TargetFieldName="first_name" />
+            <FieldMapping FieldName="LastFailedLogin" TargetFieldName="last_failed_login" />
+            <FieldMapping FieldName="LastLoginAt" TargetFieldName="last_login_at" />
+            <FieldMapping FieldName="LastName" TargetFieldName="last_name" />
+            <FieldMapping FieldName="LockedUntil" TargetFieldName="locked_until" />
+            <FieldMapping FieldName="PasswordHash" TargetFieldName="password_hash" />
+            <FieldMapping FieldName="PhoneNumber" TargetFieldName="phone_number" />
+            <FieldMapping FieldName="PhoneVerified" TargetFieldName="phone_verified" />
+            <FieldMapping FieldName="Status" TargetFieldName="status" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+            <FieldMapping FieldName="UserId" TargetFieldName="user_id" />
+            <FieldMapping FieldName="Username" TargetFieldName="username" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Auth:UserAddress" TargetName="postgres:auth:user_addresses">
+          <FieldMappings>
+            <FieldMapping FieldName="AddressId" TargetFieldName="address_id" />
+            <FieldMapping FieldName="AddressLine1" TargetFieldName="address_line1" />
+            <FieldMapping FieldName="AddressLine2" TargetFieldName="address_line2" />
+            <FieldMapping FieldName="AddressType" TargetFieldName="address_type" />
+            <FieldMapping FieldName="City" TargetFieldName="city" />
+            <FieldMapping FieldName="Country" TargetFieldName="country" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="IsDefault" TargetFieldName="is_default" />
+            <FieldMapping FieldName="State" TargetFieldName="state" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+            <FieldMapping FieldName="UserId" TargetFieldName="user_id" />
+            <FieldMapping FieldName="ZipCode" TargetFieldName="zip_code" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Auth:UserRole" TargetName="postgres:auth:user_roles">
+          <FieldMappings>
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="Description" TargetFieldName="description" />
+            <FieldMapping FieldName="RoleId" TargetFieldName="role_id" />
+            <FieldMapping FieldName="RoleName" TargetFieldName="role_name" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Auth:UserRoleAssignment" TargetName="postgres:auth:user_role_assignments">
+          <FieldMappings>
+            <FieldMapping FieldName="AssignedAt" TargetFieldName="assigned_at" />
+            <FieldMapping FieldName="AssignedBy" TargetFieldName="assigned_by" />
+            <FieldMapping FieldName="RoleId" TargetFieldName="role_id" />
+            <FieldMapping FieldName="UserId" TargetFieldName="user_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Auth:UserSession" TargetName="postgres:auth:user_sessions">
+          <FieldMappings>
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="DeviceInfo" TargetFieldName="device_info" />
+            <FieldMapping FieldName="ExpiresAt" TargetFieldName="expires_at" />
+            <FieldMapping FieldName="IpAddress" TargetFieldName="ip_address" />
+            <FieldMapping FieldName="Revoked" TargetFieldName="revoked" />
+            <FieldMapping FieldName="SessionId" TargetFieldName="session_id" />
+            <FieldMapping FieldName="SessionToken" TargetFieldName="session_token" />
+            <FieldMapping FieldName="UserId" TargetFieldName="user_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Cart:AbandonedCart" TargetName="postgres:cart:abandoned_carts">
+          <FieldMappings>
+            <FieldMapping FieldName="AbandonedAt" TargetFieldName="abandoned_at" />
+            <FieldMapping FieldName="AbandonedId" TargetFieldName="abandoned_id" />
+            <FieldMapping FieldName="CartId" TargetFieldName="cart_id" />
+            <FieldMapping FieldName="Notified" TargetFieldName="notified" />
+            <FieldMapping FieldName="UserId" TargetFieldName="user_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Cart:ShoppingCart" TargetName="postgres:cart:shopping_carts">
+          <FieldMappings>
+            <FieldMapping FieldName="CartId" TargetFieldName="cart_id" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="SessionId" TargetFieldName="session_id" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+            <FieldMapping FieldName="UserId" TargetFieldName="user_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Cart:ShoppingCartItem" TargetName="postgres:cart:shopping_cart_items">
+          <FieldMappings>
+            <FieldMapping FieldName="CartId" TargetFieldName="cart_id" />
+            <FieldMapping FieldName="CartItemId" TargetFieldName="cart_item_id" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="ProductId" TargetFieldName="product_id" />
+            <FieldMapping FieldName="ProductVariantId" TargetFieldName="product_variant_id" />
+            <FieldMapping FieldName="Quantity" TargetFieldName="quantity" />
+            <FieldMapping FieldName="UnitPrice" TargetFieldName="unit_price" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Cart:Wishlist" TargetName="postgres:cart:wishlists">
+          <FieldMappings>
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="IsDefault" TargetFieldName="is_default" />
+            <FieldMapping FieldName="IsPublic" TargetFieldName="is_public" />
+            <FieldMapping FieldName="Name" TargetFieldName="name" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+            <FieldMapping FieldName="UserId" TargetFieldName="user_id" />
+            <FieldMapping FieldName="WishlistId" TargetFieldName="wishlist_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Cart:WishlistItem" TargetName="postgres:cart:wishlist_items">
+          <FieldMappings>
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="ProductId" TargetFieldName="product_id" />
+            <FieldMapping FieldName="ProductVariantId" TargetFieldName="product_variant_id" />
+            <FieldMapping FieldName="WishlistId" TargetFieldName="wishlist_id" />
+            <FieldMapping FieldName="WishlistItemId" TargetFieldName="wishlist_item_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Catalog:Brand" TargetName="postgres:catalog:brands">
+          <FieldMappings>
+            <FieldMapping FieldName="BrandId" TargetFieldName="brand_id" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="CreatedBy" TargetFieldName="created_by" />
+            <FieldMapping FieldName="Description" TargetFieldName="description" />
+            <FieldMapping FieldName="LogoUrl" TargetFieldName="logo_url" />
+            <FieldMapping FieldName="Name" TargetFieldName="name" />
+            <FieldMapping FieldName="Slug" TargetFieldName="slug" />
+            <FieldMapping FieldName="Status" TargetFieldName="status" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+            <FieldMapping FieldName="UpdatedBy" TargetFieldName="updated_by" />
+            <FieldMapping FieldName="Website" TargetFieldName="website" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Catalog:Category" TargetName="postgres:catalog:categories">
+          <FieldMappings>
+            <FieldMapping FieldName="CategoryId" TargetFieldName="category_id" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="CreatedBy" TargetFieldName="created_by" />
+            <FieldMapping FieldName="Description" TargetFieldName="description" />
+            <FieldMapping FieldName="DisplayOrder" TargetFieldName="display_order" />
+            <FieldMapping FieldName="ImageUrl" TargetFieldName="image_url" />
+            <FieldMapping FieldName="MetaDescription" TargetFieldName="meta_description" />
+            <FieldMapping FieldName="MetaTitle" TargetFieldName="meta_title" />
+            <FieldMapping FieldName="Name" TargetFieldName="name" />
+            <FieldMapping FieldName="ParentCategoryId" TargetFieldName="parent_category_id" />
+            <FieldMapping FieldName="Slug" TargetFieldName="slug" />
+            <FieldMapping FieldName="Status" TargetFieldName="status" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+            <FieldMapping FieldName="UpdatedBy" TargetFieldName="updated_by" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Catalog:Product" TargetName="postgres:catalog:products">
+          <FieldMappings>
+            <FieldMapping FieldName="BrandId" TargetFieldName="brand_id" />
+            <FieldMapping FieldName="CategoryId" TargetFieldName="category_id" />
+            <FieldMapping FieldName="Cost" TargetFieldName="cost" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="CreatedBy" TargetFieldName="created_by" />
+            <FieldMapping FieldName="Description" TargetFieldName="description" />
+            <FieldMapping FieldName="Dimensions" TargetFieldName="dimensions" />
+            <FieldMapping FieldName="DiscountPrice" TargetFieldName="discount_price" />
+            <FieldMapping FieldName="IsDigital" TargetFieldName="is_digital" />
+            <FieldMapping FieldName="IsFeatured" TargetFieldName="is_featured" />
+            <FieldMapping FieldName="MetaDescription" TargetFieldName="meta_description" />
+            <FieldMapping FieldName="MetaTitle" TargetFieldName="meta_title" />
+            <FieldMapping FieldName="MinStockLevel" TargetFieldName="min_stock_level" />
+            <FieldMapping FieldName="Name" TargetFieldName="name" />
+            <FieldMapping FieldName="Price" TargetFieldName="price" />
+            <FieldMapping FieldName="ProductId" TargetFieldName="product_id" />
+            <FieldMapping FieldName="ShortDescription" TargetFieldName="short_description" />
+            <FieldMapping FieldName="Sku" TargetFieldName="sku" />
+            <FieldMapping FieldName="Slug" TargetFieldName="slug" />
+            <FieldMapping FieldName="Status" TargetFieldName="status" />
+            <FieldMapping FieldName="StockQuantity" TargetFieldName="stock_quantity" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+            <FieldMapping FieldName="UpdatedBy" TargetFieldName="updated_by" />
+            <FieldMapping FieldName="Weight" TargetFieldName="weight" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Catalog:ProductAttribute" TargetName="postgres:catalog:product_attributes">
+          <FieldMappings>
+            <FieldMapping FieldName="AttributeId" TargetFieldName="attribute_id" />
+            <FieldMapping FieldName="AttributeType" TargetFieldName="attribute_type" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="DisplayName" TargetFieldName="display_name" />
+            <FieldMapping FieldName="DisplayOrder" TargetFieldName="display_order" />
+            <FieldMapping FieldName="IsRequired" TargetFieldName="is_required" />
+            <FieldMapping FieldName="Name" TargetFieldName="name" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Catalog:ProductAttributeValue" TargetName="postgres:catalog:product_attribute_values">
+          <FieldMappings>
+            <FieldMapping FieldName="AttributeId" TargetFieldName="attribute_id" />
+            <FieldMapping FieldName="ProductId" TargetFieldName="product_id" />
+            <FieldMapping FieldName="Value" TargetFieldName="value" />
+            <FieldMapping FieldName="ValueId" TargetFieldName="value_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Catalog:ProductImage" TargetName="postgres:catalog:product_images">
+          <FieldMappings>
+            <FieldMapping FieldName="AltText" TargetFieldName="alt_text" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="DisplayOrder" TargetFieldName="display_order" />
+            <FieldMapping FieldName="ImageId" TargetFieldName="image_id" />
+            <FieldMapping FieldName="ImageUrl" TargetFieldName="image_url" />
+            <FieldMapping FieldName="IsPrimary" TargetFieldName="is_primary" />
+            <FieldMapping FieldName="ProductId" TargetFieldName="product_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Catalog:ProductQuestion" TargetName="postgres:catalog:product_questions">
+          <FieldMappings>
+            <FieldMapping FieldName="Answer" TargetFieldName="answer" />
+            <FieldMapping FieldName="AnsweredBy" TargetFieldName="answered_by" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="ProductId" TargetFieldName="product_id" />
+            <FieldMapping FieldName="Question" TargetFieldName="question" />
+            <FieldMapping FieldName="QuestionId" TargetFieldName="question_id" />
+            <FieldMapping FieldName="Status" TargetFieldName="status" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+            <FieldMapping FieldName="UserId" TargetFieldName="user_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Catalog:ProductTag" TargetName="postgres:catalog:product_tags">
+          <FieldMappings>
+            <FieldMapping FieldName="Name" TargetFieldName="name" />
+            <FieldMapping FieldName="Slug" TargetFieldName="slug" />
+            <FieldMapping FieldName="TagId" TargetFieldName="tag_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Catalog:ProductTagAssignment" TargetName="postgres:catalog:product_tag_assignments">
+          <FieldMappings>
+            <FieldMapping FieldName="ProductId" TargetFieldName="product_id" />
+            <FieldMapping FieldName="TagId" TargetFieldName="tag_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Catalog:ProductVariant" TargetName="postgres:catalog:product_variants">
+          <FieldMappings>
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="DiscountPrice" TargetFieldName="discount_price" />
+            <FieldMapping FieldName="ImageUrl" TargetFieldName="image_url" />
+            <FieldMapping FieldName="MinStockLevel" TargetFieldName="min_stock_level" />
+            <FieldMapping FieldName="Name" TargetFieldName="name" />
+            <FieldMapping FieldName="Price" TargetFieldName="price" />
+            <FieldMapping FieldName="ProductId" TargetFieldName="product_id" />
+            <FieldMapping FieldName="Sku" TargetFieldName="sku" />
+            <FieldMapping FieldName="Status" TargetFieldName="status" />
+            <FieldMapping FieldName="StockQuantity" TargetFieldName="stock_quantity" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+            <FieldMapping FieldName="VariantId" TargetFieldName="variant_id" />
+            <FieldMapping FieldName="Weight" TargetFieldName="weight" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Inventory:PurchaseOrder" TargetName="postgres:inventory:purchase_orders">
+          <FieldMappings>
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="CreatedBy" TargetFieldName="created_by" />
+            <FieldMapping FieldName="ExpectedDate" TargetFieldName="expected_date" />
+            <FieldMapping FieldName="OrderDate" TargetFieldName="order_date" />
+            <FieldMapping FieldName="OrderNumber" TargetFieldName="order_number" />
+            <FieldMapping FieldName="PurchaseOrderId" TargetFieldName="purchase_order_id" />
+            <FieldMapping FieldName="Status" TargetFieldName="status" />
+            <FieldMapping FieldName="TotalAmount" TargetFieldName="total_amount" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Inventory:PurchaseOrderItem" TargetName="postgres:inventory:purchase_order_items">
+          <FieldMappings>
+            <FieldMapping FieldName="PoiId" TargetFieldName="poi_id" />
+            <FieldMapping FieldName="ProductId" TargetFieldName="product_id" />
+            <FieldMapping FieldName="PurchaseOrderId" TargetFieldName="purchase_order_id" />
+            <FieldMapping FieldName="Quantity" TargetFieldName="quantity" />
+            <FieldMapping FieldName="TotalCost" TargetFieldName="total_cost" />
+            <FieldMapping FieldName="UnitCost" TargetFieldName="unit_cost" />
+            <FieldMapping FieldName="VariantId" TargetFieldName="variant_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Marketing:Coupon" TargetName="postgres:marketing:coupons">
+          <FieldMappings>
+            <FieldMapping FieldName="Code" TargetFieldName="code" />
+            <FieldMapping FieldName="CouponId" TargetFieldName="coupon_id" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="CreatedBy" TargetFieldName="created_by" />
+            <FieldMapping FieldName="Description" TargetFieldName="description" />
+            <FieldMapping FieldName="DiscountType" TargetFieldName="discount_type" />
+            <FieldMapping FieldName="DiscountValue" TargetFieldName="discount_value" />
+            <FieldMapping FieldName="MaxDiscountAmount" TargetFieldName="max_discount_amount" />
+            <FieldMapping FieldName="MinOrderAmount" TargetFieldName="min_order_amount" />
+            <FieldMapping FieldName="Name" TargetFieldName="name" />
+            <FieldMapping FieldName="Status" TargetFieldName="status" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+            <FieldMapping FieldName="UpdatedBy" TargetFieldName="updated_by" />
+            <FieldMapping FieldName="UsageCount" TargetFieldName="usage_count" />
+            <FieldMapping FieldName="UsageLimit" TargetFieldName="usage_limit" />
+            <FieldMapping FieldName="UserUsageLimit" TargetFieldName="user_usage_limit" />
+            <FieldMapping FieldName="ValidFrom" TargetFieldName="valid_from" />
+            <FieldMapping FieldName="ValidTo" TargetFieldName="valid_to" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Marketing:CouponUsage" TargetName="postgres:marketing:coupon_usages">
+          <FieldMappings>
+            <FieldMapping FieldName="CouponId" TargetFieldName="coupon_id" />
+            <FieldMapping FieldName="DiscountAmount" TargetFieldName="discount_amount" />
+            <FieldMapping FieldName="OrderId" TargetFieldName="order_id" />
+            <FieldMapping FieldName="UsageId" TargetFieldName="usage_id" />
+            <FieldMapping FieldName="UsedAt" TargetFieldName="used_at" />
+            <FieldMapping FieldName="UserId" TargetFieldName="user_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Marketing:GiftCard" TargetName="postgres:marketing:gift_cards">
+          <FieldMappings>
+            <FieldMapping FieldName="Balance" TargetFieldName="balance" />
+            <FieldMapping FieldName="Code" TargetFieldName="code" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="CreatedBy" TargetFieldName="created_by" />
+            <FieldMapping FieldName="ExpiresAt" TargetFieldName="expires_at" />
+            <FieldMapping FieldName="GiftCardId" TargetFieldName="gift_card_id" />
+            <FieldMapping FieldName="InitialAmount" TargetFieldName="initial_amount" />
+            <FieldMapping FieldName="IsActive" TargetFieldName="is_active" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Marketing:RewardPoint" TargetName="postgres:marketing:reward_points">
+          <FieldMappings>
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="ExpiresAt" TargetFieldName="expires_at" />
+            <FieldMapping FieldName="Points" TargetFieldName="points" />
+            <FieldMapping FieldName="Reason" TargetFieldName="reason" />
+            <FieldMapping FieldName="RewardId" TargetFieldName="reward_id" />
+            <FieldMapping FieldName="UserId" TargetFieldName="user_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Reviews:ProductReview" TargetName="postgres:reviews:product_reviews">
+          <FieldMappings>
+            <FieldMapping FieldName="Content" TargetFieldName="content" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="IsVerifiedPurchase" TargetFieldName="is_verified_purchase" />
+            <FieldMapping FieldName="OrderId" TargetFieldName="order_id" />
+            <FieldMapping FieldName="ProductId" TargetFieldName="product_id" />
+            <FieldMapping FieldName="Rating" TargetFieldName="rating" />
+            <FieldMapping FieldName="ReviewId" TargetFieldName="review_id" />
+            <FieldMapping FieldName="Status" TargetFieldName="status" />
+            <FieldMapping FieldName="Title" TargetFieldName="title" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+            <FieldMapping FieldName="UserId" TargetFieldName="user_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Reviews:ReviewImage" TargetName="postgres:reviews:review_images">
+          <FieldMappings>
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="ImageId" TargetFieldName="image_id" />
+            <FieldMapping FieldName="ImageUrl" TargetFieldName="image_url" />
+            <FieldMapping FieldName="ReviewId" TargetFieldName="review_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Reviews:ReviewReport" TargetName="postgres:reviews:review_reports">
+          <FieldMappings>
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="Processed" TargetFieldName="processed" />
+            <FieldMapping FieldName="ProcessedAt" TargetFieldName="processed_at" />
+            <FieldMapping FieldName="ProcessedBy" TargetFieldName="processed_by" />
+            <FieldMapping FieldName="Reason" TargetFieldName="reason" />
+            <FieldMapping FieldName="ReportId" TargetFieldName="report_id" />
+            <FieldMapping FieldName="ReviewId" TargetFieldName="review_id" />
+            <FieldMapping FieldName="UserId" TargetFieldName="user_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Reviews:ReviewVote" TargetName="postgres:reviews:review_votes">
+          <FieldMappings>
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="Helpful" TargetFieldName="helpful" />
+            <FieldMapping FieldName="ReviewId" TargetFieldName="review_id" />
+            <FieldMapping FieldName="UserId" TargetFieldName="user_id" />
+            <FieldMapping FieldName="VoteId" TargetFieldName="vote_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Sales:Order" TargetName="postgres:sales:orders">
+          <FieldMappings>
+            <FieldMapping FieldName="BillingAddress" TargetFieldName="billing_address" />
+            <FieldMapping FieldName="BillingCity" TargetFieldName="billing_city" />
+            <FieldMapping FieldName="BillingCountry" TargetFieldName="billing_country" />
+            <FieldMapping FieldName="BillingEmail" TargetFieldName="billing_email" />
+            <FieldMapping FieldName="BillingFirstName" TargetFieldName="billing_first_name" />
+            <FieldMapping FieldName="BillingLastName" TargetFieldName="billing_last_name" />
+            <FieldMapping FieldName="BillingPhone" TargetFieldName="billing_phone" />
+            <FieldMapping FieldName="BillingState" TargetFieldName="billing_state" />
+            <FieldMapping FieldName="BillingZipCode" TargetFieldName="billing_zip_code" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="CreatedBy" TargetFieldName="created_by" />
+            <FieldMapping FieldName="DeliveredAt" TargetFieldName="delivered_at" />
+            <FieldMapping FieldName="DiscountAmount" TargetFieldName="discount_amount" />
+            <FieldMapping FieldName="EstimatedDeliveryDate" TargetFieldName="estimated_delivery_date" />
+            <FieldMapping FieldName="Notes" TargetFieldName="notes" />
+            <FieldMapping FieldName="OrderDate" TargetFieldName="order_date" />
+            <FieldMapping FieldName="OrderId" TargetFieldName="order_id" />
+            <FieldMapping FieldName="OrderNumber" TargetFieldName="order_number" />
+            <FieldMapping FieldName="PaymentMethod" TargetFieldName="payment_method" />
+            <FieldMapping FieldName="PaymentStatus" TargetFieldName="payment_status" />
+            <FieldMapping FieldName="ShippingAddress" TargetFieldName="shipping_address" />
+            <FieldMapping FieldName="ShippingAmount" TargetFieldName="shipping_amount" />
+            <FieldMapping FieldName="ShippingCity" TargetFieldName="shipping_city" />
+            <FieldMapping FieldName="ShippingCountry" TargetFieldName="shipping_country" />
+            <FieldMapping FieldName="ShippingEmail" TargetFieldName="shipping_email" />
+            <FieldMapping FieldName="ShippingFirstName" TargetFieldName="shipping_first_name" />
+            <FieldMapping FieldName="ShippingLastName" TargetFieldName="shipping_last_name" />
+            <FieldMapping FieldName="ShippingPhone" TargetFieldName="shipping_phone" />
+            <FieldMapping FieldName="ShippingState" TargetFieldName="shipping_state" />
+            <FieldMapping FieldName="ShippingZipCode" TargetFieldName="shipping_zip_code" />
+            <FieldMapping FieldName="Status" TargetFieldName="status" />
+            <FieldMapping FieldName="SubTotal" TargetFieldName="sub_total" />
+            <FieldMapping FieldName="TaxAmount" TargetFieldName="tax_amount" />
+            <FieldMapping FieldName="TotalAmount" TargetFieldName="total_amount" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+            <FieldMapping FieldName="UserId" TargetFieldName="user_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Sales:OrderItem" TargetName="postgres:sales:order_items">
+          <FieldMappings>
+            <FieldMapping FieldName="OrderId" TargetFieldName="order_id" />
+            <FieldMapping FieldName="OrderItemId" TargetFieldName="order_item_id" />
+            <FieldMapping FieldName="ProductId" TargetFieldName="product_id" />
+            <FieldMapping FieldName="ProductName" TargetFieldName="product_name" />
+            <FieldMapping FieldName="ProductSku" TargetFieldName="product_sku" />
+            <FieldMapping FieldName="ProductVariantId" TargetFieldName="product_variant_id" />
+            <FieldMapping FieldName="Quantity" TargetFieldName="quantity" />
+            <FieldMapping FieldName="TotalPrice" TargetFieldName="total_price" />
+            <FieldMapping FieldName="UnitPrice" TargetFieldName="unit_price" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Sales:OrderPayment" TargetName="postgres:sales:order_payments">
+          <FieldMappings>
+            <FieldMapping FieldName="Amount" TargetFieldName="amount" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="Currency" TargetFieldName="currency" />
+            <FieldMapping FieldName="GatewayResponse" TargetFieldName="gateway_response" />
+            <FieldMapping FieldName="OrderId" TargetFieldName="order_id" />
+            <FieldMapping FieldName="PaidAt" TargetFieldName="paid_at" />
+            <FieldMapping FieldName="PaymentId" TargetFieldName="payment_id" />
+            <FieldMapping FieldName="PaymentMethod" TargetFieldName="payment_method" />
+            <FieldMapping FieldName="Status" TargetFieldName="status" />
+            <FieldMapping FieldName="TransactionId" TargetFieldName="transaction_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Sales:OrderRefund" TargetName="postgres:sales:order_refunds">
+          <FieldMappings>
+            <FieldMapping FieldName="Amount" TargetFieldName="amount" />
+            <FieldMapping FieldName="OrderId" TargetFieldName="order_id" />
+            <FieldMapping FieldName="PaymentId" TargetFieldName="payment_id" />
+            <FieldMapping FieldName="ProcessedAt" TargetFieldName="processed_at" />
+            <FieldMapping FieldName="ProcessedBy" TargetFieldName="processed_by" />
+            <FieldMapping FieldName="Reason" TargetFieldName="reason" />
+            <FieldMapping FieldName="RefundId" TargetFieldName="refund_id" />
+            <FieldMapping FieldName="RequestedAt" TargetFieldName="requested_at" />
+            <FieldMapping FieldName="Status" TargetFieldName="status" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Sales:OrderShipment" TargetName="postgres:sales:order_shipments">
+          <FieldMappings>
+            <FieldMapping FieldName="CarrierId" TargetFieldName="carrier_id" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="DeliveredAt" TargetFieldName="delivered_at" />
+            <FieldMapping FieldName="OrderId" TargetFieldName="order_id" />
+            <FieldMapping FieldName="ShipmentId" TargetFieldName="shipment_id" />
+            <FieldMapping FieldName="ShipmentNumber" TargetFieldName="shipment_number" />
+            <FieldMapping FieldName="ShippedAt" TargetFieldName="shipped_at" />
+            <FieldMapping FieldName="ShippingCost" TargetFieldName="shipping_cost" />
+            <FieldMapping FieldName="Status" TargetFieldName="status" />
+            <FieldMapping FieldName="TrackingNumber" TargetFieldName="tracking_number" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Sales:OrderStatusHistory" TargetName="postgres:sales:order_status_history">
+          <FieldMappings>
+            <FieldMapping FieldName="Comment" TargetFieldName="comment" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="CreatedBy" TargetFieldName="created_by" />
+            <FieldMapping FieldName="FromStatus" TargetFieldName="from_status" />
+            <FieldMapping FieldName="HistoryId" TargetFieldName="history_id" />
+            <FieldMapping FieldName="OrderId" TargetFieldName="order_id" />
+            <FieldMapping FieldName="ToStatus" TargetFieldName="to_status" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Sales:ShipmentCarrier" TargetName="postgres:sales:shipment_carriers">
+          <FieldMappings>
+            <FieldMapping FieldName="CarrierId" TargetFieldName="carrier_id" />
+            <FieldMapping FieldName="Code" TargetFieldName="code" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="Name" TargetFieldName="name" />
+            <FieldMapping FieldName="Phone" TargetFieldName="phone" />
+            <FieldMapping FieldName="Website" TargetFieldName="website" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Sales:ShipmentItem" TargetName="postgres:sales:shipment_items">
+          <FieldMappings>
+            <FieldMapping FieldName="OrderItemId" TargetFieldName="order_item_id" />
+            <FieldMapping FieldName="Quantity" TargetFieldName="quantity" />
+            <FieldMapping FieldName="ShipmentId" TargetFieldName="shipment_id" />
+            <FieldMapping FieldName="ShipmentItemId" TargetFieldName="shipment_item_id" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="System:Currency" TargetName="postgres:system:currencies">
+          <FieldMappings>
+            <FieldMapping FieldName="CurrencyCode" TargetFieldName="currency_code" />
+            <FieldMapping FieldName="ExchangeRate" TargetFieldName="exchange_rate" />
+            <FieldMapping FieldName="Name" TargetFieldName="name" />
+            <FieldMapping FieldName="Symbol" TargetFieldName="symbol" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="System:EmailTemplate" TargetName="postgres:system:email_templates">
+          <FieldMappings>
+            <FieldMapping FieldName="Body" TargetFieldName="body" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="Language" TargetFieldName="language" />
+            <FieldMapping FieldName="Name" TargetFieldName="name" />
+            <FieldMapping FieldName="Subject" TargetFieldName="subject" />
+            <FieldMapping FieldName="TemplateId" TargetFieldName="template_id" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="System:SystemSetting" TargetName="postgres:system:system_settings">
+          <FieldMappings>
+            <FieldMapping FieldName="Category" TargetFieldName="category" />
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="Description" TargetFieldName="description" />
+            <FieldMapping FieldName="IsPublic" TargetFieldName="is_public" />
+            <FieldMapping FieldName="SettingId" TargetFieldName="setting_id" />
+            <FieldMapping FieldName="SettingKey" TargetFieldName="setting_key" />
+            <FieldMapping FieldName="SettingType" TargetFieldName="setting_type" />
+            <FieldMapping FieldName="SettingValue" TargetFieldName="setting_value" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
+            <FieldMapping FieldName="UpdatedBy" TargetFieldName="updated_by" />
+          </FieldMappings>
+        </EntityMapping>
+      </EntityMappings>
+      <TypedViewMappings />
+      <SPCallMappings />
+      <TvfCallMappings />
+      <TypeConversionDefinitions />
+    </MappingStore>
+  </MappingStores>
+  <ModelViews />
+</Project>

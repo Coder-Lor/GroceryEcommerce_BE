@@ -29,6 +29,7 @@ public class CreateProductVariantCommandHandler(
 
         var createReq = new CreateProductVariantRequest
         {
+           
             ProductId = request.ProductId,
             Sku = request.Sku,
             Name = request.Name,

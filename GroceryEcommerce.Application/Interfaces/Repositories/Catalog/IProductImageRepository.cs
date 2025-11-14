@@ -8,6 +8,7 @@ public interface IProductImageRepository
     // Basic CRUD operations
     Task<Result<ProductImage?>> GetByIdAsync(Guid imageId, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<ProductImage>>> GetByProductIdAsync(PagedRequest request, Guid productId, CancellationToken cancellationToken = default);
+    Task<Result<List<string>>> GetImageUrlsByProductAsync(Guid productId, CancellationToken cancellationToken = default);
     Task<Result<ProductImage>> CreateAsync(ProductImage image, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateAsync(ProductImage image, CancellationToken cancellationToken = default);
     Task<Result<bool>> DeleteAsync(Guid imageId, CancellationToken cancellationToken = default);

@@ -8,10 +8,6 @@ public class PurchaseOrder
     [Key]
     public Guid PurchaseOrderId { get; set; }
     
-    public Guid SupplierId { get; set; }
-    
-    public Guid? WarehouseId { get; set; }
-    
     [Required]
     [StringLength(100)]
     public required string OrderNumber { get; set; }
@@ -30,8 +26,6 @@ public class PurchaseOrder
     public DateTime? UpdatedAt { get; set; }
     
     // Navigation properties
-    public Supplier Supplier { get; set; } = null!;
     public User? CreatedByUser { get; set; }
-    public Warehouse? Warehouse { get; set; }
     public ICollection<PurchaseOrderItem> PurchaseOrderItems { get; set; } = new List<PurchaseOrderItem>();
 }
