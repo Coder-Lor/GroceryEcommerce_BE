@@ -24,8 +24,10 @@ public class OrderRefundDto
 public class CreateOrderRefundRequest
 {
     public Guid OrderId { get; set; }
+    public Guid? PaymentId { get; set; }
     public decimal Amount { get; set; }
     public string Reason { get; set; } = string.Empty;
+    public Guid RequestedBy { get; set; }
     public string? Notes { get; set; }
 }
 
