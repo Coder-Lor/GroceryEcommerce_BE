@@ -121,29 +121,29 @@ public class PurchaseOrderRepository(
         return await GetSingleAsync(PurchaseOrderFields.OrderNumber, orderNumber, "PurchaseOrder_Number", TimeSpan.FromMinutes(15), cancellationToken);
     }
 
-    public async Task<bool> CreateAsync(PurchaseOrder purchaseOrder, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> CreateAsync(PurchaseOrder purchaseOrder, CancellationToken cancellationToken = default)
     {
         try
         {
             var adapter = GetAdapter();
             var entity = Mapper.Map<PurchaseOrderEntity>(purchaseOrder);
+            entity.IsNew = true;
             
             await adapter.SaveEntityAsync(entity, cancellationToken: cancellationToken);
             
-            // Update the purchase order with the entity data
             await CacheService.RemoveByPatternAsync("PurchaseOrder*", cancellationToken);
             
             Logger.LogInformation("PurchaseOrder created: {PurchaseOrderId}", entity.PurchaseOrderId);
-            return true;
+            return Result<bool>.Success(true);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error creating purchase order");
-            return false;
+            return Result<bool>.Failure("An error occurred while creating purchase order.");
         }
     }
 
-    public async Task<bool> UpdateAsync(PurchaseOrder purchaseOrder, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> UpdateAsync(PurchaseOrder purchaseOrder, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -155,16 +155,16 @@ public class PurchaseOrderRepository(
             await CacheService.RemoveByPatternAsync("PurchaseOrder*", cancellationToken);
             
             Logger.LogInformation("PurchaseOrder updated: {PurchaseOrderId}", entity.PurchaseOrderId);
-            return true;
+            return Result<bool>.Success(true);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error updating purchase order: {PurchaseOrderId}", purchaseOrder.PurchaseOrderId);
-            return false;
+            return Result<bool>.Failure("An error occurred while updating purchase order.");
         }
     }
 
-    public async Task<bool> DeleteAsync(Guid purchaseOrderId, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> DeleteAsync(Guid purchaseOrderId, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -175,12 +175,12 @@ public class PurchaseOrderRepository(
             await CacheService.RemoveByPatternAsync("PurchaseOrder*", cancellationToken);
             
             Logger.LogInformation("PurchaseOrder deleted: {PurchaseOrderId}", purchaseOrderId);
-            return true;
+            return Result<bool>.Success(true);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error deleting purchase order: {PurchaseOrderId}", purchaseOrderId);
-            return false;
+            return Result<bool>.Failure("An error occurred while deleting purchase order.");
         }
     }
 
@@ -204,8 +204,7 @@ public class PurchaseOrderRepository(
     {
         return await GetPagedConfiguredAsync(
             pagedRequest,
-            req => req.WithFilter("OrderDate", fromDate, FilterOperator.GreaterThanOrEqual)
-                      .WithFilter("OrderDate", toDate, FilterOperator.LessThanOrEqual),
+            req => req.WithRangeFilter("OrderDate", fromDate, toDate),
             PurchaseOrderFields.OrderDate.Name,
             SortDirection.Descending,
             cancellationToken
@@ -284,7 +283,7 @@ public class PurchaseOrderRepository(
     {
         return await GetPagedConfiguredAsync(
             pagedRequest,
-            req => req.WithFilter("Status", new List<short> { 1, 2 }), 
+            req => req.WithFilter("Status", "1,2", FilterOperator.In),
             PurchaseOrderFields.OrderDate.Name,
             SortDirection.Ascending,
             cancellationToken
