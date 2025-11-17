@@ -117,6 +117,7 @@ public class UpdateOrderRequest
 
 public class CreateOrderItemRequest
 {
+    public Guid OrderId { get; set; }
     public Guid ProductId { get; set; }
     public Guid? ProductVariantId { get; set; }
     public decimal UnitPrice { get; set; }
@@ -132,6 +133,8 @@ public class UpdateOrderItemRequest
 public class CreateOrderStatusHistoryRequest
 {
     public Guid OrderId { get; set; }
-    public short Status { get; set; }
-    public string? Notes { get; set; }
+    public short? FromStatus { get; set; }
+    public short ToStatus { get; set; }
+    public string? Comment { get; set; }
+    public Guid CreatedBy { get; set; }
 }

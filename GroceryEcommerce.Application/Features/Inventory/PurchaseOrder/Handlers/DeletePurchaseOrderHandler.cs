@@ -13,10 +13,10 @@ public class DeletePurchaseOrderHandler(
 {
     public async Task<Result<bool>> Handle(DeletePurchaseOrderCommand request, CancellationToken cancellationToken)
     {
-        var deleteSuccess = await repository.DeleteAsync(request.PurchaseOrderId, cancellationToken);
-        if (!deleteSuccess)
+        var deleteResult = await repository.DeleteAsync(request.PurchaseOrderId, cancellationToken);
+        if (!deleteResult.IsSuccess)
         {
-            return Result<bool>.Failure("Failed to delete purchase order");
+            return Result<bool>.Failure(deleteResult.ErrorMessage ?? "Failed to delete purchase order");
         }
         return Result<bool>.Success(true);
     }
