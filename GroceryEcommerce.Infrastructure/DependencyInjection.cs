@@ -3,12 +3,14 @@ using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
 using GroceryEcommerce.Application.Interfaces.Repositories.Cart;
 using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
 using GroceryEcommerce.Application.Interfaces.Repositories.Inventory;
+using GroceryEcommerce.Application.Interfaces.Repositories.Sales;
 using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.DatabaseSpecific;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Cart;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Inventory;
+using GroceryEcommerce.Infrastructure.Persistence.Repositories.Sales;
 using GroceryEcommerce.Infrastructure.Services;
 using GroceryEcommerce.Infrastructure.Settings;
 using Microsoft.Extensions.Configuration;
@@ -295,6 +297,70 @@ public static class DependencyInjection
             var cacheService = provider.GetRequiredService<ICacheService>();
             var logger = provider.GetRequiredService<ILogger<PurchaseOrderItemRepository>>();
             return new PurchaseOrderItemRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
+        // Sales Repositories
+        services.AddScoped<ISalesRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<OrderRepository>>();
+            return new OrderRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IOrderItemRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<OrderItemRepository>>();
+            return new OrderItemRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IOrderPaymentRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<OrderPaymentRepository>>();
+            return new OrderPaymentRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IOrderShipmentRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<OrderShipmentRepository>>();
+            return new OrderShipmentRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IOrderRefundRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<OrderRefundRepository>>();
+            return new OrderRefundRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IOrderStatusHistoryRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<OrderStatusHistoryRepository>>();
+            return new OrderStatusHistoryRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IShipmentCarrierRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<ShipmentCarrierRepository>>();
+            return new ShipmentCarrierRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
         // Register existing services

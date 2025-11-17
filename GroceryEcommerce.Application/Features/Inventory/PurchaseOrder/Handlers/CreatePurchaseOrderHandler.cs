@@ -46,10 +46,10 @@ public class CreatePurchaseOrderHandler(
                 CreatedAt = DateTime.UtcNow
             };
 
-            var createSuccess = await repository.CreateAsync(purchaseOrder, cancellationToken);
-            if (!createSuccess)
+            var createResult = await repository.CreateAsync(purchaseOrder, cancellationToken);
+            if (!createResult.IsSuccess)
             {
-                return Result<PurchaseOrderDto>.Failure("Failed to create purchase order");
+                return Result<PurchaseOrderDto>.Failure(createResult.ErrorMessage ?? "Failed to create purchase order");
             }
 
             // Get the created purchase order to include all data

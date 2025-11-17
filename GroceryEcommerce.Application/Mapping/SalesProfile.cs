@@ -30,7 +30,27 @@ public class SalesProfile : Profile
         CreateMap<CreateOrderRequest, Order>()
             .ForMember(dest => dest.OrderId, opt => opt.MapFrom(src => Guid.NewGuid()))
             .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateTime.UtcNow))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+            // Map Shipping Address fields
+            .ForMember(dest => dest.ShippingFirstName, opt => opt.MapFrom(src => src.ShippingAddress.FirstName))
+            .ForMember(dest => dest.ShippingLastName, opt => opt.MapFrom(src => src.ShippingAddress.LastName))
+            .ForMember(dest => dest.ShippingEmail, opt => opt.MapFrom(src => src.ShippingAddress.Email))
+            .ForMember(dest => dest.ShippingPhone, opt => opt.MapFrom(src => src.ShippingAddress.Phone))
+            .ForMember(dest => dest.ShippingAddress, opt => opt.MapFrom(src => src.ShippingAddress.Address))
+            .ForMember(dest => dest.ShippingCity, opt => opt.MapFrom(src => src.ShippingAddress.City))
+            .ForMember(dest => dest.ShippingState, opt => opt.MapFrom(src => src.ShippingAddress.State))
+            .ForMember(dest => dest.ShippingZipCode, opt => opt.MapFrom(src => src.ShippingAddress.ZipCode))
+            .ForMember(dest => dest.ShippingCountry, opt => opt.MapFrom(src => src.ShippingAddress.Country))
+            // Map Billing Address fields
+            .ForMember(dest => dest.BillingFirstName, opt => opt.MapFrom(src => src.BillingAddress.FirstName))
+            .ForMember(dest => dest.BillingLastName, opt => opt.MapFrom(src => src.BillingAddress.LastName))
+            .ForMember(dest => dest.BillingEmail, opt => opt.MapFrom(src => src.BillingAddress.Email))
+            .ForMember(dest => dest.BillingPhone, opt => opt.MapFrom(src => src.BillingAddress.Phone))
+            .ForMember(dest => dest.BillingAddress, opt => opt.MapFrom(src => src.BillingAddress.Address))
+            .ForMember(dest => dest.BillingCity, opt => opt.MapFrom(src => src.BillingAddress.City))
+            .ForMember(dest => dest.BillingState, opt => opt.MapFrom(src => src.BillingAddress.State))
+            .ForMember(dest => dest.BillingZipCode, opt => opt.MapFrom(src => src.BillingAddress.ZipCode))
+            .ForMember(dest => dest.BillingCountry, opt => opt.MapFrom(src => src.BillingAddress.Country));
 
         CreateMap<UpdateOrderRequest, Order>()
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
@@ -48,13 +68,12 @@ public class SalesProfile : Profile
 
         // Order Status History mappings
         CreateMap<OrderStatusHistory, OrderStatusHistoryDto>()
+            .ForMember(dest => dest.OrderStatusHistoryId, opt => opt.MapFrom(src => src.HistoryId))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.ToStatus))
             .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => GetOrderStatusName(src.ToStatus)))
             .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Comment))
+            .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy))
             .ForMember(dest => dest.CreatedByName, opt => opt.MapFrom(src => src.CreatedByUser != null ? $"{src.CreatedByUser.FirstName} {src.CreatedByUser.LastName}".Trim() : null));
-
-        CreateMap<CreateOrderStatusHistoryRequest, OrderStatusHistory>()
-            .ForMember(dest => dest.HistoryId, opt => opt.MapFrom(src => Guid.NewGuid()))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
         // Order Payment mappings
         CreateMap<OrderPayment, OrderPaymentDto>()
@@ -92,10 +111,28 @@ public class SalesProfile : Profile
 
         CreateMap<CreateOrderRefundRequest, OrderRefund>()
             .ForMember(dest => dest.RefundId, opt => opt.MapFrom(src => Guid.NewGuid()))
-            .ForMember(dest => dest.RequestedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+            .ForMember(dest => dest.RequestedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+            .ForMember(dest => dest.RequestedBy, opt => opt.MapFrom(src => src.RequestedBy));
 
         CreateMap<UpdateOrderRefundRequest, OrderRefund>()
             .ForMember(dest => dest.ProcessedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+
+        // ShipmentCarrier mappings
+        CreateMap<ShipmentCarrier, ShipmentCarrierDto>()
+            .ForMember(dest => dest.ShipmentCarrierId, opt => opt.MapFrom(src => src.CarrierId))
+            .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true)); // Default to active
+
+        CreateMap<CreateShipmentCarrierRequest, ShipmentCarrier>()
+            .ForMember(dest => dest.CarrierId, opt => opt.MapFrom(src => Guid.NewGuid()))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+
+        CreateMap<UpdateShipmentCarrierRequest, ShipmentCarrier>();
+
+        // OrderStatusHistory mappings - already exists but ensure CreatedBy is mapped
+        CreateMap<CreateOrderStatusHistoryRequest, OrderStatusHistory>()
+            .ForMember(dest => dest.HistoryId, opt => opt.MapFrom(src => Guid.NewGuid()))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+            .ForMember(dest => dest.CreatedBy, opt => opt.MapFrom(src => src.CreatedBy));
     }
 
     private static string GetOrderStatusName(short status)

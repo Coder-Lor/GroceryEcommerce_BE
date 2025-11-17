@@ -99,6 +99,9 @@ public class CatalogProfile : Profile
         CreateMap<Product, CreateProductResponse>()
             .IncludeBase<Product, ProductBaseResponse>();
 
+        CreateMap<Product, UpdateProductResponse>()
+            .IncludeBase<Product, ProductBaseResponse>();
+
         CreateMap<Product, GetProductBySlugResponse>()
             .IncludeBase<Product, ProductBaseResponse>();
 
@@ -110,7 +113,6 @@ public class CatalogProfile : Profile
 
         CreateMap<Product, GetProductByIdResponse>()
             .IncludeBase<Product, ProductBaseResponse>();
-
 
         CreateMap<Category, CreateCategoryResponse>()
             .IncludeBase<Category, CategoryDto>()

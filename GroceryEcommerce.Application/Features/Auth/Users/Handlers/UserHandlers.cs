@@ -2,16 +2,17 @@ using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Features.Auth.Users.Commands;
 using GroceryEcommerce.Application.Features.Auth.Users.Queries;
 using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
+using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Domain.Entities.Auth;
 using MediatR;
 
 namespace GroceryEcommerce.Application.Features.Auth.Users.Handlers;
 
-public sealed class GetUserByIdQueryHandler(IUserRepository repository)
+public sealed class GetUserByIdQueryHandler(IUserRepository repository, ICurrentUserService currentUserService)
     : IRequestHandler<GetUserByIdQuery, Result<User?>>
 {
     public Task<Result<User?>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
-        => repository.GetByIdAsync(request.UserId, cancellationToken);
+        => repository.GetByIdAsync(currentUserService.GetCurrentUserId() ?? request.UserId ?? Guid.Empty, cancellationToken);
 }
 
 public sealed class GetUserByEmailQueryHandler(IUserRepository repository)

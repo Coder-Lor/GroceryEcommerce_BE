@@ -1,17 +1,17 @@
 using GroceryEcommerce.Application.Common;
+using GroceryEcommerce.Application.Interfaces.Repositories.Common;
 using GroceryEcommerce.Domain.Entities.Sales;
 
 namespace GroceryEcommerce.Application.Interfaces.Repositories.Sales;
 
-public interface IShipmentCarrierRepository
+public interface IShipmentCarrierRepository : IPagedRepository<ShipmentCarrier>
 {
     // Basic CRUD operations
     Task<Result<ShipmentCarrier?>> GetByIdAsync(Guid carrierId, CancellationToken cancellationToken = default);
     Task<Result<ShipmentCarrier?>> GetByNameAsync(string name, CancellationToken cancellationToken = default);
     Task<Result<ShipmentCarrier?>> GetByCodeAsync(string code, CancellationToken cancellationToken = default);
     Task<Result<List<ShipmentCarrier>>> GetAllAsync(CancellationToken cancellationToken = default);
-    Task<Result<PagedResult<ShipmentCarrier>>> GetPagedAsync(PagedRequest request, CancellationToken cancellationToken = default);
-    Task<Result<ShipmentCarrier>> CreateAsync(ShipmentCarrier carrier, CancellationToken cancellationToken = default);
+    Task<Result<bool>> CreateAsync(ShipmentCarrier carrier, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateAsync(ShipmentCarrier carrier, CancellationToken cancellationToken = default);
     Task<Result<bool>> DeleteAsync(Guid carrierId, CancellationToken cancellationToken = default);
     
