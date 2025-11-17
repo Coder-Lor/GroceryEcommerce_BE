@@ -166,7 +166,7 @@ internal class Program
             {
                 //.WithOrigins("http://localhost:3000", "https://localhost:3000", "https://localhost:7129", "http://localhost:4200")
                 policy
-                    .AllowAnyOrigin()
+                    .WithOrigins("http://localhost:3000", "https://localhost:3000", "https://localhost:7129", "http://localhost:4200")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
