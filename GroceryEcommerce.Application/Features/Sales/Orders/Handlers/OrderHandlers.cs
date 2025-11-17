@@ -8,6 +8,7 @@ using GroceryEcommerce.Application.Models.Sales;
 using GroceryEcommerce.Domain.Entities.Sales;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace GroceryEcommerce.Application.Features.Sales.Orders.Handlers;
 
@@ -118,6 +119,7 @@ public class CreateOrderHandler(
     IMapper mapper,
     ISalesRepository repository,
     IProductRepository productRepository,
+    IProductVariantRepository productVariantRepository,
     ILogger<CreateOrderHandler> logger
 ) : IRequestHandler<CreateOrderCommand, Result<OrderDto>>
 {
@@ -141,27 +143,49 @@ public class CreateOrderHandler(
             order.OrderDate = DateTime.UtcNow;
             order.CreatedAt = DateTime.UtcNow;
 
-            // Create order items - Load ProductName and ProductSku from Product repository
+            // Create order items - Load ProductName from Product and ProductSku from ProductVariant
             if (request.Request.Items != null && request.Request.Items.Any())
             {
                 var orderItems = new List<OrderItem>();
                 foreach (var item in request.Request.Items)
                 {
+                    // Validate ProductVariantId is required
+                    if (!item.ProductVariantId.HasValue)
+                    {
+                        return Result<OrderDto>.Failure($"ProductVariantId is required for order item with ProductId: {item.ProductId}");
+                    }
+
+                    // Get product to populate product name
                     var productResult = await productRepository.GetByIdAsync(item.ProductId, cancellationToken);
                     if (!productResult.IsSuccess || productResult.Data == null)
                     {
                         return Result<OrderDto>.Failure($"Product not found: {item.ProductId}");
                     }
 
+                    // Get product variant to populate SKU and validate it exists
+                    var variantResult = await productVariantRepository.GetByIdAsync(item.ProductVariantId.Value, cancellationToken);
+                    if (!variantResult.IsSuccess || variantResult.Data == null)
+                    {
+                        return Result<OrderDto>.Failure($"Product variant not found: {item.ProductVariantId.Value}");
+                    }
+
                     var product = productResult.Data;
+                    var variant = variantResult.Data;
+
+                    // Validate variant belongs to the product
+                    if (variant.ProductId != item.ProductId)
+                    {
+                        return Result<OrderDto>.Failure($"Product variant {item.ProductVariantId.Value} does not belong to product {item.ProductId}");
+                    }
+
                     orderItems.Add(new OrderItem
                     {
                         OrderItemId = Guid.NewGuid(),
                         OrderId = order.OrderId,
                         ProductId = item.ProductId,
-                        ProductVariantId = item.ProductVariantId,
-                        ProductName = product.Name,
-                        ProductSku = product.Sku,
+                        ProductVariantId = item.ProductVariantId.Value,
+                        ProductName = product.Name,  // Use product name
+                        ProductSku = variant.Sku,    // Use variant SKU
                         UnitPrice = item.UnitPrice,
                         Quantity = item.Quantity,
                         TotalPrice = item.UnitPrice * item.Quantity

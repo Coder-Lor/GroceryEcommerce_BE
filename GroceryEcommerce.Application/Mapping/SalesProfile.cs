@@ -30,7 +30,27 @@ public class SalesProfile : Profile
         CreateMap<CreateOrderRequest, Order>()
             .ForMember(dest => dest.OrderId, opt => opt.MapFrom(src => Guid.NewGuid()))
             .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateTime.UtcNow))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+            // Map Shipping Address fields
+            .ForMember(dest => dest.ShippingFirstName, opt => opt.MapFrom(src => src.ShippingAddress.FirstName))
+            .ForMember(dest => dest.ShippingLastName, opt => opt.MapFrom(src => src.ShippingAddress.LastName))
+            .ForMember(dest => dest.ShippingEmail, opt => opt.MapFrom(src => src.ShippingAddress.Email))
+            .ForMember(dest => dest.ShippingPhone, opt => opt.MapFrom(src => src.ShippingAddress.Phone))
+            .ForMember(dest => dest.ShippingAddress, opt => opt.MapFrom(src => src.ShippingAddress.Address))
+            .ForMember(dest => dest.ShippingCity, opt => opt.MapFrom(src => src.ShippingAddress.City))
+            .ForMember(dest => dest.ShippingState, opt => opt.MapFrom(src => src.ShippingAddress.State))
+            .ForMember(dest => dest.ShippingZipCode, opt => opt.MapFrom(src => src.ShippingAddress.ZipCode))
+            .ForMember(dest => dest.ShippingCountry, opt => opt.MapFrom(src => src.ShippingAddress.Country))
+            // Map Billing Address fields
+            .ForMember(dest => dest.BillingFirstName, opt => opt.MapFrom(src => src.BillingAddress.FirstName))
+            .ForMember(dest => dest.BillingLastName, opt => opt.MapFrom(src => src.BillingAddress.LastName))
+            .ForMember(dest => dest.BillingEmail, opt => opt.MapFrom(src => src.BillingAddress.Email))
+            .ForMember(dest => dest.BillingPhone, opt => opt.MapFrom(src => src.BillingAddress.Phone))
+            .ForMember(dest => dest.BillingAddress, opt => opt.MapFrom(src => src.BillingAddress.Address))
+            .ForMember(dest => dest.BillingCity, opt => opt.MapFrom(src => src.BillingAddress.City))
+            .ForMember(dest => dest.BillingState, opt => opt.MapFrom(src => src.BillingAddress.State))
+            .ForMember(dest => dest.BillingZipCode, opt => opt.MapFrom(src => src.BillingAddress.ZipCode))
+            .ForMember(dest => dest.BillingCountry, opt => opt.MapFrom(src => src.BillingAddress.Country));
 
         CreateMap<UpdateOrderRequest, Order>()
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));

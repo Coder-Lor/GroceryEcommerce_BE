@@ -14,6 +14,7 @@ public class CreateOrderItemHandler(
     IMapper mapper,
     IOrderItemRepository repository,
     IProductRepository productRepository,
+    IProductVariantRepository productVariantRepository,
     ILogger<CreateOrderItemHandler> logger
 ) : IRequestHandler<CreateOrderItemCommand, Result<OrderItemDto>>
 {
@@ -23,22 +24,43 @@ public class CreateOrderItemHandler(
         {
             logger.LogInformation("Creating order item for order: {OrderId}", request.Request.OrderId);
 
-            // Get product to populate name and SKU
+            // Validate ProductVariantId is required
+            if (!request.Request.ProductVariantId.HasValue)
+            {
+                return Result<OrderItemDto>.Failure("ProductVariantId is required for order item.");
+            }
+
+            // Get product to populate product name
             var productResult = await productRepository.GetByIdAsync(request.Request.ProductId, cancellationToken);
             if (!productResult.IsSuccess || productResult.Data == null)
             {
                 return Result<OrderItemDto>.Failure($"Product not found: {request.Request.ProductId}");
             }
 
+            // Get product variant to populate SKU and validate it exists
+            var variantResult = await productVariantRepository.GetByIdAsync(request.Request.ProductVariantId.Value, cancellationToken);
+            if (!variantResult.IsSuccess || variantResult.Data == null)
+            {
+                return Result<OrderItemDto>.Failure($"Product variant not found: {request.Request.ProductVariantId.Value}");
+            }
+
             var product = productResult.Data;
+            var variant = variantResult.Data;
+
+            // Validate variant belongs to the product
+            if (variant.ProductId != request.Request.ProductId)
+            {
+                return Result<OrderItemDto>.Failure($"Product variant {request.Request.ProductVariantId.Value} does not belong to product {request.Request.ProductId}");
+            }
+
             var orderItem = new OrderItem
             {
                 OrderItemId = Guid.NewGuid(),
                 OrderId = request.Request.OrderId,
                 ProductId = request.Request.ProductId,
-                ProductVariantId = request.Request.ProductVariantId,
-                ProductName = product.Name,
-                ProductSku = product.Sku,
+                ProductVariantId = request.Request.ProductVariantId.Value,
+                ProductName = product.Name,  // Use product name
+                ProductSku = variant.Sku,    // Use variant SKU
                 UnitPrice = request.Request.UnitPrice,
                 Quantity = request.Request.Quantity,
                 TotalPrice = request.Request.UnitPrice * request.Request.Quantity

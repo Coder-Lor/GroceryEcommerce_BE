@@ -1,3 +1,4 @@
+using System.Linq;
 using AutoMapper;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Interfaces.Repositories.Sales;
@@ -179,6 +180,18 @@ public class OrderRepository(
             var entity = Mapper.Map<OrderEntity>(order);
             
             await adapter.SaveEntityAsync(entity, cancellationToken: cancellationToken);
+            
+            // Save order items if they exist
+            if (order.OrderItems != null && order.OrderItems.Any())
+            {
+                foreach (var orderItem in order.OrderItems)
+                {
+                    var orderItemEntity = Mapper.Map<OrderItemEntity>(orderItem);
+                    await adapter.SaveEntityAsync(orderItemEntity, cancellationToken: cancellationToken);
+                }
+                Logger.LogInformation("Created {Count} order items for order: {OrderId}", order.OrderItems.Count, entity.OrderId);
+            }
+            
             await CacheService.RemoveByPatternAsync("Order*", cancellationToken);
             
             Logger.LogInformation("Order created: {OrderId}", entity.OrderId);
