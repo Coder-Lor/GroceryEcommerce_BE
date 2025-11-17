@@ -4,6 +4,6 @@ using MediatR;
 
 namespace GroceryEcommerce.Application.Features.Auth.Users.Queries;
 
-public sealed record GetUserByIdQuery(Guid UserId) : IRequest<Result<User?>>;
+public sealed record GetUserByIdQuery(Guid? UserId) : IRequest<Result<User?>>;
 
 

@@ -20,7 +20,7 @@ public class UserController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet("{userId:guid}")]
-    public async Task<ActionResult<Result<User?>>> GetById(Guid userId)
+    public async Task<ActionResult<Result<User?>>> GetById(Guid? userId)
     {
         var result = await mediator.Send(new GetUserByIdQuery(userId));
         if (!result.IsSuccess) return BadRequest(result);
