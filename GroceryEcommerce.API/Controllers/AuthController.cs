@@ -77,11 +77,21 @@ public class AuthController(IMediator mediator) : ControllerBase
     
     [AllowAnonymous]
     [HttpPost("refresh-token")]
-    public async Task<ActionResult<Result<RefreshTokenResponse>>> RefreshToken([FromBody] RefreshTokenCommand request)
+    public async Task<ActionResult<Result<RefreshTokenResponse>>> RefreshToken()
     {
-        var result = await mediator.Send(request);
+        var refreshToken = Request.Cookies["refreshToken"];
+        if (string.IsNullOrEmpty(refreshToken))
+            return Unauthorized(Result<RefreshTokenResponse>.Failure("Refresh Token not provided in cookies."));
+
+        var command = new RefreshTokenCommand(refreshToken);
+        var result = await mediator.Send(command);
+
         if (!result.IsSuccess)
-            return BadRequest(result);
+        {
+            Response.Cookies.Delete("refreshToken");
+            Response.Cookies.Delete("accessToken");
+            return Unauthorized(result);
+        }
         
         if (result.Data is not null)
         {
