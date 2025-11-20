@@ -4,7 +4,7 @@ using MediatR;
 
 namespace GroceryEcommerce.Application.Features.Auth.UserAddresses.Commands;
 
-public sealed record CreateUserAddressCommand : IRequest<Result<UserAddress>>
+public sealed record CreateUserAddressCommand : IRequest<Result<bool>>
 {
     public required Guid UserId { get; init; }
     public required string AddressLine1 { get; init; }

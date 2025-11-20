@@ -9,7 +9,7 @@ public interface IUserAddressRepository
     Task<Result<UserAddress?>> GetByIdAsync(Guid addressId, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<UserAddress>>> GetByUserIdAsync( PagedRequest request, Guid userId, CancellationToken cancellationToken = default);
     Task<Result<UserAddress?>> GetDefaultAddressByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
-    Task<Result<UserAddress>> CreateAsync(UserAddress address, CancellationToken cancellationToken = default);
+    Task<Result<bool>> CreateAsync(UserAddress address, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateAsync(UserAddress address, CancellationToken cancellationToken = default);
     Task<Result<bool>> DeleteAsync(Guid addressId, CancellationToken cancellationToken = default);
     

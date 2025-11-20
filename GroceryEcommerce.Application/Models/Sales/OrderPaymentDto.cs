@@ -1,4 +1,4 @@
-namespace GroceryEcommerce.Application.Models.Sales;
+﻿namespace GroceryEcommerce.Application.Models.Sales;
 
 public class OrderPaymentDto
 {
@@ -51,4 +51,49 @@ public class ProcessPaymentRequest
     public string? Cvv { get; set; }
     public string? CardHolderName { get; set; }
     public string? BillingAddress { get; set; }
+}
+
+public record PaymentConfirmationRequest
+{
+    // ID giao dịch trên SePay
+    public long Id { get; set; }
+
+    // Brand name của ngân hàng
+    public string Gateway { get; set; } = string.Empty;
+
+    // Thời gian xảy ra giao dịch phía ngân hàng (format: yyyy-MM-dd HH:mm:ss)
+    public DateTime TransactionDate { get; set; }
+
+    // Số tài khoản ngân hàng
+    public string? AccountNumber { get; set; }
+
+    // Mã code thanh toán (có thể null)
+    public string? Code { get; set; }
+
+    // Nội dung chuyển khoản
+    public string? Content { get; set; }
+
+    // Loại giao dịch: "in" (tiền vào) | "out" (tiền ra)
+    public string? TransferType { get; set; }
+
+    // Số tiền giao dịch
+    public decimal TransferAmount { get; set; }
+
+    // Số dư tài khoản (lũy kế)
+    public decimal Accumulated { get; set; }
+
+    // Tài khoản ngân hàng phụ (nếu có)
+    public string? SubAccount { get; set; }
+
+    // Mã tham chiếu của tin nhắn sms
+    public string? ReferenceCode { get; set; }
+
+    // Mô tả
+    public string? Description { get; set; }
+}
+
+public class SepayResponse
+{
+    public bool success { get; set; }
+    public string? message { get; set; }
 }

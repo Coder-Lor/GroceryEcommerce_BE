@@ -28,7 +28,7 @@ public class UserAddressController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("create")]
-    public async Task<ActionResult<Result<UserAddress>>> Create([FromBody] CreateUserAddressCommand command)
+    public async Task<ActionResult<Result<bool>>> Create([FromBody] CreateUserAddressCommand command)
     {
         var result = await mediator.Send(command);
         if (!result.IsSuccess) return BadRequest(result);
