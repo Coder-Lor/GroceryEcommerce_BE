@@ -3,6 +3,7 @@ using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
 using GroceryEcommerce.Application.Interfaces.Repositories.Cart;
 using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
 using GroceryEcommerce.Application.Interfaces.Repositories.Inventory;
+using GroceryEcommerce.Application.Interfaces.Repositories.Marketing;
 using GroceryEcommerce.Application.Interfaces.Repositories.Sales;
 using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.DatabaseSpecific;
@@ -10,6 +11,7 @@ using GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Cart;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Catalog;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Inventory;
+using GroceryEcommerce.Infrastructure.Persistence.Repositories.Marketing;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Sales;
 using GroceryEcommerce.Infrastructure.Services;
 using GroceryEcommerce.Infrastructure.Settings;
@@ -361,6 +363,34 @@ public static class DependencyInjection
             var cacheService = provider.GetRequiredService<ICacheService>();
             var logger = provider.GetRequiredService<ILogger<ShipmentCarrierRepository>>();
             return new ShipmentCarrierRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
+        // Marketing Repositories
+        services.AddScoped<ICouponUsageRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<CouponUsageRepository>>();
+            return new CouponUsageRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IGiftCardRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<GiftCardRepository>>();
+            return new GiftCardRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
+        services.AddScoped<IRewardPointRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var logger = provider.GetRequiredService<ILogger<RewardPointRepository>>();
+            return new RewardPointRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
         // Register existing services
