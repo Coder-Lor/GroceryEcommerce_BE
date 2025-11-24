@@ -20,7 +20,7 @@ public class CreateRewardPointCommandHandler(
     {
         logger.LogInformation("Creating RewardPoint for UserId: {UserId}, Points: {Points}", request.UserId, request.Points);
 
-        var rewardPoint = new RewardPoint
+        var rewardPoint = new Domain.Entities.Marketing.RewardPoint
         {
             RewardId = Guid.NewGuid(),
             UserId = request.UserId,
@@ -148,7 +148,7 @@ public class GetRewardPointsByUserIdQueryHandler(
             return Result<List<RewardPointDto>>.Failure(result.ErrorMessage ?? "Failed to get RewardPoints.");
         }
 
-        var dtos = mapper.Map<List<RewardPointDto>>(result.Data ?? new List<RewardPoint>());
+        var dtos = mapper.Map<List<RewardPointDto>>(result.Data ?? new List<Domain.Entities.Marketing.RewardPoint>());
         return Result<List<RewardPointDto>>.Success(dtos);
     }
 }
@@ -170,7 +170,7 @@ public class GetRewardPointsPagingQueryHandler(
             return Result<PagedResult<RewardPointDto>>.Failure(result.ErrorMessage ?? "Failed to get RewardPoints.");
         }
 
-        var dtos = mapper.Map<List<RewardPointDto>>(result.Data?.Items ?? new List<RewardPoint>());
+        var dtos = mapper.Map<List<RewardPointDto>>(result.Data?.Items ?? new List<Domain.Entities.Marketing.RewardPoint>());
         var pagedResult = new PagedResult<RewardPointDto>(
             dtos,
             result.Data?.TotalCount ?? 0,

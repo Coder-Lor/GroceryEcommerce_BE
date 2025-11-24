@@ -238,13 +238,13 @@ public class RewardPointRepository(
             var qf = new QueryFactory();
             var now = DateTime.UtcNow;
             var query = qf.Create<RewardPointEntity>()
-                .Where(RewardPointFields.UserId == userId & 
-                       (RewardPointFields.ExpiresAt == null | RewardPointFields.ExpiresAt > now))
+                .Where((RewardPointFields.UserId == userId).And(
+                       RewardPointFields.ExpiresAt.IsNull().Or(RewardPointFields.ExpiresAt > now)))
                 .Select(() => RewardPointFields.Points.Sum());
             
             var total = await adapter.FetchScalarAsync<decimal?>(query, cancellationToken);
             Logger.LogInformation("Available points for user {UserId}: {Total}", userId, total ?? 0);
-            return Result<decimal>.Success(total ?? 0);
+            return Result<decimal>.Success(total ?? 0);                             
         }
         catch (Exception ex)
         {
@@ -281,7 +281,7 @@ public class RewardPointRepository(
             var adapter = GetAdapter();
             var qf = new QueryFactory();
             var query = qf.Create<RewardPointEntity>()
-                .Where(RewardPointFields.ExpiresAt <= expiryDate & RewardPointFields.ExpiresAt != null)
+                .Where(RewardPointFields.ExpiresAt <= expiryDate)
                 .OrderBy(RewardPointFields.ExpiresAt.Ascending());
             
             var entities = await adapter.FetchQueryAsync(query, cancellationToken);

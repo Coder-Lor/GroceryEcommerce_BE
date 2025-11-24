@@ -31,7 +31,7 @@ public class CreateGiftCardCommandHandler(
             code = GenerateGiftCardCode();
         }
 
-        var giftCard = new GiftCard
+        var giftCard = new Domain.Entities.Marketing.GiftCard
         {
             GiftCardId = Guid.NewGuid(),
             Code = code,
@@ -196,7 +196,7 @@ public class GetGiftCardsPagingQueryHandler(
             return Result<PagedResult<GiftCardDto>>.Failure(result.ErrorMessage ?? "Failed to get GiftCards.");
         }
 
-        var dtos = mapper.Map<List<GiftCardDto>>(result.Data?.Items ?? new List<GiftCard>());
+        var dtos = mapper.Map<List<GiftCardDto>>(result.Data?.Items ?? new List<Domain.Entities.Marketing.GiftCard>());
         var pagedResult = new PagedResult<GiftCardDto>(
             dtos,
             result.Data?.TotalCount ?? 0,

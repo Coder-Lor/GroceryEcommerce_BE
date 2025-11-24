@@ -20,7 +20,7 @@ public class CreateCouponUsageCommandHandler(
     {
         logger.LogInformation("Creating CouponUsage for CouponId: {CouponId}, UserId: {UserId}", request.CouponId, request.UserId);
 
-        var usage = new CouponUsage
+        var usage = new Domain.Entities.Marketing.CouponUsage
         {
             UsageId = Guid.NewGuid(),
             CouponId = request.CouponId,
@@ -146,7 +146,7 @@ public class GetCouponUsagesPagingQueryHandler(
             return Result<PagedResult<CouponUsageDto>>.Failure(result.ErrorMessage ?? "Failed to get CouponUsages.");
         }
 
-        var dtos = mapper.Map<List<CouponUsageDto>>(result.Data?.Items ?? new List<CouponUsage>());
+        var dtos = mapper.Map<List<CouponUsageDto>>(result.Data?.Items ?? new List<Domain.Entities.Marketing.CouponUsage>());
         var pagedResult = new PagedResult<CouponUsageDto>(
             dtos,
             result.Data?.TotalCount ?? 0,
@@ -175,7 +175,7 @@ public class GetCouponUsagesByCouponIdQueryHandler(
             return Result<PagedResult<CouponUsageDto>>.Failure(result.ErrorMessage ?? "Failed to get CouponUsages.");
         }
 
-        var dtos = mapper.Map<List<CouponUsageDto>>(result.Data?.Items ?? new List<CouponUsage>());
+        var dtos = mapper.Map<List<CouponUsageDto>>(result.Data?.Items ?? new List<Domain.Entities.Marketing.CouponUsage>());
         var pagedResult = new PagedResult<CouponUsageDto>(
             dtos,
             result.Data?.TotalCount ?? 0,
@@ -204,7 +204,7 @@ public class GetCouponUsagesByUserIdQueryHandler(
             return Result<PagedResult<CouponUsageDto>>.Failure(result.ErrorMessage ?? "Failed to get CouponUsages.");
         }
 
-        var dtos = mapper.Map<List<CouponUsageDto>>(result.Data?.Items ?? new List<CouponUsage>());
+        var dtos = mapper.Map<List<CouponUsageDto>>(result.Data?.Items ?? new List<Domain.Entities.Marketing.CouponUsage>());
         var pagedResult = new PagedResult<CouponUsageDto>(
             dtos,
             result.Data?.TotalCount ?? 0,
