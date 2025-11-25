@@ -376,10 +376,10 @@ public class RefreshTokenRepository(
     protected override EntityQuery<RefreshTokenEntity> ApplySearch(EntityQuery<RefreshTokenEntity> query, string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
-        searchTerm = searchTerm.Trim().ToLower();
+        var term = searchTerm.Trim();
         
         // Try parse as Guid first
-        if (Guid.TryParse(searchTerm, out var guid))
+        if (Guid.TryParse(term, out var guid))
         {
             return query.Where(
                 RefreshTokenFields.TokenId == guid |
@@ -388,7 +388,7 @@ public class RefreshTokenRepository(
         }
         
         // Text search on RefreshToken field
-        return query.Where(RefreshTokenFields.RefreshToken.Contains(searchTerm));
+        return query.Where(SearchPredicateBuilder.BuildContainsPredicate(term, RefreshTokenFields.RefreshToken));
     }
 
     protected override EntityQuery<RefreshTokenEntity> ApplySorting(EntityQuery<RefreshTokenEntity> query, string? sortBy, SortDirection sortDirection)

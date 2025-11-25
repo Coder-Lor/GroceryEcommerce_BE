@@ -79,13 +79,17 @@ public class OrderRepository(
 
     protected override EntityQuery<OrderEntity> ApplySearch(EntityQuery<OrderEntity> query, string searchTerm)
     {
-        return query.Where(
-            OrderFields.OrderNumber.Contains(searchTerm) |
-            OrderFields.ShippingFirstName.Contains(searchTerm) |
-            OrderFields.ShippingLastName.Contains(searchTerm) |
-            OrderFields.ShippingEmail.Contains(searchTerm) |
-            OrderFields.BillingEmail.Contains(searchTerm)
-        );
+        if (string.IsNullOrWhiteSpace(searchTerm)) return query;
+
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+            searchTerm,
+            OrderFields.OrderNumber,
+            OrderFields.ShippingFirstName,
+            OrderFields.ShippingLastName,
+            OrderFields.ShippingEmail,
+            OrderFields.BillingEmail);
+
+        return query.Where(predicate);
     }
 
     protected override EntityQuery<OrderEntity> ApplySorting(EntityQuery<OrderEntity> query, string? sortBy, SortDirection sortDirection)

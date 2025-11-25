@@ -66,12 +66,16 @@ public class ShipmentCarrierRepository(
 
     protected override EntityQuery<ShipmentCarrierEntity> ApplySearch(EntityQuery<ShipmentCarrierEntity> query, string searchTerm)
     {
-        return query.Where(
-            ShipmentCarrierFields.Name.Contains(searchTerm) |
-            ShipmentCarrierFields.Code.Contains(searchTerm) |
-            ShipmentCarrierFields.Website.Contains(searchTerm) |
-            ShipmentCarrierFields.Phone.Contains(searchTerm)
-        );
+        if (string.IsNullOrWhiteSpace(searchTerm)) return query;
+
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+            searchTerm,
+            ShipmentCarrierFields.Name,
+            ShipmentCarrierFields.Code,
+            ShipmentCarrierFields.Website,
+            ShipmentCarrierFields.Phone);
+
+        return query.Where(predicate);
     }
 
     protected override EntityQuery<ShipmentCarrierEntity> ApplySorting(EntityQuery<ShipmentCarrierEntity> query, string? sortBy, SortDirection sortDirection)

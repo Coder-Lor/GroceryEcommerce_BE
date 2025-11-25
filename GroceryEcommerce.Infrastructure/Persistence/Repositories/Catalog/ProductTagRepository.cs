@@ -68,12 +68,14 @@ public class ProductTagRepository(
     protected override EntityQuery<ProductTagEntity> ApplySearch(EntityQuery<ProductTagEntity> query, string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
-        searchTerm = searchTerm.Trim().ToLower();
-        return query.Where(
-            ProductTagFields.Name.Contains(searchTerm) |
-            ProductTagFields.Slug.Contains(searchTerm) |
-            ProductTagFields.TagId.Contains(searchTerm)
-        );
+        
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+            searchTerm,
+            ProductTagFields.Name,
+            ProductTagFields.Slug,
+            ProductTagFields.TagId);
+
+        return query.Where(predicate);
     }
 
     protected override EntityQuery<ProductTagEntity> ApplySorting(EntityQuery<ProductTagEntity> query, string? sortBy, SortDirection sortDirection)

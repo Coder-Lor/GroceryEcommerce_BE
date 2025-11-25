@@ -69,7 +69,9 @@ public class OrderRefundRepository(
 
     protected override EntityQuery<OrderRefundEntity> ApplySearch(EntityQuery<OrderRefundEntity> query, string searchTerm)
     {
-        return query.Where(OrderRefundFields.Reason.Contains(searchTerm));
+        if (string.IsNullOrWhiteSpace(searchTerm)) return query;
+
+        return query.Where(SearchPredicateBuilder.BuildContainsPredicate(searchTerm, OrderRefundFields.Reason));
     }
 
     protected override EntityQuery<OrderRefundEntity> ApplySorting(EntityQuery<OrderRefundEntity> query, string? sortBy, SortDirection sortDirection)

@@ -81,15 +81,17 @@ public class UserAddressRepository(
     protected override EntityQuery<UserAddressEntity> ApplySearch(EntityQuery<UserAddressEntity> query, string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
-        searchTerm = searchTerm.Trim().ToLower();
-        return query.Where(
-            UserAddressFields.AddressLine1.Contains(searchTerm) |
-            UserAddressFields.AddressLine2.Contains(searchTerm) |
-            UserAddressFields.City.Contains(searchTerm) |
-            UserAddressFields.State.Contains(searchTerm) |
-            UserAddressFields.Country.Contains(searchTerm) |
-            UserAddressFields.ZipCode.Contains(searchTerm)
-        );
+
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+            searchTerm,
+            UserAddressFields.AddressLine1,
+            UserAddressFields.AddressLine2,
+            UserAddressFields.City,
+            UserAddressFields.State,
+            UserAddressFields.Country,
+            UserAddressFields.ZipCode);
+
+        return query.Where(predicate);
     }
 
     protected override EntityQuery<UserAddressEntity> ApplySorting(EntityQuery<UserAddressEntity> query, string? sortBy, SortDirection sortDirection)

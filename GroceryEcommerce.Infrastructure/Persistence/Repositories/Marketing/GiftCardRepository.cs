@@ -75,7 +75,9 @@ public class GiftCardRepository(
 
     protected override EntityQuery<GiftCardEntity> ApplySearch(EntityQuery<GiftCardEntity> query, string searchTerm)
     {
-        return query.Where(GiftCardFields.Code.Contains(searchTerm));
+        if (string.IsNullOrWhiteSpace(searchTerm)) return query;
+
+        return query.Where(SearchPredicateBuilder.BuildContainsPredicate(searchTerm, GiftCardFields.Code));
     }
 
     protected override EntityQuery<GiftCardEntity> ApplySorting(EntityQuery<GiftCardEntity> query, string? sortBy, SortDirection sortDirection)

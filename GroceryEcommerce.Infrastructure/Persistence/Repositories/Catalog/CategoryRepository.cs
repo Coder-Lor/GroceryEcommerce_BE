@@ -71,13 +71,14 @@ public class CategoryRepository(
     protected override EntityQuery<CategoryEntity> ApplySearch(EntityQuery<CategoryEntity> query, string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
-        searchTerm = searchTerm.Trim().ToLower();
+        
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+            searchTerm,
+            CategoryFields.Name,
+            CategoryFields.Slug,
+            CategoryFields.Description);
 
-        return query.Where(
-            CategoryFields.Name.Contains(searchTerm) |
-            CategoryFields.Slug.Contains(searchTerm) |
-            CategoryFields.Description.Contains(searchTerm)
-        );
+        return query.Where(predicate);
     }
     
     protected override EntityQuery<CategoryEntity> ApplySorting(EntityQuery<CategoryEntity> query, string? sortBy, SortDirection sortDirection)
@@ -769,8 +770,9 @@ public class CategoryRepository(
             }
             
             var qf = new QueryFactory();
+            var predicate = SearchPredicateBuilder.BuildContainsPredicate(searchTerm, CategoryFields.Name);
             var query = qf.Category
-                .Where(CategoryFields.Name.Contains(searchTerm))
+                .Where(predicate)
                 .OrderBy(CategoryFields.Name.Ascending());
             
             var adapter = GetAdapter(); // Sử dụng adapter phù hợp

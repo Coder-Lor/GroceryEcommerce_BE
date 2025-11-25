@@ -69,7 +69,10 @@ public class RewardPointRepository(
 
     protected override EntityQuery<RewardPointEntity> ApplySearch(EntityQuery<RewardPointEntity> query, string searchTerm)
     {
-        return query.Where(RewardPointFields.Reason.Contains(searchTerm));
+        if (string.IsNullOrWhiteSpace(searchTerm)) return query;
+
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(searchTerm, RewardPointFields.Reason);
+        return query.Where(predicate);
     }
 
     protected override EntityQuery<RewardPointEntity> ApplySorting(EntityQuery<RewardPointEntity> query, string? sortBy, SortDirection sortDirection)

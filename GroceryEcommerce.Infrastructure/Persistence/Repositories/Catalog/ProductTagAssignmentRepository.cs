@@ -64,11 +64,13 @@ public class ProductTagAssignmentRepository(
     protected override EntityQuery<ProductTagAssignmentEntity> ApplySearch(EntityQuery<ProductTagAssignmentEntity> query, string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
-        searchTerm = searchTerm.Trim().ToLower();
-        return query.Where(
-            ProductTagAssignmentFields.ProductId.Contains(searchTerm) |
-            ProductTagAssignmentFields.TagId.Contains(searchTerm)
-        );
+        
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+            searchTerm,
+            ProductTagAssignmentFields.ProductId,
+            ProductTagAssignmentFields.TagId);
+
+        return query.Where(predicate);
     }
 
     protected override EntityQuery<ProductTagAssignmentEntity> ApplySorting(EntityQuery<ProductTagAssignmentEntity> query, string? sortBy, SortDirection sortDirection)
