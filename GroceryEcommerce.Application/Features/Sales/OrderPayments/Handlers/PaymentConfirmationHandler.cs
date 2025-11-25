@@ -1,5 +1,4 @@
-﻿using GroceryEcommerce.Application.Common;
-using GroceryEcommerce.Application.Features.Sales.OrderPayments.Commands;
+﻿using GroceryEcommerce.Application.Features.Sales.OrderPayments.Commands;
 using GroceryEcommerce.Application.Interfaces.Repositories.Sales;
 using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Application.Models.Notifications;
@@ -7,6 +6,7 @@ using GroceryEcommerce.Application.Models.Sales;
 using Microsoft.Extensions.Logging;
 using MediatR;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace GroceryEcommerce.Application.Features.Sales.OrderPayments.Handlers;
 
@@ -17,6 +17,8 @@ public class PaymentConfirmationHandler (
     ILogger<PaymentConfirmationHandler> logger
 ) : IRequestHandler<PaymentConfirmationCommand, SepayResponse>
 {
+    private static readonly Regex TransactionCodeRegex = new(@"[A-Za-z]{2}\d{12}", RegexOptions.Compiled);
+
     public async Task<SepayResponse> Handle(PaymentConfirmationCommand request, CancellationToken cancellationToken)
     {
         try
@@ -114,9 +116,23 @@ public class PaymentConfirmationHandler (
     }
 
     private static string? DetermineTransactionId(PaymentConfirmationRequest request)
-        => request.Code
+    {
+        if (!string.IsNullOrWhiteSpace(request.Code))
+        {
+            return request.Code.Trim();
+        }
 
-           ?? (request.Id > 0 ? request.Id.ToString() : null);
+        if (!string.IsNullOrWhiteSpace(request.Content))
+        {
+            var match = TransactionCodeRegex.Match(request.Content);
+            if (match.Success)
+            {
+                return match.Value;
+            }
+        }
+
+        return request.Id > 0 ? request.Id.ToString() : null;
+    }
 
     private async Task<GroceryEcommerce.Domain.Entities.Sales.Order?> UpdateOrderStatusAsync(Guid orderId, CancellationToken cancellationToken)
     {

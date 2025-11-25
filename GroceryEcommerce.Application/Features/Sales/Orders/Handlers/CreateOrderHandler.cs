@@ -262,7 +262,7 @@ public class CreateOrderHandler(
                                 OrderId = order.OrderId,
                                 PaymentMethod = 3, // Bank Transfer
                                 Amount = order.TotalAmount,
-                                TransactionId = paymentResult.Data.TransactionId,
+                                TransactionId = order.OrderNumber,
                                 GatewayResponse = System.Text.Json.JsonSerializer.Serialize(paymentResult.Data),
                                 Status = 1, // Pending
                                 Currency = "VND",
@@ -275,9 +275,9 @@ public class CreateOrderHandler(
                                 // Thêm thông tin payment vào response
                                 response.PaymentUrl = paymentResult.Data.PaymentUrl;
                                 response.QrCodeUrl = paymentResult.Data.QrCodeUrl;
-                                response.PaymentTransactionId = paymentResult.Data.TransactionId;
-                                logger.LogInformation("Payment request created successfully for order: {OrderId}, TransactionId: {TransactionId}", 
-                                    order.OrderId, paymentResult.Data.TransactionId);
+                                response.PaymentTransactionId = order.OrderNumber;
+                                logger.LogInformation("Payment request created successfully for order: {OrderId}, TransactionCode: {TransactionCode}", 
+                                    order.OrderId, order.OrderNumber);
                             }
                             else
                             {
