@@ -93,11 +93,13 @@ public class ProductQuestionRepository(
     protected override EntityQuery<ProductQuestionEntity> ApplySearch(EntityQuery<ProductQuestionEntity> query, string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
-        searchTerm = searchTerm.Trim().ToLower();
-        return query.Where(
-            ProductQuestionFields.Question.Contains(searchTerm) |
-            ProductQuestionFields.Answer.Contains(searchTerm)
-        );
+        
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+            searchTerm,
+            ProductQuestionFields.Question,
+            ProductQuestionFields.Answer);
+
+        return query.Where(predicate);
     }
 
     protected override EntityQuery<ProductQuestionEntity> ApplySorting(EntityQuery<ProductQuestionEntity> query, string? sortBy, SortDirection sortDirection)

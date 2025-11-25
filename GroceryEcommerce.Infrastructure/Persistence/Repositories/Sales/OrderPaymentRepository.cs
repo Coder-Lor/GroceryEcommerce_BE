@@ -69,7 +69,9 @@ public class OrderPaymentRepository(
 
     protected override EntityQuery<OrderPaymentEntity> ApplySearch(EntityQuery<OrderPaymentEntity> query, string searchTerm)
     {
-        return query.Where(OrderPaymentFields.TransactionId.Contains(searchTerm));
+        if (string.IsNullOrWhiteSpace(searchTerm)) return query;
+
+        return query.Where(SearchPredicateBuilder.BuildContainsPredicate(searchTerm, OrderPaymentFields.TransactionId));
     }
 
     protected override EntityQuery<OrderPaymentEntity> ApplySorting(EntityQuery<OrderPaymentEntity> query, string? sortBy, SortDirection sortDirection)

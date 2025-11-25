@@ -69,12 +69,13 @@ public class ProductAttributeRepository(
     protected override EntityQuery<ProductAttributeEntity> ApplySearch(EntityQuery<ProductAttributeEntity> query, string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
-        searchTerm = searchTerm.Trim().ToLower();
+        
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+            searchTerm,
+            ProductAttributeFields.DisplayName,
+            ProductAttributeFields.Name);
 
-        return query.Where(
-            ProductAttributeFields.DisplayName.Contains(searchTerm) |
-            ProductAttributeFields.Name.Contains(searchTerm)
-        );
+        return query.Where(predicate);
     }
     
     private EntityField2? GetSortField(string? sortBy)

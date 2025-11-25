@@ -68,12 +68,13 @@ public class AuthenticationRepository(
     protected override EntityQuery<UserEntity> ApplySearch(EntityQuery<UserEntity> query, string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
-        searchTerm = searchTerm.Trim().ToLower();
         
-        return query.Where(
-            UserFields.Email.Contains(searchTerm) |
-            UserFields.Username.Contains(searchTerm)
-        );
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+            searchTerm,
+            UserFields.Email,
+            UserFields.Username);
+
+        return query.Where(predicate);
     }
     
     protected override EntityQuery<UserEntity> ApplySorting(EntityQuery<UserEntity> query, string? sortBy, SortDirection sortDirection)

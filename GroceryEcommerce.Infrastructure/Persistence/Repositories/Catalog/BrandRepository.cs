@@ -136,11 +136,13 @@ public class BrandRepository(
     protected override EntityQuery<BrandEntity> ApplySearch(EntityQuery<BrandEntity> query, string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
-        searchTerm = searchTerm.Trim().ToLower();
-        return query.Where(
-            BrandFields.Name.Contains(searchTerm) |
-            BrandFields.Slug.Contains(searchTerm) 
-        );
+        
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+            searchTerm,
+            BrandFields.Name,
+            BrandFields.Slug);
+
+        return query.Where(predicate);
     }
     
     protected override EntityQuery<BrandEntity> ApplySorting(EntityQuery<BrandEntity> query, string? sortBy, SortDirection sortDirection)

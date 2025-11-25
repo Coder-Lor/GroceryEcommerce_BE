@@ -69,7 +69,8 @@ public class PurchaseOrderRepository(
 
     protected override EntityQuery<PurchaseOrderEntity> ApplySearch(EntityQuery<PurchaseOrderEntity> query, string searchTerm)
     {
-        return query.Where(PurchaseOrderFields.OrderNumber.Contains(searchTerm));
+        if (string.IsNullOrWhiteSpace(searchTerm)) return query;
+        return query.Where(SearchPredicateBuilder.BuildContainsPredicate(searchTerm, PurchaseOrderFields.OrderNumber));
     }
 
     protected override EntityQuery<PurchaseOrderEntity> ApplySorting(EntityQuery<PurchaseOrderEntity> query, string? sortBy, SortDirection sortDirection)

@@ -88,13 +88,15 @@ public class ProductImageRepository(
     protected override EntityQuery<ProductImageEntity> ApplySearch(EntityQuery<ProductImageEntity> query, string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
-        searchTerm = searchTerm.Trim().ToLower();
-        return query.Where(
-            ProductImageFields.AltText.Contains(searchTerm) |
-            ProductImageFields.ImageUrl.Contains(searchTerm) |
-            ProductImageFields.IsPrimary.Contains(searchTerm) |
-            ProductImageFields.ProductId.Contains(searchTerm)
-        );
+
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+            searchTerm,
+            ProductImageFields.AltText,
+            ProductImageFields.ImageUrl,
+            ProductImageFields.IsPrimary,
+            ProductImageFields.ProductId);
+
+        return query.Where(predicate);
     }
 
     protected override EntityQuery<ProductImageEntity> ApplySorting(EntityQuery<ProductImageEntity> query, string? sortBy, SortDirection sortDirection)

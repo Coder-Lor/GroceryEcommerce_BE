@@ -69,13 +69,14 @@ public class AuditLogRepository(
     protected override EntityQuery<AuditLogEntity> ApplySearch(EntityQuery<AuditLogEntity> query, string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
-        searchTerm = searchTerm.Trim().ToLower();
+        
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+            searchTerm,
+            AuditLogFields.Action,
+            AuditLogFields.Entity,
+            AuditLogFields.Detail);
 
-        return query.Where(
-            AuditLogFields.Action.Contains(searchTerm) |
-            AuditLogFields.Entity.Contains(searchTerm) |
-            AuditLogFields.Detail.Contains(searchTerm)
-        );
+        return query.Where(predicate);
     }
 
     protected override EntityQuery<AuditLogEntity> ApplySorting(EntityQuery<AuditLogEntity> query, string? sortBy, SortDirection sortDirection)

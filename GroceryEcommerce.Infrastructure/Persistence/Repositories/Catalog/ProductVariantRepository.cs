@@ -104,14 +104,16 @@ public class ProductVariantRepository(
     protected override EntityQuery<ProductVariantEntity> ApplySearch(EntityQuery<ProductVariantEntity> query, string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
-        searchTerm = searchTerm.Trim().ToLower();
-        return query.Where(
-            ProductVariantFields.Name.Contains(searchTerm) |
-            ProductVariantFields.Sku.Contains(searchTerm) |
-            ProductVariantFields.ProductId.Contains(searchTerm) |
-            ProductVariantFields.Status.Contains(searchTerm) |
-            ProductVariantFields.StockQuantity.Contains(searchTerm)
-        );
+
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+            searchTerm,
+            ProductVariantFields.Name,
+            ProductVariantFields.Sku,
+            ProductVariantFields.ProductId,
+            ProductVariantFields.Status,
+            ProductVariantFields.StockQuantity);
+
+        return query.Where(predicate);
     }
 
     protected override EntityQuery<ProductVariantEntity> ApplySorting(EntityQuery<ProductVariantEntity> query, string? sortBy, SortDirection sortDirection)

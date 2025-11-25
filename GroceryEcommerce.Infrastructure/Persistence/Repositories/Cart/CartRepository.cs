@@ -67,8 +67,7 @@ public class CartRepository(
     protected override EntityQuery<ShoppingCartEntity> ApplySearch(EntityQuery<ShoppingCartEntity> query, string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
-        var term = searchTerm.Trim().ToLower();
-        return query.Where(ShoppingCartFields.SessionId.Contains(term));
+        return query.Where(SearchPredicateBuilder.BuildContainsPredicate(searchTerm, ShoppingCartFields.SessionId));
     }
 
     protected override EntityQuery<ShoppingCartEntity> ApplySorting(EntityQuery<ShoppingCartEntity> query, string? sortBy, SortDirection sortDirection)

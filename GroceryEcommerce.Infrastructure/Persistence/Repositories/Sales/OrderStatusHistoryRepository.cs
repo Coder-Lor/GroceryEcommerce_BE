@@ -69,7 +69,9 @@ public class OrderStatusHistoryRepository(
 
     protected override EntityQuery<OrderStatusHistoryEntity> ApplySearch(EntityQuery<OrderStatusHistoryEntity> query, string searchTerm)
     {
-        return query.Where(OrderStatusHistoryFields.Comment.Contains(searchTerm));
+        if (string.IsNullOrWhiteSpace(searchTerm)) return query;
+
+        return query.Where(SearchPredicateBuilder.BuildContainsPredicate(searchTerm, OrderStatusHistoryFields.Comment));
     }
 
     protected override EntityQuery<OrderStatusHistoryEntity> ApplySorting(EntityQuery<OrderStatusHistoryEntity> query, string? sortBy, SortDirection sortDirection)

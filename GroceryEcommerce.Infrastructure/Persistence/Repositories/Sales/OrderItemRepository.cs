@@ -75,10 +75,14 @@ public class OrderItemRepository(
 
     protected override EntityQuery<OrderItemEntity> ApplySearch(EntityQuery<OrderItemEntity> query, string searchTerm)
     {
-        return query.Where(
-            OrderItemFields.ProductName.Contains(searchTerm) |
-            OrderItemFields.ProductSku.Contains(searchTerm)
-        );
+        if (string.IsNullOrWhiteSpace(searchTerm)) return query;
+
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+            searchTerm,
+            OrderItemFields.ProductName,
+            OrderItemFields.ProductSku);
+
+        return query.Where(predicate);
     }
 
     protected override EntityQuery<OrderItemEntity> ApplySorting(EntityQuery<OrderItemEntity> query, string? sortBy, SortDirection sortDirection)

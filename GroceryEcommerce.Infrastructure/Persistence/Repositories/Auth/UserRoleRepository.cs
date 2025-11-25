@@ -70,11 +70,14 @@ public class UserRoleRepository(DataAccessAdapter scopedAdapter, IUnitOfWorkServ
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
         searchTerm = searchTerm.Trim();
-        return query.Where(
-            UserRoleFields.RoleName.Contains(searchTerm) |
-            UserRoleFields.Description.Contains(searchTerm) |
-            UserRoleFields.RoleId.Contains(searchTerm)
-        );
+
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+            searchTerm,
+            UserRoleFields.RoleName,
+            UserRoleFields.Description,
+            UserRoleFields.RoleId);
+
+        return query.Where(predicate);
     }
 
     protected override EntityQuery<UserRoleEntity> ApplySorting(EntityQuery<UserRoleEntity> query, string? sortBy, SortDirection sortDirection)

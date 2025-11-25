@@ -138,12 +138,16 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth
 
         protected override EntityQuery<UserEntity> ApplySearch(EntityQuery<UserEntity> query, string searchTerm)
         {
-            return query.Where(
-                UserFields.Username.Contains(searchTerm) |
-                UserFields.Email.Contains(searchTerm) |
-                UserFields.FirstName.Contains(searchTerm) |
-                UserFields.LastName.Contains(searchTerm)
-            );
+            if (string.IsNullOrWhiteSpace(searchTerm)) return query;
+
+            var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+                searchTerm,
+                UserFields.Username,
+                UserFields.Email,
+                UserFields.FirstName,
+                UserFields.LastName);
+
+            return query.Where(predicate);
         }
 
         protected override EntityQuery<UserEntity> ApplyFilter(EntityQuery<UserEntity> query, FilterCriteria filter)

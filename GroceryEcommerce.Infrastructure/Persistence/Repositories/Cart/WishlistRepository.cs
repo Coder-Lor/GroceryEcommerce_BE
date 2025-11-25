@@ -73,8 +73,7 @@ public class WishlistRepository(
     protected override EntityQuery<WishlistEntity> ApplySearch(EntityQuery<WishlistEntity> query, string searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm)) return query;
-        var term = searchTerm.Trim().ToLower();
-        return query.Where(WishlistFields.Name.Contains(term));
+        return query.Where(SearchPredicateBuilder.BuildContainsPredicate(searchTerm, WishlistFields.Name));
     }
 
     protected override EntityQuery<WishlistEntity> ApplySorting(EntityQuery<WishlistEntity> query, string? sortBy, SortDirection sortDirection)

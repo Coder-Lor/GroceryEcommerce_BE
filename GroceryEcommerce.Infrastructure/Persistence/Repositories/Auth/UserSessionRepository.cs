@@ -91,11 +91,13 @@ public class UserSessionRepository(DataAccessAdapter scopedAdapter, IUnitOfWorkS
             );
         }
 
-        return query.Where(
-            UserSessionFields.SessionToken.Contains(searchTerm) |
-            UserSessionFields.DeviceInfo.Contains(searchTerm) |
-            UserSessionFields.IpAddress.Contains(searchTerm)
-        );
+        var predicate = SearchPredicateBuilder.BuildContainsPredicate(
+            searchTerm,
+            UserSessionFields.SessionToken,
+            UserSessionFields.DeviceInfo,
+            UserSessionFields.IpAddress);
+
+        return query.Where(predicate);
     }
 
     protected override EntityQuery<UserSessionEntity> ApplySorting(EntityQuery<UserSessionEntity> query, string? sortBy, SortDirection sortDirection)

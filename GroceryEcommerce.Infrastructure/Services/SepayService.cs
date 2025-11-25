@@ -18,6 +18,10 @@ public class SepayService(HttpClient httpClient, IConfiguration configuration, I
     private readonly string? _apiSecret = configuration["Sepay:ApiSecret"];
     private readonly string _webhookUrl = configuration["Sepay:WebhookUrl"] ?? $"{configuration["BaseUrl"] ?? "https://localhost"}/api/order-payment/payment-confirmation";
     private readonly bool _isAuthenticationEnabled = !string.IsNullOrEmpty(configuration["Sepay:ApiKey"]) && !string.IsNullOrEmpty(configuration["Sepay:ApiSecret"]);
+    private readonly string _qrAccount = configuration["Sepay:QrAccount"] ?? "10002678072";
+    private readonly string _qrBank = configuration["Sepay:QrBank"] ?? "tpbank";
+    private readonly string _qrTemplate = configuration["Sepay:QrTemplate"] ?? "compact";
+    private readonly string _qrDownload = configuration["Sepay:QrDownload"] ?? "1";
 
     public async Task<Result<SepayPaymentResponse>> CreatePaymentAsync(CreateSepayPaymentRequest request)
     {
@@ -38,7 +42,7 @@ public class SepayService(HttpClient httpClient, IConfiguration configuration, I
                     Success = true,
                     Message = "Mock payment request created (authentication disabled)",
                     PaymentUrl = $"{_baseUrl}/payment/{mockTransactionId}",
-                    QrCodeUrl = $"{_baseUrl}/qr/{mockTransactionId}",
+                    QrCodeUrl = GenerateQrCodeUrl(request.Amount, request.Description ?? $"Thanh toán đơn hàng {request.OrderNumber}"),
                     TransactionId = mockTransactionId,
                     ExpiresAt = DateTime.UtcNow.AddHours(24)
                 });
@@ -125,7 +129,7 @@ public class SepayService(HttpClient httpClient, IConfiguration configuration, I
                     Success = true,
                     Message = "Payment request created successfully",
                     PaymentUrl = result.Data.PaymentUrl,
-                    QrCodeUrl = result.Data.QrCodeUrl,
+                    QrCodeUrl = GenerateQrCodeUrl(request.Amount, request.Description ?? $"Thanh toán đơn hàng {request.OrderNumber}"),
                     TransactionId = result.Data.TransactionId,
                     ExpiresAt = result.Data.ExpiresAt
                 });
@@ -243,12 +247,14 @@ public class SepayService(HttpClient httpClient, IConfiguration configuration, I
             {
                 _logger.LogWarning("Sepay authentication is not enabled. Returning mock payment response for transaction: {TransactionId}", transactionId);
                 
+                // Note: For update, we don't have amount/description in request, so we'll need to get it from existing payment
+                // For now, using empty values - this should be handled by getting existing payment data
                 return Result<SepayPaymentResponse>.Success(new SepayPaymentResponse
                 {
                     Success = true,
                     Message = "Mock payment updated (authentication disabled)",
                     PaymentUrl = $"{_baseUrl}/payment/{transactionId}",
-                    QrCodeUrl = $"{_baseUrl}/qr/{transactionId}",
+                    QrCodeUrl = GenerateQrCodeUrl(0, request.Description ?? ""),
                     TransactionId = transactionId,
                     ExpiresAt = DateTime.UtcNow.AddHours(24)
                 });
@@ -337,12 +343,14 @@ public class SepayService(HttpClient httpClient, IConfiguration configuration, I
             if (result?.Success == true && result.Data != null)
             {
                 _logger.LogInformation("Sepay payment updated successfully. TransactionId: {TransactionId}", transactionId);
+                // Note: For update, we use the description from request, but amount might need to come from existing payment
+                // Using description from request if available
                 return Result<SepayPaymentResponse>.Success(new SepayPaymentResponse
                 {
                     Success = true,
                     Message = "Payment updated successfully",
                     PaymentUrl = result.Data.PaymentUrl,
-                    QrCodeUrl = result.Data.QrCodeUrl,
+                    QrCodeUrl = GenerateQrCodeUrl(0, request.Description ?? ""),
                     TransactionId = result.Data.TransactionId,
                     ExpiresAt = result.Data.ExpiresAt
                 });
@@ -456,6 +464,21 @@ public class SepayService(HttpClient httpClient, IConfiguration configuration, I
         using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
         var hashBytes = hmac.ComputeHash(Encoding.UTF8.GetBytes(data));
         return Convert.ToHexString(hashBytes).ToLower();
+    }
+
+    private string GenerateQrCodeUrl(decimal amount, string description)
+    {
+        // Format amount: remove decimal places if it's a whole number, otherwise keep 2 decimal places
+        var amountString = amount % 1 == 0 ? ((long)amount).ToString() : amount.ToString("F2");
+        
+        // URL encode the description
+        var encodedDescription = Uri.EscapeDataString(description ?? "");
+        
+        // Build QR code URL according to the required structure
+        // https://qr.sepay.vn/img?acc=10002678072&bank=tpbank&amount=SO_TIEN&des=NOI_DUNG&template=TEMPLATE&download=DOWNLOAD
+        var qrCodeUrl = $"https://qr.sepay.vn/img?acc={_qrAccount}&bank={_qrBank}&amount={amountString}&des={encodedDescription}&template={_qrTemplate}&download={_qrDownload}";
+        
+        return qrCodeUrl;
     }
 
     // Helper classes cho API response
