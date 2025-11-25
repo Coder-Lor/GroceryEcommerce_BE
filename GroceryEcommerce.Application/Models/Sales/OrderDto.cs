@@ -28,6 +28,10 @@ public class OrderDto
     public required string ShippingFullAddress { get; set; }
     public required string BillingFullAddress { get; set; }
     public List<OrderItemDto> Items { get; set; } = new();
+    // Payment information (for bank transfer)
+    public string? PaymentUrl { get; set; }
+    public string? QrCodeUrl { get; set; }
+    public string? PaymentTransactionId { get; set; }
 }
 
 public class OrderDetailDto : OrderDto

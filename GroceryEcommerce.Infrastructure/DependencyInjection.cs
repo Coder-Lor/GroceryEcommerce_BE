@@ -405,6 +405,10 @@ public static class DependencyInjection
         services.AddScoped<IPasswordHashService, PasswordHashService>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddSingleton<ICacheService, CacheService>();
+        
+        // Register SepayService with HttpClient
+        services.AddHttpClient<ISepayService, SepayService>();
+        services.AddScoped<ISepayService, SepayService>();
 
         return services;
     }
