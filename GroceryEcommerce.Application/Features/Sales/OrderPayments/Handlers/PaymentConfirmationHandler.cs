@@ -82,8 +82,7 @@ public class PaymentConfirmationHandler (
     }
 
     private static string? DetermineTransactionId(PaymentConfirmationRequest request)
-        => request.ReferenceCode
-           ?? request.Code
+        => request.Code
            ?? (request.Id > 0 ? request.Id.ToString() : null);
 
     private async Task UpdateOrderStatusAsync(Guid orderId, CancellationToken cancellationToken)

@@ -309,7 +309,7 @@ public class OrderRepository(
             
             var lastOrder = await adapter.FetchFirstAsync(query, cancellationToken);
             
-            var orderNumber = $"ORD-{DateTime.UtcNow:yyyyMMdd}-{GenerateSequence(lastOrder?.OrderNumber)}";
+            var orderNumber = $"ORD{DateTime.UtcNow:yyyyMMdd}{GenerateSequence(lastOrder?.OrderNumber)}";
             
             Logger.LogInformation("Generated order number: {OrderNumber}", orderNumber);
             return Result<string>.Success(orderNumber);
