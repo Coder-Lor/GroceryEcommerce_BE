@@ -1,14 +1,10 @@
 using System;
-using System.Data;
 using SD.LLBLGen.Pro.ORMSupportClasses;
 
 namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Common;
 
 internal static class SearchPredicateBuilder
 {
-    private const string LowerFunctionName = "lower";
-    private const string UnaccentFunctionName = "unaccent";
-
     public static IPredicate BuildContainsPredicate(string searchTerm, params EntityField2[] fields)
     {
         if (fields is null || fields.Length == 0)
@@ -31,41 +27,12 @@ internal static class SearchPredicateBuilder
     {
         if (field.DataType != typeof(string))
         {
-            return field.Contains(searchTerm);
+            throw new InvalidOperationException("Contains predicate only supports string fields.");
         }
 
-        var normalizedField = new EntityField2(
-            $"{field.Name}_normalized",
-            BuildNormalizedExpression(field),
-            typeof(string));
-
-        var parameter = CreateLikeParameter(searchTerm);
-        var normalizedValue = BuildNormalizedExpression(parameter);
-
-        return new FieldCompareExpressionPredicate(
-            normalizedField,
-            ComparisonOperator.Like,
-            normalizedValue);
+        return field % BuildLikePattern(searchTerm);
     }
 
-    private static IExpression BuildNormalizedExpression(object source)
-    {
-        var lowerExpression = new DbFunctionCall(LowerFunctionName, new object[] { source });
-        return new DbFunctionCall(UnaccentFunctionName, new object[] { lowerExpression });
-    }
-
-    private static ParameterValue CreateLikeParameter(string searchTerm)
-    {
-        var value = $"%{searchTerm}%";
-
-        return new ParameterValue(
-            ParameterDirection.Input,
-            value,
-            value.Length,
-            null,
-            null,
-            DbType.String,
-            true);
-    }
+    private static string BuildLikePattern(string value) => $"%{value}%";
 }
 
