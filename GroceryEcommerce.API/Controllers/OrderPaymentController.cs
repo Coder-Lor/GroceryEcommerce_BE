@@ -77,10 +77,8 @@ public class OrderPaymentController(IMediator mediator) : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> PaymentConfirmation([FromBody] PaymentConfirmationRequest request)
     {
-        // Process the webhook data (e.g., update payment status in the database)
         var command = new PaymentConfirmationCommand(request);
         var result = await mediator.Send(command);
-        // Return a 200 OK response to acknowledge receipt of the webhook
         return Ok(result);
     }
 }
