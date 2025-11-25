@@ -195,10 +195,11 @@ public static class DependencyInjection
         services.AddScoped<IUserAddressRepository>(provider => {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
             var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var currentUserService = provider.GetRequiredService<ICurrentUserService>();
             var mapper = provider.GetRequiredService<IMapper>();
             var cacheService = provider.GetRequiredService<ICacheService>();
             var logger = provider.GetRequiredService<ILogger<UserAddressRepository>>();
-            return new UserAddressRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+            return new UserAddressRepository(adapter, unitOfWorkService, currentUserService, mapper, cacheService, logger);
         });
 
         services.AddScoped<IUserRoleAssignmentRepository>(provider => {

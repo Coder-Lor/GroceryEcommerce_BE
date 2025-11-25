@@ -5,6 +5,7 @@ using GroceryEcommerce.Application.Features.Catalog.Brand.Queries;
 using GroceryEcommerce.Application.Features.Catalog.Category.Commands;
 using GroceryEcommerce.Application.Features.Catalog.Category.Queries;
 using GroceryEcommerce.Application.Models.Catalog;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GroceryEcommerce.API.Controllers;
 
@@ -44,6 +45,7 @@ public class CategoryController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
 
+    [AllowAnonymous]
     [HttpGet("category-tree")]
     public async Task<ActionResult<Result<List<CategoryDto>>>> GetCategoryTree()
     {

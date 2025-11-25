@@ -9,12 +9,13 @@ using AutoMapper;
 namespace GroceryEcommerce.Application.Features.Auth.UserAddresses.Handlers;
 
 public sealed class CreateUserAddressCommandHandler(IUserAddressRepository repository, IMapper mapper)
-    : IRequestHandler<CreateUserAddressCommand, Result<UserAddress>>
+    : IRequestHandler<CreateUserAddressCommand, Result<bool>>
 {
-    public Task<Result<UserAddress>> Handle(CreateUserAddressCommand request, CancellationToken cancellationToken)
+    public Task<Result<bool>> Handle(CreateUserAddressCommand request, CancellationToken cancellationToken)
     {
         var entity = mapper.Map<UserAddress>(request);
-        return repository.CreateAsync(entity, cancellationToken);
+        var result = repository.CreateAsync(entity, cancellationToken);
+        return result;
     }
 }
 

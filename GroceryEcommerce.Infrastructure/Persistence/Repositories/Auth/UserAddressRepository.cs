@@ -17,6 +17,7 @@ namespace GroceryEcommerce.Infrastructure.Persistence.Repositories.Auth;
 public class UserAddressRepository(
     DataAccessAdapter scopedAdapter,
     IUnitOfWorkService unitOfWorkService,
+    ICurrentUserService currentUserService,
     IMapper mapper,
     ICacheService cacheService,
     ILogger<UserAddressRepository> logger 
@@ -182,7 +183,7 @@ public class UserAddressRepository(
         }
     }
 
-    public async Task<Result<UserAddress>> CreateAsync(UserAddress address, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> CreateAsync(UserAddress address, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -208,19 +209,19 @@ public class UserAddressRepository(
             }
 
             var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
-            if (!saved) return Result<UserAddress>.Failure("Failed to create address.");
+            if (!saved) return Result<bool>.Failure("Failed to create address.");
 
             // Invalidate caches
-            await CacheService.RemoveAsync($"UserAddresses_ByUser_{entity.UserId}", cancellationToken);
-            await CacheService.RemoveAsync($"UserDefaultAddress_{entity.UserId}", cancellationToken);
+            await CacheService.RemoveAsync($"UserAddresses_ByUser_{address.UserId}", cancellationToken);
+            await CacheService.RemoveAsync($"UserDefaultAddress_{address.UserId}", cancellationToken);
 
             Logger.LogInformation("User address created: {AddressId}", entity.AddressId);
-            return Result<UserAddress>.Success(Mapper.Map<UserAddress>(entity));
+            return Result<bool>.Success(saved);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error creating user address for user: {UserId}", address.UserId);
-            return Result<UserAddress>.Failure("An error occurred while creating address.");
+            return Result<bool>.Failure("An error occurred while creating address.");
         }
     }
 
@@ -256,9 +257,9 @@ public class UserAddressRepository(
             var saved = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (!saved) return Result<bool>.Failure("Failed to update address.");
 
-            await CacheService.RemoveAsync($"UserAddresses_ByUser_{entity.UserId}", cancellationToken);
-            await CacheService.RemoveAsync($"UserAddress_{entity.AddressId}", cancellationToken);
-            await CacheService.RemoveAsync($"UserDefaultAddress_{entity.UserId}", cancellationToken);
+            await CacheService.RemoveAsync($"UserAddresses_ByUser_{address.UserId}", cancellationToken);
+            await CacheService.RemoveAsync($"UserAddress_{address.AddressId}", cancellationToken);
+            await CacheService.RemoveAsync($"UserDefaultAddress_{address.UserId}", cancellationToken);
 
             Logger.LogInformation("User address updated: {AddressId}", entity.AddressId);
             return Result<bool>.Success(true);
@@ -281,9 +282,9 @@ public class UserAddressRepository(
             var deleted = await adapter.DeleteEntityAsync(entity, cancellationToken);
             if (!deleted) return Result<bool>.Failure("Address not found or failed to delete.");
 
-            await CacheService.RemoveAsync($"UserAddresses_ByUser_{entity.UserId}", cancellationToken);
+            await CacheService.RemoveAsync($"UserAddresses_ByUser_{currentUserService.GetCurrentUserId}", cancellationToken);
             await CacheService.RemoveAsync($"UserAddress_{addressId}", cancellationToken);
-            await CacheService.RemoveAsync($"UserDefaultAddress_{entity.UserId}", cancellationToken);
+            await CacheService.RemoveAsync($"UserDefaultAddress_{currentUserService.GetCurrentUserId}", cancellationToken);
 
             Logger.LogInformation("User address deleted: {AddressId}", addressId);
             return Result<bool>.Success(true);

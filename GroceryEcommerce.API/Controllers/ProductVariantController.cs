@@ -7,6 +7,7 @@ using GroceryEcommerce.Application.Models.Catalog;
 // using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Application.Models.Common;
 using GroceryEcommerce.API.Contracts.Catalog;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GroceryEcommerce.API.Controllers;
 
@@ -14,6 +15,7 @@ namespace GroceryEcommerce.API.Controllers;
 [Route("api/[controller]")]
 public class ProductVariantController(IMediator mediator) : ControllerBase
 {
+    [AllowAnonymous]
     [HttpPost("create")]
     public async Task<ActionResult<Result<bool>>> CreateVariant([FromBody] CreateProductVariantRequest request)
     {
@@ -123,6 +125,7 @@ public class ProductVariantController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
 
+    [AllowAnonymous]
     [HttpGet("by-id/{variantId}")]
     public async Task<ActionResult<Result<ProductVariantDto>>> GetById([FromRoute] Guid variantId)
     {
@@ -130,7 +133,8 @@ public class ProductVariantController(IMediator mediator) : ControllerBase
         var result = await mediator.Send(query);
         return Ok(result);
     }
-
+    
+    [AllowAnonymous]
     [HttpGet("product/{productId}")]
     public async Task<ActionResult<Result<PagedResult<ProductVariantDto>>>> GetByProduct(
         [FromRoute] Guid productId,
