@@ -105,6 +105,7 @@ public class CreateOrderRequest
     public decimal DiscountAmount { get; set; }
     public decimal TotalAmount { get; set; }
     public short PaymentMethod { get; set; }
+    public string? CouponCode { get; set; }
     public ShippingAddressDto ShippingAddress { get; set; } = new();
     public BillingAddressDto BillingAddress { get; set; } = new();
     public string? Notes { get; set; }

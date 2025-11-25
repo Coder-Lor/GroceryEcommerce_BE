@@ -4,9 +4,11 @@ using GroceryEcommerce.Application.Features.Sales.Orders.Commands;
 using GroceryEcommerce.Application.Features.Sales.Orders.Queries;
 using GroceryEcommerce.Application.Interfaces.Repositories.Auth;
 using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
+using GroceryEcommerce.Application.Interfaces.Repositories.Marketing;
 using GroceryEcommerce.Application.Interfaces.Repositories.Sales;
 using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Application.Models.Sales;
+using GroceryEcommerce.Domain.Entities.Marketing;
 using GroceryEcommerce.Domain.Entities.Sales;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -126,6 +128,8 @@ public class CreateOrderHandler(
     IOrderPaymentRepository orderPaymentRepository,
     IUserRepository userRepository,
     ISepayService sepayService,
+    IMarketingRepository marketingRepository,
+    ICouponUsageRepository couponUsageRepository,
     IConfiguration configuration,
     ILogger<CreateOrderHandler> logger
 ) : IRequestHandler<CreateOrderCommand, Result<OrderDto>>
@@ -135,6 +139,52 @@ public class CreateOrderHandler(
         try
         {
             logger.LogInformation("Creating order for user: {UserId}", request.Request.UserId);
+
+            // Validate and apply coupon if provided
+            Guid? couponId = null;
+            decimal couponDiscountAmount = 0;
+            
+            if (!string.IsNullOrWhiteSpace(request.Request.CouponCode))
+            {
+                logger.LogInformation("Validating coupon code: {CouponCode}", request.Request.CouponCode);
+                
+                // Get coupon by code
+                var couponResult = await marketingRepository.GetCouponByCodeAsync(request.Request.CouponCode, cancellationToken);
+                if (!couponResult.IsSuccess || couponResult.Data == null)
+                {
+                    return Result<OrderDto>.Failure($"Coupon code '{request.Request.CouponCode}' không tồn tại.");
+                }
+
+                var coupon = couponResult.Data;
+                couponId = coupon.CouponId;
+
+                // Validate coupon
+                var validateResult = await marketingRepository.ValidateCouponAsync(
+                    request.Request.CouponCode, 
+                    request.Request.SubTotal, 
+                    request.Request.UserId, 
+                    cancellationToken);
+                
+                if (!validateResult.IsSuccess || !validateResult.Data)
+                {
+                    return Result<OrderDto>.Failure($"Coupon code '{request.Request.CouponCode}' không hợp lệ hoặc không thể sử dụng.");
+                }
+
+                // Calculate discount from coupon
+                var discountResult = await marketingRepository.CalculateCouponDiscountAsync(
+                    request.Request.CouponCode, 
+                    request.Request.SubTotal, 
+                    cancellationToken);
+                
+                if (!discountResult.IsSuccess)
+                {
+                    return Result<OrderDto>.Failure($"Không thể tính toán discount từ coupon code '{request.Request.CouponCode}'.");
+                }
+
+                couponDiscountAmount = discountResult.Data;
+                logger.LogInformation("Coupon discount calculated: {DiscountAmount} for coupon: {CouponCode}", 
+                    couponDiscountAmount, request.Request.CouponCode);
+            }
 
             // Generate order number
             var orderNumberResult = await repository.GenerateOrderNumberAsync(cancellationToken);
@@ -149,6 +199,21 @@ public class CreateOrderHandler(
             order.OrderNumber = orderNumberResult.Data!;
             order.OrderDate = DateTime.UtcNow;
             order.CreatedAt = DateTime.UtcNow;
+            
+            // Apply coupon discount if any
+            if (couponDiscountAmount > 0)
+            {
+                order.DiscountAmount = couponDiscountAmount;
+                // Recalculate total amount with coupon discount
+                order.TotalAmount = order.SubTotal + order.TaxAmount + order.ShippingAmount - order.DiscountAmount;
+                // Ensure TotalAmount is not negative
+                if (order.TotalAmount < 0)
+                {
+                    order.TotalAmount = 0;
+                }
+                logger.LogInformation("Applied coupon discount: {DiscountAmount}, New total: {TotalAmount}", 
+                    couponDiscountAmount, order.TotalAmount);
+            }
 
             // Create order items - Load ProductName from Product and ProductSku from ProductVariant
             if (request.Request.Items != null && request.Request.Items.Any())
@@ -214,6 +279,43 @@ public class CreateOrderHandler(
             if (!orderResult.IsSuccess || orderResult.Data is null)
             {
                 return Result<OrderDto>.Failure("Order created but could not be retrieved.");
+            }
+
+            // Create CouponUsage record if coupon was applied
+            if (couponId.HasValue && couponDiscountAmount > 0)
+            {
+                try
+                {
+                    logger.LogInformation("Creating CouponUsage record for order: {OrderId}, coupon: {CouponId}", 
+                        order.OrderId, couponId.Value);
+                    
+                    var couponUsage = new CouponUsage
+                    {
+                        UsageId = Guid.NewGuid(),
+                        CouponId = couponId.Value,
+                        UserId = order.UserId,
+                        OrderId = order.OrderId,
+                        DiscountAmount = couponDiscountAmount,
+                        UsedAt = DateTime.UtcNow
+                    };
+
+                    var couponUsageResult = await couponUsageRepository.CreateAsync(couponUsage, cancellationToken);
+                    if (!couponUsageResult.IsSuccess)
+                    {
+                        logger.LogWarning("Failed to create CouponUsage record for order: {OrderId}, coupon: {CouponId}. Error: {Error}", 
+                            order.OrderId, couponId.Value, couponUsageResult.ErrorMessage);
+                        // Don't fail the order creation if coupon usage record creation fails
+                    }
+                    else
+                    {
+                        logger.LogInformation("CouponUsage record created successfully for order: {OrderId}", order.OrderId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log error but don't fail order creation
+                    logger.LogError(ex, "Error creating CouponUsage record for order: {OrderId}. Order was created successfully.", order.OrderId);
+                }
             }
 
             var response = mapper.Map<OrderDto>(orderResult.Data);
