@@ -1,4 +1,7 @@
-﻿namespace GroceryEcommerce.Application.Models.Sales;
+﻿using System.Text.Json.Serialization;
+using GroceryEcommerce.Application.Common.Converters;
+
+namespace GroceryEcommerce.Application.Models.Sales;
 
 public class OrderPaymentDto
 {
@@ -61,8 +64,9 @@ public record PaymentConfirmationRequest
     // Brand name của ngân hàng
     public string Gateway { get; set; } = string.Empty;
 
-    // Thời gian xảy ra giao dịch phía ngân hàng (format: yyyy-MM-dd HH:mm:ss)
-    public DateTime TransactionDate { get; set; }
+    // Thời gian xảy ra giao dịch phía ngân hàng (format string / unix timestamp từ SePay)
+    [JsonConverter(typeof(FlexibleDateTimeConverter))]
+    public DateTime? TransactionDate { get; set; }
 
     // Số tài khoản ngân hàng
     public string? AccountNumber { get; set; }
