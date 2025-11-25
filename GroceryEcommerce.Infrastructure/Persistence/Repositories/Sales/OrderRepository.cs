@@ -24,6 +24,9 @@ public class OrderRepository(
     ILogger<OrderRepository> logger
 ) : BasePagedRepository<OrderEntity, Order>(scopedAdapter, unitOfWorkService, mapper, cacheService, logger), ISalesRepository
 {
+    private const string OrderNumberPrefix = "OD";
+    private const int OrderNumberSuffixLength = 12;
+
     public override IReadOnlyList<SearchableField> GetSearchableFields()
     {
         return new List<SearchableField>
@@ -309,7 +312,7 @@ public class OrderRepository(
             
             var lastOrder = await adapter.FetchFirstAsync(query, cancellationToken);
             
-            var orderNumber = $"ORD{DateTime.UtcNow:yyyyMMdd}{GenerateSequence(lastOrder?.OrderNumber)}";
+            var orderNumber = $"{OrderNumberPrefix}{GenerateSuffix(lastOrder?.OrderNumber)}";
             
             Logger.LogInformation("Generated order number: {OrderNumber}", orderNumber);
             return Result<string>.Success(orderNumber);
@@ -321,22 +324,28 @@ public class OrderRepository(
         }
     }
 
-    private static string GenerateSequence(string? lastOrderNumber)
+    private static string GenerateSuffix(string? lastOrderNumber)
     {
-        if (string.IsNullOrEmpty(lastOrderNumber))
-            return "0001";
-        
-        var parts = lastOrderNumber.Split('-');
-        if (parts.Length == 3 && int.TryParse(parts[2], out var sequence))
+        var baseValueString = DateTime.UtcNow.ToString("ddMMyyyyHHmm");
+        var baseValue = long.Parse(baseValueString);
+
+        if (string.IsNullOrWhiteSpace(lastOrderNumber) || lastOrderNumber.Length <= OrderNumberPrefix.Length)
         {
-            var today = DateTime.UtcNow.ToString("yyyyMMdd");
-            if (parts[1] == today)
-            {
-                return (sequence + 1).ToString("D4");
-            }
+            return baseValueString;
         }
-        
-        return "0001";
+
+        var lastSuffix = lastOrderNumber.Substring(OrderNumberPrefix.Length);
+        if (!long.TryParse(lastSuffix, out var lastNumericValue))
+        {
+            return baseValueString;
+        }
+
+        var nextValue = lastNumericValue >= baseValue ? lastNumericValue + 1 : baseValue;
+        var normalized = nextValue.ToString();
+
+        return normalized.Length > OrderNumberSuffixLength
+            ? normalized[^OrderNumberSuffixLength..]
+            : normalized.PadLeft(OrderNumberSuffixLength, '0');
     }
 
     // Order Item operations (delegated to IOrderItemRepository but kept for backward compatibility)
