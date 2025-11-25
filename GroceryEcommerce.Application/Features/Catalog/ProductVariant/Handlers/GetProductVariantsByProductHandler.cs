@@ -31,7 +31,13 @@ public class GetProductVariantsByProductHandler(
             return Result<PagedResult<ProductVariantDto>>.Failure(result.ErrorMessage ?? "Failed to get product variants");
         }
 
-        var mapped = mapper.Map<PagedResult<ProductVariantDto>>(result.Data);
-        return Result<PagedResult<ProductVariantDto>>.Success(mapped);
+        var mappedItems = mapper.Map<List<ProductVariantDto>>(result.Data.Items);
+        var response = new PagedResult<ProductVariantDto>(
+            mappedItems,
+            result.Data.TotalCount,
+            result.Data.Page,
+            result.Data.PageSize
+        );
+        return Result<PagedResult<ProductVariantDto>>.Success(response);
     }
 }

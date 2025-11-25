@@ -232,6 +232,9 @@ public class ProductVariantRepository(
                 new QueryFactory().ProductVariant.Where(ProductVariantFields.VariantId == variantId),
                 cancellationToken
             );
+            var productId = entity.ProductId;
+            var sku = entity.Sku;
+
             if (entity is null) {
                 logger.LogWarning("Product variant not found for delete: {VariantId}", variantId);
                 return Result<bool>.Failure("Product variant not found.");
@@ -240,8 +243,8 @@ public class ProductVariantRepository(
             if (deleted) {
                 await CacheService.RemoveAsync("All_ProductVariants", cancellationToken);
                 await CacheService.RemoveAsync($"ProductVariant_{variantId}", cancellationToken);
-                await CacheService.RemoveAsync($"ProductVariants_ByProduct_{entity.ProductId}", cancellationToken);
-                await CacheService.RemoveAsync($"ProductVariants_BySku_{entity.Sku}", cancellationToken);
+                await CacheService.RemoveAsync($"ProductVariants_ByProduct_{productId}", cancellationToken);
+                await CacheService.RemoveAsync($"ProductVariants_BySku_{sku}", cancellationToken);
                 logger.LogInformation("Product variant deleted: {VariantId}", variantId);
                 return Result<bool>.Success(true);
             }
