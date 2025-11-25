@@ -115,6 +115,7 @@ public class PaymentConfirmationHandler (
 
     private static string? DetermineTransactionId(PaymentConfirmationRequest request)
         => request.Code
+
            ?? (request.Id > 0 ? request.Id.ToString() : null);
 
     private async Task<GroceryEcommerce.Domain.Entities.Sales.Order?> UpdateOrderStatusAsync(Guid orderId, CancellationToken cancellationToken)
