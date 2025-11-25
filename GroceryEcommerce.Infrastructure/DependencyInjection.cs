@@ -376,6 +376,16 @@ public static class DependencyInjection
             return new CouponUsageRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
+        services.AddScoped<IMarketingRepository>(provider => {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            var couponUsageRepository = provider.GetRequiredService<ICouponUsageRepository>();
+            var logger = provider.GetRequiredService<ILogger<MarketingRepository>>();
+            return new MarketingRepository(adapter, unitOfWorkService, mapper, cacheService, couponUsageRepository, logger);
+        });
+
         services.AddScoped<IGiftCardRepository>(provider => {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();
             var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
