@@ -485,3 +485,4 @@ $RECYCLE.BIN/
 
 **appsetting*.json
 /aspnet-dev-cert.crt
+SIGNALR_CLIENT_GUIDE.md

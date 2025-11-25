@@ -149,14 +149,30 @@ internal class Program
                 {
                     OnMessageReceived = context =>
                     {
-                        if (context.Request.Cookies.TryGetValue("accessToken", out var token))
+                        // Support JWT token from query string for SignalR
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/notificationHub"))
+                        {
+                            context.Token = accessToken;
+                        }
+                        else if (context.Request.Cookies.TryGetValue("accessToken", out var token))
+                        {
                             context.Token = token;
+                        }
                         return Task.CompletedTask;
                     }
                 };
             });
 
         builder.Services.AddAuthorization();
+        
+        // SignalR
+        builder.Services.AddSignalR();
+        
+        // Register NotificationService
+        builder.Services.AddScoped<GroceryEcommerce.Application.Interfaces.Services.INotificationService, GroceryEcommerce.API.Services.NotificationService>();
         
         // CORS
 
@@ -195,6 +211,9 @@ internal class Program
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
+        
+        // Map SignalR Hub
+        app.MapHub<GroceryEcommerce.API.Hubs.NotificationHub>("/notificationHub");
 
         app.Run();
     }
