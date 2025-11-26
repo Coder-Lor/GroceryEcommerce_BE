@@ -29,6 +29,7 @@ public class ProductController(IMediator mediator) : ControllerBase
     
     [AllowAnonymous]
     [HttpGet("paging")]
+    [Produces("application/json")]
     public async Task<ActionResult<Result<PagedResult<ProductBaseResponse>>>> GetProductsPaging([FromQuery] PagedRequest request)
     {
         var query = new GetProductsPagingQuery(request);

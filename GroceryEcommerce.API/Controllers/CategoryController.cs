@@ -14,6 +14,7 @@ namespace GroceryEcommerce.API.Controllers;
 public class CategoryController(IMediator mediator) : ControllerBase
 {
     [HttpGet("paging")  ]
+    [Produces("application/json")]
     public async Task<ActionResult<Result<PagedResult<CategoryDto>>>> GetCategoriesPaging([FromQuery] PagedRequest request)
     {
         var query = new GetCategoriesPagingQuery(request);
