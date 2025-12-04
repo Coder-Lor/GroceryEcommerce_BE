@@ -85,9 +85,9 @@ internal class Program
             c.SetTraceLevel(TraceLevel.Verbose); // bật log (optional)
         });
 
-        //RuntimeConfiguration.Tracing
-        //    .SetTraceLevel("ORMPersistenceExecution", TraceLevel.Verbose)
-        //    .SetTraceLevel("ORMPlainSQLQueryExecution", TraceLevel.Verbose);
+        RuntimeConfiguration.Tracing
+            .SetTraceLevel("ORMPersistenceExecution", TraceLevel.Verbose)
+            .SetTraceLevel("ORMPlainSQLQueryExecution", TraceLevel.Verbose);
 
         // Clean Architecture layers
         builder.Services.AddInfrastructure(builder.Configuration);
