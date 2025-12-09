@@ -117,40 +117,75 @@ public class CartRepository(
             if (cartEntity is null)
                 return Result<ShoppingCart?>.Success(null);
             
-            // Fetch ShoppingCartItems với JOIN Product (INNER JOIN) và LEFT JOIN ProductVariant
-            // Logic: Nếu không có variant (ProductVariantId == null) thì dùng Product gốc
-            //        Nếu có variant (ProductVariantId != null) thì dùng ProductVariant
+            // Lấy cart items kèm Product để phục vụ hiển thị, tránh cast lỗi
+            var itemsPrefetchPath = new PrefetchPath2(EntityType.ShoppingCartItemEntity);
+            itemsPrefetchPath.Add(ShoppingCartItemEntity.PrefetchPathProduct);
+
+            var cartItemsCollection = new EntityCollection<ShoppingCartItemEntity>();
+            var itemsQueryParams = new QueryParameters
+            {
+                CollectionToFetch = cartItemsCollection,
+                FilterToUse = new PredicateExpression(ShoppingCartItemFields.CartId == cartEntity.CartId),
+                PrefetchPathToUse = itemsPrefetchPath
+            };
+            await adapter.FetchEntityCollectionAsync(itemsQueryParams, cancellationToken);
+            var cartItems = cartItemsCollection.ToList();
             
-            // Bước 1: Fetch ShoppingCartItems với JOIN Product (INNER JOIN - luôn có ProductId)
-            var itemsQuery = qf.ShoppingCartItem
-                .Where(ShoppingCartItemFields.CartId == cartEntity.CartId)
-                .WithPath(ShoppingCartItemEntity.PrefetchPathProduct);
-            
-            var cartItemsList = await adapter.FetchQueryAsync(itemsQuery, cancellationToken);
-            var cartItems = cartItemsList.Cast<ShoppingCartItemEntity>().ToList();
-            
-            // Bước 2: Lấy danh sách ProductVariantId từ items
+            // Chuẩn bị danh sách ProductId và ProductVariantId để lấy dữ liệu bổ sung
+            var productIds = cartItems.Select(i => i.ProductId).Distinct().ToList();
             var variantIds = cartItems
                 .Where(item => item.ProductVariantId.HasValue)
                 .Select(item => item.ProductVariantId!.Value)
                 .Distinct()
                 .ToList();
-            
-            // Bước 3: Fetch ProductVariant bằng JOIN theo IDs (LEFT JOIN logic)
+
+            // Lấy ProductVariant theo VariantId
             if (variantIds.Any())
             {
                 var variantsQuery = qf.ProductVariant
                     .Where(ProductVariantFields.VariantId.In(variantIds));
                 var variantsList = await adapter.FetchQueryAsync(variantsQuery, cancellationToken);
-                var variants = variantsList.Cast<ProductVariantEntity>().ToList();
-                
-                // Gán ProductVariant vào từng item theo ProductVariantId
-                var variantsDict = variants.ToDictionary(v => v.VariantId);
+                var variantsDict = variantsList.Cast<ProductVariantEntity>().ToDictionary(v => v.VariantId);
+
                 foreach (var item in cartItems)
                 {
                     if (item.ProductVariantId.HasValue && variantsDict.TryGetValue(item.ProductVariantId.Value, out var variant))
                     {
                         item.ProductVariant = variant;
+                    }
+                }
+            }
+
+            // Lấy ảnh chính của sản phẩm để bổ sung cho variant nếu thiếu ảnh
+            var primaryImageByProduct = new Dictionary<Guid, string?>();
+            if (productIds.Any())
+            {
+                var imageFilter = new PredicateExpression(ProductImageFields.ProductId.In(productIds));
+                imageFilter.AddWithAnd(ProductImageFields.IsPrimary == true);
+
+                var primaryImagesQuery = qf.ProductImage
+                    .Where(imageFilter)
+                    .OrderBy(
+                        ProductImageFields.DisplayOrder.Ascending(),
+                        ProductImageFields.ImageId.Ascending());
+
+                var imageEntities = new EntityCollection<ProductImageEntity>();
+                await adapter.FetchQueryAsync(primaryImagesQuery, imageEntities, cancellationToken);
+
+                primaryImageByProduct = imageEntities
+                    .GroupBy(img => img.ProductId)
+                    .ToDictionary(g => g.Key, g => g.FirstOrDefault()?.ImageUrl);
+            }
+
+            foreach (var item in cartItems)
+            {
+                if (item.ProductVariant is null || string.IsNullOrWhiteSpace(item.ProductVariant.ImageUrl))
+                {
+                    if (primaryImageByProduct.TryGetValue(item.ProductId, out var url) && !string.IsNullOrWhiteSpace(url))
+                    {
+                        // Bổ sung ảnh chính cho variant khi thiếu ảnh
+                        item.ProductVariant ??= new ProductVariantEntity { VariantId = item.ProductVariantId ?? Guid.NewGuid(), ProductId = item.ProductId };
+                        item.ProductVariant.ImageUrl = url;
                     }
                 }
             }

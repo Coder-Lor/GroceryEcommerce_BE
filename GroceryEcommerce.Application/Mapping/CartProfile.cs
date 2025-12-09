@@ -36,7 +36,12 @@ public class CartProfile : Profile
         CreateMap<ShoppingCartItem, ShoppingCartItemDto>()
                   .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
                   .ForMember(dest => dest.ProductSku, opt => opt.MapFrom(src => src.Product.Sku))
-                  .ForMember(dest => dest.ProductImageUrl, opt => opt.MapFrom(src => src.Product.ProductImages.FirstOrDefault(i => i.IsPrimary) != null ? src.Product.ProductImages.FirstOrDefault(i => i.IsPrimary)!.ImageUrl : null))
+                  .ForMember(dest => dest.ProductImageUrl, opt => opt.MapFrom(src =>
+                      !string.IsNullOrWhiteSpace(src.ProductVariant != null ? src.ProductVariant.ImageUrl : null)
+                          ? src.ProductVariant!.ImageUrl
+                          : (src.Product.ProductImages != null && src.Product.ProductImages.FirstOrDefault(i => i.IsPrimary) != null
+                              ? src.Product.ProductImages.FirstOrDefault(i => i.IsPrimary)!.ImageUrl
+                              : null)))
          .ForMember(dest => dest.VariantName, opt => opt.MapFrom(src => src.ProductVariant != null ? src.ProductVariant.Name : null))
          .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.UnitPrice * src.Quantity));
 
@@ -55,7 +60,12 @@ public class CartProfile : Profile
         CreateMap<WishlistItem, WishlistItemDto>()
  .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
     .ForMember(dest => dest.ProductSku, opt => opt.MapFrom(src => src.Product.Sku))
-         .ForMember(dest => dest.ProductImageUrl, opt => opt.MapFrom(src => src.Product.ProductImages.FirstOrDefault(i => i.IsPrimary) != null ? src.Product.ProductImages.FirstOrDefault(i => i.IsPrimary)!.ImageUrl : null))
+         .ForMember(dest => dest.ProductImageUrl, opt => opt.MapFrom(src =>
+             !string.IsNullOrWhiteSpace(src.ProductVariant != null ? src.ProductVariant.ImageUrl : null)
+                 ? src.ProductVariant!.ImageUrl
+                 : (src.Product.ProductImages != null && src.Product.ProductImages.FirstOrDefault(i => i.IsPrimary) != null
+                     ? src.Product.ProductImages.FirstOrDefault(i => i.IsPrimary)!.ImageUrl
+                     : null)))
        .ForMember(dest => dest.ProductPrice, opt => opt.MapFrom(src => src.Product.Price))
       .ForMember(dest => dest.ProductDiscountPrice, opt => opt.MapFrom(src => src.Product.DiscountPrice))
    .ForMember(dest => dest.ProductStockQuantity, opt => opt.MapFrom(src => src.Product.StockQuantity))

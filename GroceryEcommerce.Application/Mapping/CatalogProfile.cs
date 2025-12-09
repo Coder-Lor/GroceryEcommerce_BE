@@ -149,6 +149,12 @@ public class CatalogProfile : Profile
         // Product Variant mappings
         CreateMap<ProductVariant, ProductVariantDto>()
             .ForMember(dest => dest.ProductVariantId, opt => opt.MapFrom(src => src.VariantId))
+            .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src =>
+                !string.IsNullOrWhiteSpace(src.ImageUrl)
+                    ? src.ImageUrl
+                    : (src.Product != null && src.Product.ProductImages != null && src.Product.ProductImages.FirstOrDefault(i => i.IsPrimary) != null
+                        ? src.Product.ProductImages.FirstOrDefault(i => i.IsPrimary)!.ImageUrl
+                        : null)))
             .ForMember(dest => dest.Attributes, opt => opt.MapFrom(src => src.VariantAttributeValues));
 
         // Add these mappings for response types
