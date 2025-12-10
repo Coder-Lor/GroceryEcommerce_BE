@@ -188,7 +188,7 @@ public class GiftCardRepository(
             await CacheService.RemoveByPatternAsync("GiftCard*", cancellationToken);
             
             Logger.LogInformation("GiftCard created: {GiftCardId}", entity.GiftCardId);
-            var domainEntity = Mapper.Map<GiftCard>(entity);
+            var domainEntity = Mapper.Map<GiftCard>(giftCard);
             return Result<GiftCard>.Success(domainEntity);
         }
         catch (Exception ex)
