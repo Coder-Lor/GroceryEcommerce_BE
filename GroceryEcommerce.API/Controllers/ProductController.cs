@@ -54,6 +54,7 @@ public class ProductController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
 
+    [AllowAnonymous]
     [HttpGet("slug/{slug}")]
     public async Task<ActionResult<Result<GetProductBySlugResponse>>> GetBySlug([FromRoute] string slug)
     {
