@@ -181,7 +181,7 @@ internal class Program
             options.AddPolicy("AllowSpecificOrigins", policy =>
             {
                 policy
-                    .WithOrigins("http://localhost:4200", "https://api/sepay.vn", "https://grocery-ecommerce.azurewebsites.net", "https://groceryecommerce.live/", "https://groceryecommerce.live/home")
+                    .WithOrigins("http://localhost:4200", "https://api/sepay.vn", "https://grocery-ecommerce.azurewebsites.net", "https://groceryecommerce.live/")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
