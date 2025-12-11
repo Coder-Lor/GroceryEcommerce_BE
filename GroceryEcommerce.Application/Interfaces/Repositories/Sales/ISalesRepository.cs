@@ -14,7 +14,7 @@ public interface ISalesRepository : IPagedRepository<Order>
     Task<Result<PagedResult<Order>>> GetOrdersByDateRangeAsync(DateTime fromDate, DateTime toDate, PagedRequest request, CancellationToken cancellationToken = default);
     Task<Result<bool>> CreateOrderAsync(Order order, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateOrderAsync(Order order, CancellationToken cancellationToken = default);
-    Task<Result<bool>> UpdateOrderStatusAsync(Guid orderId, short status, CancellationToken cancellationToken = default);
+    Task<Result<bool>> UpdateOrderStatusAsync(Guid orderId, Guid? currentUserId, short status, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateOrderPaymentStatusAsync(Guid orderId, short paymentStatus, CancellationToken cancellationToken = default);
     Task<Result<bool>> DeleteOrderAsync(Guid orderId, CancellationToken cancellationToken = default);
     Task<Result<string>> GenerateOrderNumberAsync(CancellationToken cancellationToken = default);

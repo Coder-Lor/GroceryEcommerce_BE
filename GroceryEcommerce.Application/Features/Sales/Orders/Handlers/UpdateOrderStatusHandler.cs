@@ -1,6 +1,7 @@
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Features.Sales.Orders.Commands;
 using GroceryEcommerce.Application.Interfaces.Repositories.Sales;
+using GroceryEcommerce.Application.Interfaces.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -8,6 +9,7 @@ namespace GroceryEcommerce.Application.Features.Sales.Orders.Handlers;
 
 public class UpdateOrderStatusHandler(
     ISalesRepository repository,
+    ICurrentUserService currentUserService,
     ILogger<UpdateOrderStatusHandler> logger
 ) : IRequestHandler<UpdateOrderStatusCommand, Result<bool>>
 {
@@ -17,7 +19,9 @@ public class UpdateOrderStatusHandler(
         {
             logger.LogInformation("Updating order status: {OrderId}, Status: {Status}", request.OrderId, request.Status);
 
-            var result = await repository.UpdateOrderStatusAsync(request.OrderId, request.Status, cancellationToken);
+            var currentUserId = currentUserService.GetCurrentUserId();
+
+            var result = await repository.UpdateOrderStatusAsync(request.OrderId, currentUserId, request.Status, cancellationToken);
             if (!result.IsSuccess)
             {
                 logger.LogError("Failed to update order status: {OrderId}", request.OrderId);

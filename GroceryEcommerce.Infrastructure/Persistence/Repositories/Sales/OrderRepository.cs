@@ -9,6 +9,7 @@ using GroceryEcommerce.EntityClasses;
 using GroceryEcommerce.FactoryClasses;
 using GroceryEcommerce.HelperClasses;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Common;
+using GroceryEcommerce.Infrastructure.Services;
 using Microsoft.Extensions.Logging;
 using SD.LLBLGen.Pro.ORMSupportClasses;
 using SD.LLBLGen.Pro.QuerySpec;
@@ -233,7 +234,7 @@ public class OrderRepository(
         }
     }
 
-    public async Task<Result<bool>> UpdateOrderStatusAsync(Guid orderId, short status, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> UpdateOrderStatusAsync(Guid orderId, Guid? currentUserId, short status, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -242,6 +243,7 @@ public class OrderRepository(
             
             entity.Status = status;
             entity.UpdatedAt = DateTime.UtcNow;
+            entity.CreatedBy = currentUserId;
             
             await adapter.SaveEntityAsync(entity, cancellationToken: cancellationToken);
             await CacheService.RemoveByPatternAsync("Order*", cancellationToken);
