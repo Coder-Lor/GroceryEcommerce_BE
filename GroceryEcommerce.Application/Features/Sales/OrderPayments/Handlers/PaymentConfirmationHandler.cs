@@ -1,4 +1,4 @@
-﻿using GroceryEcommerce.Application.Features.Sales.OrderPayments.Commands;
+using GroceryEcommerce.Application.Features.Sales.OrderPayments.Commands;
 using GroceryEcommerce.Application.Interfaces.Repositories.Sales;
 using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Application.Models.Notifications;
@@ -144,17 +144,35 @@ public class PaymentConfirmationHandler (
         }
 
         var order = orderResult.Data;
-        order.PaymentStatus = 2; // Paid
+        
+        // Cập nhật PaymentStatus = 2 (Paid) sử dụng method chuyên biệt
+        var updatePaymentStatusResult = await salesRepository.UpdateOrderPaymentStatusAsync(orderId, 2, cancellationToken);
+        if (!updatePaymentStatusResult.IsSuccess)
+        {
+            logger.LogError("Failed to update order payment status for orderId: {OrderId}. Error: {Error}", 
+                orderId, updatePaymentStatusResult.ErrorMessage);
+            return null;
+        }
+
+        // Nếu order đang ở trạng thái Pending (1), cập nhật thành Processing (2)
         if (order.Status == 1)
         {
-            order.Status = 2; // Processing
+            var updateStatusResult = await salesRepository.UpdateOrderStatusAsync(orderId, null, 2, cancellationToken);
+            if (!updateStatusResult.IsSuccess)
+            {
+                logger.LogWarning("Failed to update order status to Processing for orderId: {OrderId}. Error: {Error}", 
+                    orderId, updateStatusResult.ErrorMessage);
+                // Không return null vì PaymentStatus đã được cập nhật thành công
+            }
         }
-        order.UpdatedAt = DateTime.UtcNow;
 
-        var updateOrderResult = await salesRepository.UpdateOrderAsync(order, cancellationToken);
-        if (!updateOrderResult.IsSuccess)
+        // Lấy lại order đã được cập nhật để return
+        var updatedOrderResult = await salesRepository.GetOrderByIdAsync(orderId, cancellationToken);
+        if (updatedOrderResult.IsSuccess && updatedOrderResult.Data != null)
         {
-            logger.LogError("Failed to update order status for orderId: {OrderId}", orderId);
+            logger.LogInformation("Order status updated successfully for orderId: {OrderId}, PaymentStatus: {PaymentStatus}, Status: {Status}", 
+                orderId, updatedOrderResult.Data.PaymentStatus, updatedOrderResult.Data.Status);
+            return updatedOrderResult.Data;
         }
 
         return order;
