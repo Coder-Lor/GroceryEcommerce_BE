@@ -136,6 +136,22 @@ public class OrderRepository(
         return OrderFields.OrderId.In(ids);
     }
 
+    // Override GetPagedAsync to load User navigation property
+    public override async Task<Result<PagedResult<Order>>> GetPagedAsync(
+        PagedRequest request,
+        PrefetchPath2? prefetchPath = null,
+        CancellationToken cancellationToken = default)
+    {
+        // Tạo PrefetchPath để load User và CreatedByUser
+        var orderPrefetchPath = prefetchPath ?? new PrefetchPath2(EntityType.OrderEntity);
+        
+        // Luôn thêm User prefetch (sẽ không duplicate nếu đã có)
+        orderPrefetchPath.Add(OrderEntity.PrefetchPathUser); // Load User (customer)
+        orderPrefetchPath.Add(OrderEntity.PrefetchPathUser1); // Load CreatedByUser
+        
+        return await base.GetPagedAsync(request, orderPrefetchPath, cancellationToken);
+    }
+
     // ISalesRepository implementation
     public async Task<Result<PagedResult<Order>>> GetOrdersByUserIdAsync(Guid userId, PagedRequest request, CancellationToken cancellationToken = default)
     {
