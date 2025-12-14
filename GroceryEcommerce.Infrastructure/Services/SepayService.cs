@@ -18,8 +18,8 @@ public class SepayService(HttpClient httpClient, IConfiguration configuration, I
     private readonly string? _apiSecret = configuration["Sepay:ApiSecret"];
     private readonly string _webhookUrl = configuration["Sepay:WebhookUrl"] ?? $"{configuration["BaseUrl"] ?? "https://localhost"}/api/order-payment/payment-confirmation";
     private readonly bool _isAuthenticationEnabled = !string.IsNullOrEmpty(configuration["Sepay:ApiKey"]) && !string.IsNullOrEmpty(configuration["Sepay:ApiSecret"]);
-    private readonly string _qrAccount = configuration["Sepay:QrAccount"] ?? "10002678072";
-    private readonly string _qrBank = configuration["Sepay:QrBank"] ?? "tpbank";
+    private readonly string _qrAccount = configuration["Sepay:QrAccount"] ?? "0333961796";
+    private readonly string _qrBank = configuration["Sepay:QrBank"] ?? "mbbank";
     private readonly string _qrTemplate = configuration["Sepay:QrTemplate"] ?? "compact";
     private readonly string _qrDownload = configuration["Sepay:QrDownload"] ?? "1";
 
