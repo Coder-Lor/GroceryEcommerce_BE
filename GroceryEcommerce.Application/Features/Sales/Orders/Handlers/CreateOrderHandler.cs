@@ -7,12 +7,10 @@ using GroceryEcommerce.Application.Interfaces.Repositories.Marketing;
 using GroceryEcommerce.Application.Interfaces.Repositories.Sales;
 using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Application.Models.Sales;
-using GroceryEcommerce.Domain.Entities.Marketing;
 using GroceryEcommerce.Domain.Entities.Sales;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Linq;
 
 namespace GroceryEcommerce.Application.Features.Sales.Orders.Handlers;
 
@@ -24,8 +22,7 @@ public class CreateOrderHandler(
     IOrderPaymentRepository orderPaymentRepository,
     IUserRepository userRepository,
     ISepayService sepayService,
-    IMarketingRepository marketingRepository,
-    ICouponUsageRepository couponUsageRepository,
+    IGiftCardRepository giftCardRepository,
     IConfiguration configuration,
     ILogger<CreateOrderHandler> logger
 ) : IRequestHandler<CreateOrderCommand, Result<OrderDto>>
@@ -36,50 +33,39 @@ public class CreateOrderHandler(
         {
             logger.LogInformation("Creating order for user: {UserId}", request.Request.UserId);
 
-            // Validate and apply coupon if provided
-            Guid? couponId = null;
-            decimal couponDiscountAmount = 0;
+            // Validate and apply gift card if provided
+            string? giftCardCode = null;
+            decimal giftCardDiscountAmount = 0;
             
             if (!string.IsNullOrWhiteSpace(request.Request.CouponCode))
             {
-                logger.LogInformation("Validating coupon code: {CouponCode}", request.Request.CouponCode);
+                giftCardCode = request.Request.CouponCode;
+                logger.LogInformation("Validating gift card code: {GiftCardCode}", giftCardCode);
                 
-                // Get coupon by code
-                var couponResult = await marketingRepository.GetCouponByCodeAsync(request.Request.CouponCode, cancellationToken);
-                if (!couponResult.IsSuccess || couponResult.Data == null)
-                {
-                    return Result<OrderDto>.Failure($"Coupon code '{request.Request.CouponCode}' không tồn tại.");
-                }
-
-                var coupon = couponResult.Data;
-                couponId = coupon.CouponId;
-
-                // Validate coupon
-                var validateResult = await marketingRepository.ValidateCouponAsync(
-                    request.Request.CouponCode, 
-                    request.Request.SubTotal, 
-                    request.Request.UserId, 
-                    cancellationToken);
-                
+                // Validate gift card
+                var validateResult = await giftCardRepository.IsGiftCardValidAsync(giftCardCode, cancellationToken);
                 if (!validateResult.IsSuccess || !validateResult.Data)
                 {
-                    return Result<OrderDto>.Failure($"Coupon code '{request.Request.CouponCode}' không hợp lệ hoặc không thể sử dụng.");
+                    return Result<OrderDto>.Failure($"Gift card code '{giftCardCode}' không hợp lệ hoặc không thể sử dụng.");
                 }
 
-                // Calculate discount from coupon
-                var discountResult = await marketingRepository.CalculateCouponDiscountAsync(
-                    request.Request.CouponCode, 
-                    request.Request.SubTotal, 
-                    cancellationToken);
-                
-                if (!discountResult.IsSuccess)
+                // Get gift card balance
+                var balanceResult = await giftCardRepository.GetRemainingBalanceAsync(giftCardCode, cancellationToken);
+                if (!balanceResult.IsSuccess)
                 {
-                    return Result<OrderDto>.Failure($"Không thể tính toán discount từ coupon code '{request.Request.CouponCode}'.");
+                    return Result<OrderDto>.Failure($"Không thể lấy số dư của gift card '{giftCardCode}'.");
                 }
 
-                couponDiscountAmount = discountResult.Data;
-                logger.LogInformation("Coupon discount calculated: {DiscountAmount} for coupon: {CouponCode}", 
-                    couponDiscountAmount, request.Request.CouponCode);
+                var giftCardBalance = balanceResult.Data;
+                
+                // Calculate total amount before discount
+                var totalBeforeDiscount = request.Request.SubTotal + request.Request.TaxAmount + request.Request.ShippingAmount;
+                
+                // Use gift card balance, but not more than total amount
+                giftCardDiscountAmount = Math.Min(giftCardBalance, totalBeforeDiscount);
+                
+                logger.LogInformation("Gift card discount calculated: {DiscountAmount} (balance: {Balance}, total: {Total}) for gift card: {GiftCardCode}", 
+                    giftCardDiscountAmount, giftCardBalance, totalBeforeDiscount, giftCardCode);
             }
 
             // Generate order number
@@ -96,23 +82,23 @@ public class CreateOrderHandler(
             order.OrderDate = DateTime.UtcNow;
             order.CreatedAt = DateTime.UtcNow;
             
-            // Apply coupon discount if any
-            if (couponDiscountAmount > 0)
+            // Apply gift card discount if any
+            if (giftCardDiscountAmount > 0)
             {
-                order.DiscountAmount = couponDiscountAmount;
-                // Recalculate total amount with coupon discount
+                order.DiscountAmount = giftCardDiscountAmount;
+                // Recalculate total amount with gift card discount
                 order.TotalAmount = order.SubTotal + order.TaxAmount + order.ShippingAmount - order.DiscountAmount;
                 // Ensure TotalAmount is not negative
                 if (order.TotalAmount < 0)
                 {
                     order.TotalAmount = 0;
                 }
-                logger.LogInformation("Applied coupon discount: {DiscountAmount}, New total: {TotalAmount}", 
-                    couponDiscountAmount, order.TotalAmount);
+                logger.LogInformation("Applied gift card discount: {DiscountAmount}, New total: {TotalAmount}", 
+                    giftCardDiscountAmount, order.TotalAmount);
             }
 
             // Create order items - Load ProductName from Product and ProductSku from ProductVariant
-            if (request.Request.Items != null && request.Request.Items.Any())
+            if (request.Request.Items.Any())
             {
                 var orderItems = new List<OrderItem>();
                 foreach (var item in request.Request.Items)
@@ -177,47 +163,39 @@ public class CreateOrderHandler(
                 return Result<OrderDto>.Failure("Order created but could not be retrieved.");
             }
 
-            // Create CouponUsage record if coupon was applied
-            if (couponId.HasValue && couponDiscountAmount > 0)
+            // Redeem gift card if gift card was applied
+            if (!string.IsNullOrWhiteSpace(giftCardCode) && giftCardDiscountAmount > 0)
             {
                 try
                 {
-                    logger.LogInformation("Creating CouponUsage record for order: {OrderId}, coupon: {CouponId}", 
-                        order.OrderId, couponId.Value);
+                    logger.LogInformation("Redeeming gift card for order: {OrderId}, gift card code: {GiftCardCode}, amount: {Amount}", 
+                        order.OrderId, giftCardCode, giftCardDiscountAmount);
                     
-                    var couponUsage = new CouponUsage
+                    var redeemResult = await giftCardRepository.RedeemGiftCardAsync(giftCardCode, giftCardDiscountAmount, cancellationToken);
+                    if (!redeemResult.IsSuccess)
                     {
-                        UsageId = Guid.NewGuid(),
-                        CouponId = couponId.Value,
-                        UserId = order.UserId,
-                        OrderId = order.OrderId,
-                        DiscountAmount = couponDiscountAmount,
-                        UsedAt = DateTime.UtcNow
-                    };
-
-                    var couponUsageResult = await couponUsageRepository.CreateAsync(couponUsage, cancellationToken);
-                    if (!couponUsageResult.IsSuccess)
-                    {
-                        logger.LogWarning("Failed to create CouponUsage record for order: {OrderId}, coupon: {CouponId}. Error: {Error}", 
-                            order.OrderId, couponId.Value, couponUsageResult.ErrorMessage);
-                        // Don't fail the order creation if coupon usage record creation fails
+                        logger.LogWarning("Failed to redeem gift card for order: {OrderId}, gift card code: {GiftCardCode}. Error: {Error}", 
+                            order.OrderId, giftCardCode, redeemResult.ErrorMessage);
+                        // Don't fail the order creation if gift card redemption fails
                     }
                     else
                     {
-                        logger.LogInformation("CouponUsage record created successfully for order: {OrderId}", order.OrderId);
+                        logger.LogInformation("Gift card redeemed successfully for order: {OrderId}, gift card code: {GiftCardCode}, amount: {Amount}", 
+                            order.OrderId, giftCardCode, giftCardDiscountAmount);
                     }
                 }
                 catch (Exception ex)
                 {
                     // Log error but don't fail order creation
-                    logger.LogError(ex, "Error creating CouponUsage record for order: {OrderId}. Order was created successfully.", order.OrderId);
+                    logger.LogError(ex, "Error redeeming gift card for order: {OrderId}, gift card code: {GiftCardCode}. Order was created successfully.", 
+                        order.OrderId, giftCardCode);
                 }
             }
 
             var response = mapper.Map<OrderDto>(orderResult.Data);
 
             // Nếu phương thức thanh toán là chuyển khoản (PaymentMethod = 3), tạo payment request với Sepay
-            // Nhưng nếu TotalAmount = 0 (sau khi áp mã giảm giá), không cần gọi Sepay, đánh dấu đã thanh toán luôn
+            // Nhưng nếu TotalAmount = 0 (sau khi áp gift card), không cần gọi Sepay, đánh dấu đã thanh toán luôn
             if (order.PaymentMethod == 3) // 3 = Bank Transfer
             {
                 // Nếu tổng tiền = 0, đánh dấu đã thanh toán luôn, không cần gọi Sepay
