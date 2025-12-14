@@ -18,7 +18,9 @@ public class MarketingProfile : Profile
 
         CreateMap<CreateCouponRequest, Coupon>()
             .ForMember(dest => dest.CouponId, opt => opt.MapFrom(src => Guid.NewGuid()))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
+            .ForMember(dest => dest.ValidFrom, opt => opt.MapFrom(src => NormalizeValidFrom(src.ValidFrom)))
+            .ForMember(dest => dest.ValidTo, opt => opt.MapFrom(src => NormalizeValidTo(src.ValidTo, src.ValidFrom)));
 
         CreateMap<UpdateCouponRequest, Coupon>()
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
@@ -150,8 +152,61 @@ public class MarketingProfile : Profile
         if (coupon.Status != 1) return "Coupon is not active";
         if (coupon.ValidFrom > DateTime.UtcNow) return "Coupon is not yet valid";
         if (coupon.ValidTo < DateTime.UtcNow) return "Coupon has expired";
-        if (coupon.UsageLimit.HasValue && coupon.UsageCount >= coupon.UsageLimit.Value) return "Coupon usage limit reached";
+        // Note: UsageCount check removed because it's not updated from database
+        // Real validation is done in ValidateCouponAsync which queries from CouponUsage table
         return null;
+    }
+
+    private static DateTime NormalizeValidFrom(DateTime validFrom)
+    {
+        var now = DateTime.UtcNow;
+        // Nếu ValidFrom trong quá khứ, set về hiện tại để voucher có thể sử dụng ngay
+        // Nếu ValidFrom trong tương lai, giữ nguyên (cho phép tạo voucher trước khi phát hành)
+        if (validFrom < now)
+        {
+            return now;
+        }
+        // Đảm bảo datetime là UTC (nếu client gửi local time, convert sang UTC)
+        if (validFrom.Kind == DateTimeKind.Local)
+        {
+            return validFrom.ToUniversalTime();
+        }
+        if (validFrom.Kind == DateTimeKind.Unspecified)
+        {
+            // Giả định là UTC nếu không có timezone info
+            return DateTime.SpecifyKind(validFrom, DateTimeKind.Utc);
+        }
+        return validFrom;
+    }
+
+    private static DateTime NormalizeValidTo(DateTime validTo, DateTime validFrom)
+    {
+        var normalizedValidFrom = NormalizeValidFrom(validFrom);
+        
+        // Đảm bảo datetime là UTC trước khi so sánh
+        DateTime normalizedValidTo;
+        if (validTo.Kind == DateTimeKind.Local)
+        {
+            normalizedValidTo = validTo.ToUniversalTime();
+        }
+        else if (validTo.Kind == DateTimeKind.Unspecified)
+        {
+            // Giả định là UTC nếu không có timezone info
+            normalizedValidTo = DateTime.SpecifyKind(validTo, DateTimeKind.Utc);
+        }
+        else
+        {
+            normalizedValidTo = validTo;
+        }
+        
+        // Đảm bảo ValidTo phải sau ValidFrom
+        if (normalizedValidTo <= normalizedValidFrom)
+        {
+            // Nếu ValidTo không hợp lệ, set nó là 1 năm sau ValidFrom
+            return normalizedValidFrom.AddYears(1);
+        }
+        
+        return normalizedValidTo;
     }
 
     private static string GetGiftCardValidationMessage(GiftCard giftCard)
