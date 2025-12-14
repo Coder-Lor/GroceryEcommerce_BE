@@ -124,10 +124,22 @@ public class MarketingRepository(
     {
         try
         {
+            // Trim and normalize code for comparison
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                return Result<Coupon?>.Success(null);
+            }
+            
+            var normalizedCode = code.Trim();
             var adapter = GetAdapter();
             var qf = new QueryFactory();
+            
+            // Use case-insensitive comparison using lower() function
+            var codeField = (EntityField2)CouponFields.Code.Clone();
+            codeField.ExpressionToApply = new DbFunctionCall("lower({0})", new object[] { CouponFields.Code });
+            
             var query = qf.Create<CouponEntity>()
-                .Where(CouponFields.Code == code);
+                .Where(codeField == normalizedCode.ToLowerInvariant());
             
             var entity = await adapter.FetchFirstAsync(query, cancellationToken);
             if (entity == null)

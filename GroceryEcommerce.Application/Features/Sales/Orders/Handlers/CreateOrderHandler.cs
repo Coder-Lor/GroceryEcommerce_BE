@@ -217,100 +217,142 @@ public class CreateOrderHandler(
             var response = mapper.Map<OrderDto>(orderResult.Data);
 
             // Nếu phương thức thanh toán là chuyển khoản (PaymentMethod = 3), tạo payment request với Sepay
+            // Nhưng nếu TotalAmount = 0 (sau khi áp mã giảm giá), không cần gọi Sepay, đánh dấu đã thanh toán luôn
             if (order.PaymentMethod == 3) // 3 = Bank Transfer
             {
-                try
+                // Nếu tổng tiền = 0, đánh dấu đã thanh toán luôn, không cần gọi Sepay
+                if (order.TotalAmount == 0)
                 {
-                    logger.LogInformation("Creating payment request for bank transfer order: {OrderId}", order.OrderId);
-
-                    // Lấy thông tin user
-                    var userResult = await userRepository.GetByIdAsync(order.UserId, cancellationToken);
-                    if (!userResult.IsSuccess || userResult.Data == null)
+                    try
                     {
-                        logger.LogWarning("User not found for order: {OrderId}, but order was created. Payment request will not be created.", order.OrderId);
-                    }
-                    else
-                    {
-                        var user = userResult.Data;
-                        var customerName = $"{user.FirstName} {user.LastName}".Trim();
-                        if (string.IsNullOrEmpty(customerName))
+                        logger.LogInformation("Order total amount is 0, marking payment as completed without calling Sepay for order: {OrderId}", order.OrderId);
+                        
+                        var freeOrderPayment = new OrderPayment
                         {
-                            customerName = user.Username;
-                        }
-
-                        // Tạo payment request với Sepay
-                        var paymentRequest = new CreateSepayPaymentRequest
-                        {
+                            PaymentId = Guid.NewGuid(),
                             OrderId = order.OrderId,
-                            OrderNumber = order.OrderNumber,
-                            Amount = order.TotalAmount,
-                            Description = $"Thanh toán đơn hàng {order.OrderNumber}",
-                            CustomerName = customerName,
-                            CustomerEmail = user.Email,
-                            CustomerPhone = user.PhoneNumber,
-                            ReturnUrl = $"{configuration["BaseUrl"] ?? "https://localhost"}/order/{order.OrderId}/success",
-                            CancelUrl = $"{configuration["BaseUrl"] ?? "https://localhost"}/order/{order.OrderId}/cancel"
+                            PaymentMethod = 3, // Bank Transfer
+                            Amount = 0,
+                            TransactionId = order.OrderNumber,
+                            GatewayResponse = "Order total is 0 after discount, payment automatically completed",
+                            Status = 2, // Completed
+                            Currency = "VND",
+                            PaidAt = DateTime.UtcNow,
+                            CreatedAt = DateTime.UtcNow
                         };
 
-                        var paymentResult = await sepayService.CreatePaymentAsync(paymentRequest);
-                        if (paymentResult.IsSuccess && paymentResult.Data != null)
+                        var createPaymentResult = await orderPaymentRepository.CreateAsync(freeOrderPayment, cancellationToken);
+                        if (createPaymentResult.IsSuccess)
                         {
-                            // Tạo OrderPayment record
-                            var orderPayment = new OrderPayment
-                            {
-                                PaymentId = Guid.NewGuid(),
-                                OrderId = order.OrderId,
-                                PaymentMethod = 3, // Bank Transfer
-                                Amount = order.TotalAmount,
-                                TransactionId = order.OrderNumber,
-                                GatewayResponse = System.Text.Json.JsonSerializer.Serialize(paymentResult.Data),
-                                Status = 1, // Pending
-                                Currency = "VND",
-                                CreatedAt = DateTime.UtcNow
-                            };
-
-                            var createPaymentResult = await orderPaymentRepository.CreateAsync(orderPayment, cancellationToken);
-                            if (createPaymentResult.IsSuccess)
-                            {
-                                // Thêm thông tin payment vào response
-                                response.PaymentUrl = paymentResult.Data.PaymentUrl;
-                                response.QrCodeUrl = paymentResult.Data.QrCodeUrl;
-                                response.PaymentTransactionId = order.OrderNumber;
-                                logger.LogInformation("Payment request created successfully for order: {OrderId}, TransactionCode: {TransactionCode}", 
-                                    order.OrderId, order.OrderNumber);
-                            }
-                            else
-                            {
-                                logger.LogWarning("Order payment record creation failed for order: {OrderId}. Error: {Error}", 
-                                    order.OrderId, createPaymentResult.ErrorMessage);
-                            }
+                            logger.LogInformation("Free order payment record created successfully for order: {OrderId}", order.OrderId);
                         }
                         else
                         {
-                            // Tạo payment record với status failed nếu payment creation fail
-                            var failedPayment = new OrderPayment
-                            {
-                                PaymentId = Guid.NewGuid(),
-                                OrderId = order.OrderId,
-                                PaymentMethod = 3, // Bank Transfer
-                                Amount = order.TotalAmount,
-                                TransactionId = null,
-                                GatewayResponse = paymentResult.ErrorMessage,
-                                Status = 3, // Failed
-                                Currency = "VND",
-                                CreatedAt = DateTime.UtcNow
-                            };
-                            
-                            await orderPaymentRepository.CreateAsync(failedPayment, cancellationToken);
-                            logger.LogWarning("Sepay payment request creation failed for order: {OrderId}, Error: {Error}. Order payment record created with failed status.", 
-                                order.OrderId, paymentResult.ErrorMessage);
+                            logger.LogWarning("Failed to create free order payment record for order: {OrderId}. Error: {Error}", 
+                                order.OrderId, createPaymentResult.ErrorMessage);
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Error creating free order payment record for order: {OrderId}", order.OrderId);
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    // Log lỗi nhưng không fail order creation
-                    logger.LogError(ex, "Error creating payment request for order: {OrderId}. Order was created successfully but payment request failed.", order.OrderId);
+                    // Tổng tiền > 0, gọi Sepay như bình thường
+                    try
+                    {
+                        logger.LogInformation("Creating payment request for bank transfer order: {OrderId}", order.OrderId);
+
+                        // Lấy thông tin user
+                        var userResult = await userRepository.GetByIdAsync(order.UserId, cancellationToken);
+                        if (!userResult.IsSuccess || userResult.Data == null)
+                        {
+                            logger.LogWarning("User not found for order: {OrderId}, but order was created. Payment request will not be created.", order.OrderId);
+                        }
+                        else
+                        {
+                            var user = userResult.Data;
+                            var customerName = $"{user.FirstName} {user.LastName}".Trim();
+                            if (string.IsNullOrEmpty(customerName))
+                            {
+                                customerName = user.Username;
+                            }
+
+                            // Tạo payment request với Sepay
+                            var paymentRequest = new CreateSepayPaymentRequest
+                            {
+                                OrderId = order.OrderId,
+                                OrderNumber = order.OrderNumber,
+                                Amount = order.TotalAmount,
+                                Description = $"Thanh toán đơn hàng {order.OrderNumber}",
+                                CustomerName = customerName,
+                                CustomerEmail = user.Email,
+                                CustomerPhone = user.PhoneNumber,
+                                ReturnUrl = $"{configuration["BaseUrl"] ?? "https://localhost"}/order/{order.OrderId}/success",
+                                CancelUrl = $"{configuration["BaseUrl"] ?? "https://localhost"}/order/{order.OrderId}/cancel"
+                            };
+
+                            var paymentResult = await sepayService.CreatePaymentAsync(paymentRequest);
+                            if (paymentResult.IsSuccess && paymentResult.Data != null)
+                            {
+                                // Tạo OrderPayment record
+                                var orderPayment = new OrderPayment
+                                {
+                                    PaymentId = Guid.NewGuid(),
+                                    OrderId = order.OrderId,
+                                    PaymentMethod = 3, // Bank Transfer
+                                    Amount = order.TotalAmount,
+                                    TransactionId = order.OrderNumber,
+                                    GatewayResponse = System.Text.Json.JsonSerializer.Serialize(paymentResult.Data),
+                                    Status = 1, // Pending
+                                    Currency = "VND",
+                                    CreatedAt = DateTime.UtcNow
+                                };
+
+                                var createPaymentResult = await orderPaymentRepository.CreateAsync(orderPayment, cancellationToken);
+                                if (createPaymentResult.IsSuccess)
+                                {
+                                    // Thêm thông tin payment vào response
+                                    response.PaymentUrl = paymentResult.Data.PaymentUrl;
+                                    response.QrCodeUrl = paymentResult.Data.QrCodeUrl;
+                                    response.PaymentTransactionId = order.OrderNumber;
+                                    logger.LogInformation("Payment request created successfully for order: {OrderId}, TransactionCode: {TransactionCode}", 
+                                        order.OrderId, order.OrderNumber);
+                                }
+                                else
+                                {
+                                    logger.LogWarning("Order payment record creation failed for order: {OrderId}. Error: {Error}", 
+                                        order.OrderId, createPaymentResult.ErrorMessage);
+                                }
+                            }
+                            else
+                            {
+                                // Tạo payment record với status failed nếu payment creation fail
+                                var failedPayment = new OrderPayment
+                                {
+                                    PaymentId = Guid.NewGuid(),
+                                    OrderId = order.OrderId,
+                                    PaymentMethod = 3, // Bank Transfer
+                                    Amount = order.TotalAmount,
+                                    TransactionId = null,
+                                    GatewayResponse = paymentResult.ErrorMessage,
+                                    Status = 3, // Failed
+                                    Currency = "VND",
+                                    CreatedAt = DateTime.UtcNow
+                                };
+                                
+                                await orderPaymentRepository.CreateAsync(failedPayment, cancellationToken);
+                                logger.LogWarning("Sepay payment request creation failed for order: {OrderId}, Error: {Error}. Order payment record created with failed status.", 
+                                    order.OrderId, paymentResult.ErrorMessage);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log lỗi nhưng không fail order creation
+                        logger.LogError(ex, "Error creating payment request for order: {OrderId}. Order was created successfully but payment request failed.", order.OrderId);
+                    }
                 }
             }
 
