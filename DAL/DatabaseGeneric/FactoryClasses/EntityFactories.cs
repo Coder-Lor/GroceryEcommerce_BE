@@ -284,6 +284,16 @@ namespace GroceryEcommerce.FactoryClasses
 		protected override IEntity2 CreateImpl(IEntityFields2 fields) { return new ProductVariantEntity(fields); }
 	}
 
+	/// <summary>Factory to create new, empty ShopEntity objects.</summary>
+	[Serializable]
+	public partial class ShopEntityFactory : EntityFactoryBase2<ShopEntity> 
+	{
+		/// <summary>CTor</summary>
+		public ShopEntityFactory() : base("ShopEntity", GroceryEcommerce.EntityType.ShopEntity, false) { }
+		/// <inheritdoc/>
+		protected override IEntity2 CreateImpl(IEntityFields2 fields) { return new ShopEntity(fields); }
+	}
+
 	/// <summary>Factory to create new, empty PurchaseOrderEntity objects.</summary>
 	[Serializable]
 	public partial class PurchaseOrderEntityFactory : EntityFactoryBase2<PurchaseOrderEntity> 
@@ -585,6 +595,8 @@ namespace GroceryEcommerce.FactoryClasses
 					return new ProductTagAssignmentEntityFactory();
 				case GroceryEcommerce.EntityType.ProductVariantEntity:
 					return new ProductVariantEntityFactory();
+				case GroceryEcommerce.EntityType.ShopEntity:
+					return new ShopEntityFactory();
 				case GroceryEcommerce.EntityType.PurchaseOrderEntity:
 					return new PurchaseOrderEntityFactory();
 				case GroceryEcommerce.EntityType.PurchaseOrderItemEntity:

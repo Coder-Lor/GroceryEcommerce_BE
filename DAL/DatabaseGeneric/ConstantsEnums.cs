@@ -58,6 +58,8 @@ namespace GroceryEcommerce
 		ProductTagAssignmentEntity,
 		///<summary>ProductVariant</summary>
 		ProductVariantEntity,
+		///<summary>Shop</summary>
+		ShopEntity,
 		///<summary>PurchaseOrder</summary>
 		PurchaseOrderEntity,
 		///<summary>PurchaseOrderItem</summary>

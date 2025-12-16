@@ -43,6 +43,7 @@ namespace GroceryEcommerce.EntityClasses
 		private EntityCollection<ProductEntity> _products1;
 		private EntityCollection<ProductQuestionEntity> _productQuestions;
 		private EntityCollection<ProductQuestionEntity> _productQuestions1;
+		private EntityCollection<ShopEntity> _shops;
 		private EntityCollection<PurchaseOrderEntity> _purchaseOrders;
 		private EntityCollection<CouponEntity> _coupons;
 		private EntityCollection<CouponEntity> _coupons1;
@@ -101,6 +102,8 @@ namespace GroceryEcommerce.EntityClasses
 			public static readonly string ProductQuestions = "ProductQuestions";
 			/// <summary>Member name ProductQuestions1</summary>
 			public static readonly string ProductQuestions1 = "ProductQuestions1";
+			/// <summary>Member name Shops</summary>
+			public static readonly string Shops = "Shops";
 			/// <summary>Member name PurchaseOrders</summary>
 			public static readonly string PurchaseOrders = "PurchaseOrders";
 			/// <summary>Member name Coupons</summary>
@@ -156,6 +159,7 @@ namespace GroceryEcommerce.EntityClasses
 				AddNavigatorMetaData<UserEntity, EntityCollection<ProductEntity>>("Products1", a => a._products1, (a, b) => a._products1 = b, a => a.Products1, () => new UserRelations().ProductEntityUsingUpdatedBy, typeof(ProductEntity), (int)GroceryEcommerce.EntityType.ProductEntity);
 				AddNavigatorMetaData<UserEntity, EntityCollection<ProductQuestionEntity>>("ProductQuestions", a => a._productQuestions, (a, b) => a._productQuestions = b, a => a.ProductQuestions, () => new UserRelations().ProductQuestionEntityUsingAnsweredBy, typeof(ProductQuestionEntity), (int)GroceryEcommerce.EntityType.ProductQuestionEntity);
 				AddNavigatorMetaData<UserEntity, EntityCollection<ProductQuestionEntity>>("ProductQuestions1", a => a._productQuestions1, (a, b) => a._productQuestions1 = b, a => a.ProductQuestions1, () => new UserRelations().ProductQuestionEntityUsingUserId, typeof(ProductQuestionEntity), (int)GroceryEcommerce.EntityType.ProductQuestionEntity);
+				AddNavigatorMetaData<UserEntity, EntityCollection<ShopEntity>>("Shops", a => a._shops, (a, b) => a._shops = b, a => a.Shops, () => new UserRelations().ShopEntityUsingOwnerUserId, typeof(ShopEntity), (int)GroceryEcommerce.EntityType.ShopEntity);
 				AddNavigatorMetaData<UserEntity, EntityCollection<PurchaseOrderEntity>>("PurchaseOrders", a => a._purchaseOrders, (a, b) => a._purchaseOrders = b, a => a.PurchaseOrders, () => new UserRelations().PurchaseOrderEntityUsingCreatedBy, typeof(PurchaseOrderEntity), (int)GroceryEcommerce.EntityType.PurchaseOrderEntity);
 				AddNavigatorMetaData<UserEntity, EntityCollection<CouponEntity>>("Coupons", a => a._coupons, (a, b) => a._coupons = b, a => a.Coupons, () => new UserRelations().CouponEntityUsingCreatedBy, typeof(CouponEntity), (int)GroceryEcommerce.EntityType.CouponEntity);
 				AddNavigatorMetaData<UserEntity, EntityCollection<CouponEntity>>("Coupons1", a => a._coupons1, (a, b) => a._coupons1 = b, a => a.Coupons1, () => new UserRelations().CouponEntityUsingUpdatedBy, typeof(CouponEntity), (int)GroceryEcommerce.EntityType.CouponEntity);
@@ -308,6 +312,10 @@ namespace GroceryEcommerce.EntityClasses
 		/// <summary>Creates a new IRelationPredicateBucket object which contains the predicate expression and relation collection to fetch the related entities of type 'ProductQuestion' to this entity.</summary>
 		/// <returns></returns>
 		public virtual IRelationPredicateBucket GetRelationInfoProductQuestions1() { return CreateRelationInfoForNavigator("ProductQuestions1"); }
+
+		/// <summary>Creates a new IRelationPredicateBucket object which contains the predicate expression and relation collection to fetch the related entities of type 'Shop' to this entity.</summary>
+		/// <returns></returns>
+		public virtual IRelationPredicateBucket GetRelationInfoShops() { return CreateRelationInfoForNavigator("Shops"); }
 
 		/// <summary>Creates a new IRelationPredicateBucket object which contains the predicate expression and relation collection to fetch the related entities of type 'PurchaseOrder' to this entity.</summary>
 		/// <returns></returns>
@@ -466,6 +474,10 @@ namespace GroceryEcommerce.EntityClasses
 		/// <summary>Creates a new PrefetchPathElement2 object which contains all the information to prefetch the related entities of type 'ProductQuestion' for this entity.</summary>
 		/// <returns>Ready to use IPrefetchPathElement2 implementation.</returns>
 		public static IPrefetchPathElement2 PrefetchPathProductQuestions1 { get { return _staticMetaData.GetPrefetchPathElement("ProductQuestions1", CommonEntityBase.CreateEntityCollection<ProductQuestionEntity>()); } }
+
+		/// <summary>Creates a new PrefetchPathElement2 object which contains all the information to prefetch the related entities of type 'Shop' for this entity.</summary>
+		/// <returns>Ready to use IPrefetchPathElement2 implementation.</returns>
+		public static IPrefetchPathElement2 PrefetchPathShops { get { return _staticMetaData.GetPrefetchPathElement("Shops", CommonEntityBase.CreateEntityCollection<ShopEntity>()); } }
 
 		/// <summary>Creates a new PrefetchPathElement2 object which contains all the information to prefetch the related entities of type 'PurchaseOrder' for this entity.</summary>
 		/// <returns>Ready to use IPrefetchPathElement2 implementation.</returns>
@@ -731,6 +743,10 @@ namespace GroceryEcommerce.EntityClasses
 		[TypeContainedAttribute(typeof(ProductQuestionEntity))]
 		public virtual EntityCollection<ProductQuestionEntity> ProductQuestions1 { get { return GetOrCreateEntityCollection<ProductQuestionEntity, ProductQuestionEntityFactory>("User1", true, false, ref _productQuestions1); } }
 
+		/// <summary>Gets the EntityCollection with the related entities of type 'ShopEntity' which are related to this entity via a relation of type '1:n'. If the EntityCollection hasn't been fetched yet, the collection returned will be empty.<br/><br/></summary>
+		[TypeContainedAttribute(typeof(ShopEntity))]
+		public virtual EntityCollection<ShopEntity> Shops { get { return GetOrCreateEntityCollection<ShopEntity, ShopEntityFactory>("User", true, false, ref _shops); } }
+
 		/// <summary>Gets the EntityCollection with the related entities of type 'PurchaseOrderEntity' which are related to this entity via a relation of type '1:n'. If the EntityCollection hasn't been fetched yet, the collection returned will be empty.<br/><br/></summary>
 		[TypeContainedAttribute(typeof(PurchaseOrderEntity))]
 		public virtual EntityCollection<PurchaseOrderEntity> PurchaseOrders { get { return GetOrCreateEntityCollection<PurchaseOrderEntity, PurchaseOrderEntityFactory>("User", true, false, ref _purchaseOrders); } }
@@ -947,6 +963,12 @@ namespace GroceryEcommerce.RelationClasses
 			get { return ModelInfoProviderSingleton.GetInstance().CreateRelation(RelationType.OneToMany, "ProductQuestions1", true, new[] { UserFields.UserId, ProductQuestionFields.UserId }); }
 		}
 
+		/// <summary>Returns a new IEntityRelation object, between UserEntity and ShopEntity over the 1:n relation they have, using the relation between the fields: User.UserId - Shop.OwnerUserId</summary>
+		public virtual IEntityRelation ShopEntityUsingOwnerUserId
+		{
+			get { return ModelInfoProviderSingleton.GetInstance().CreateRelation(RelationType.OneToMany, "Shops", true, new[] { UserFields.UserId, ShopFields.OwnerUserId }); }
+		}
+
 		/// <summary>Returns a new IEntityRelation object, between UserEntity and PurchaseOrderEntity over the 1:n relation they have, using the relation between the fields: User.UserId - PurchaseOrder.CreatedBy</summary>
 		public virtual IEntityRelation PurchaseOrderEntityUsingCreatedBy
 		{
@@ -1059,6 +1081,7 @@ namespace GroceryEcommerce.RelationClasses
 		internal static readonly IEntityRelation ProductEntityUsingUpdatedByStatic = new UserRelations().ProductEntityUsingUpdatedBy;
 		internal static readonly IEntityRelation ProductQuestionEntityUsingAnsweredByStatic = new UserRelations().ProductQuestionEntityUsingAnsweredBy;
 		internal static readonly IEntityRelation ProductQuestionEntityUsingUserIdStatic = new UserRelations().ProductQuestionEntityUsingUserId;
+		internal static readonly IEntityRelation ShopEntityUsingOwnerUserIdStatic = new UserRelations().ShopEntityUsingOwnerUserId;
 		internal static readonly IEntityRelation PurchaseOrderEntityUsingCreatedByStatic = new UserRelations().PurchaseOrderEntityUsingCreatedBy;
 		internal static readonly IEntityRelation CouponEntityUsingCreatedByStatic = new UserRelations().CouponEntityUsingCreatedBy;
 		internal static readonly IEntityRelation CouponEntityUsingUpdatedByStatic = new UserRelations().CouponEntityUsingUpdatedBy;

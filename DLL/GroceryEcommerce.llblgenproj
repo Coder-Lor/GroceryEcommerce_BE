@@ -96,7 +96,7 @@
   <CodeGenerationCyclePreferences>
     <OutputType Value="3">
       <LastUsedPreferences>
-        <DestinationRootFolder Value="C:\Users\Admin\source\repos\ThangIT2k4\GroceryEcommerce_BE\DAL" />
+        <DestinationRootFolder Value="D:\HAUI_Subject_3\DoAnChuyenNganh\Backend\DAL" />
         <FrameworkName Value="LLBLGen Pro Runtime Framework" />
         <LanguageName Value="C#" />
         <PlatformName Value=".NET 9" />
@@ -113,6 +113,27 @@
       </LastUsedPreferences>
     </OutputType>
   </CodeGenerationCyclePreferences>
+  <OutputSettingValues>
+    <SettingValues>
+      <SettingValue Name="1:AdapterDbGenericSubFolderName" Value="DatabaseGeneric" Type="18" />
+      <SettingValue Name="1:AdapterDbSpecificNamespaceSuffix" Value="DatabaseSpecific" Type="18" />
+      <SettingValue Name="1:AdapterDbSpecificProjectFileSuffix" Value="DBSpecific" Type="18" />
+      <SettingValue Name="1:AdapterDbSpecificSubFolderName" Value="DatabaseSpecific" Type="18" />
+      <SettingValue Name="1:ConvertNulledReferenceTypesToDefaultValue" Value="true" Type="3" />
+      <SettingValue Name="1:EntityBaseClassNameDefault" Value="CommonEntityBase" Type="18" />
+      <SettingValue Name="1:FieldPropertyIsPublicDefault" Value="true" Type="3" />
+      <SettingValue Name="1:GenerateAsNullableTypeDefault" Value="true" Type="3" />
+      <SettingValue Name="1:GenerateEntityFieldFactory" Value="false" Type="3" />
+      <SettingValue Name="1:GenerateEntityFieldsFactory" Value="false" Type="3" />
+      <SettingValue Name="1:InlineValueTypedFields" Value="true" Type="3" />
+      <SettingValue Name="1:LazyLoadingWithoutResultReturnsNew" Value="false" Type="3" />
+      <SettingValue Name="1:NavigatorPropertyIsPublicDefault" Value="true" Type="3" />
+      <SettingValue Name="1:SupportedActionCombinations" Value="0,1,2,3,4,5,6,7" Type="18" />
+      <SettingValue Name="1:TdlEmitTimeDateInOutputFiles" Value="false" Type="3" />
+      <SettingValue Name="1:TypedListOutputTypeDefault" Value="PocoWithQuerySpecQuery" Type="18" />
+      <SettingValue Name="1:TypedViewOutputTypeDefault" Value="PocoWithQuerySpecQuery" Type="18" />
+    </SettingValues>
+  </OutputSettingValues>
   <CodeGenerationMetaDataDefaults>
     <TargetElement Type="256">
       <Defaults>
@@ -347,6 +368,7 @@
           <Field Name="Name" Type="string" MaxLength="255" />
           <Field Name="Price" Type="decimal" Precision="18" Scale="2" />
           <Field Name="ProductId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="ShopId" Type="guid" IsOptional="true" IsAutoCreated="true" />
           <Field Name="ShortDescription" Type="string" IsOptional="true" MaxLength="500" />
           <Field Name="Sku" Type="string" MaxLength="100" />
           <Field Name="Slug" Type="string" IsOptional="true" MaxLength="255" />
@@ -448,6 +470,24 @@
         <UniqueConstraints>
           <UniqueConstraint Name="ProductVariantsSkuKey">
             <Field Name="Sku" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="Shop" GroupName="Catalog" ObjectID="808a5749-02bd-4dab-9cff-e5634c671e43">
+        <Fields>
+          <Field Name="CreatedAt" Type="datetime" />
+          <Field Name="Description" Type="string" IsOptional="true" MaxLength="1073741824" />
+          <Field Name="LogoUrl" Type="string" IsOptional="true" MaxLength="500" />
+          <Field Name="Name" Type="string" MaxLength="255" />
+          <Field Name="OwnerUserId" Type="guid" />
+          <Field Name="ShopId" Type="guid" IsPrimaryKey="true" />
+          <Field Name="Slug" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="Status" Type="short" Precision="5" />
+          <Field Name="UpdatedAt" Type="datetime" IsOptional="true" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="ShopsSlugKey">
+            <Field Name="Slug" />
           </UniqueConstraint>
         </UniqueConstraints>
       </EntityDefinition>
@@ -620,6 +660,7 @@
           <Field Name="ShippingPhone" Type="string" IsOptional="true" MaxLength="20" />
           <Field Name="ShippingState" Type="string" MaxLength="100" />
           <Field Name="ShippingZipCode" Type="string" MaxLength="20" />
+          <Field Name="ShopId" Type="guid" IsOptional="true" IsAutoCreated="true" />
           <Field Name="Status" Type="short" Precision="5" />
           <Field Name="SubTotal" Type="decimal" Precision="18" Scale="2" />
           <Field Name="TaxAmount" Type="decimal" Precision="18" Scale="2" />
@@ -888,6 +929,11 @@
           <FieldFieldRelationship FkField="CategoryId" PkField="CategoryId" />
         </FieldRelationships>
       </NormalRelationship>
+      <NormalRelationship Name="Catalog.Product.Shop-Catalog.Shop.Products" Start="Catalog:Product" End="Catalog:Shop" StartNavigator="Shop" EndNavigator="Products" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ShopId" PkField="ShopId" />
+        </FieldRelationships>
+      </NormalRelationship>
       <NormalRelationship Name="Catalog.Product.User-Auth.User.Products" Start="Catalog:Product" End="Auth:User" StartNavigator="User" EndNavigator="Products" Type="4">
         <FieldRelationships>
           <FieldFieldRelationship FkField="CreatedBy" PkField="UserId" />
@@ -941,6 +987,11 @@
       <NormalRelationship Name="Catalog.ProductVariant.Product-Catalog.Product.ProductVariants" Start="Catalog:ProductVariant" End="Catalog:Product" StartNavigator="Product" EndNavigator="ProductVariants" Type="4" DeleteRuleAction="1">
         <FieldRelationships>
           <FieldFieldRelationship FkField="ProductId" PkField="ProductId" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Catalog.Shop.User-Auth.User.Shops" Start="Catalog:Shop" End="Auth:User" StartNavigator="User" EndNavigator="Shops" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="OwnerUserId" PkField="UserId" />
         </FieldRelationships>
       </NormalRelationship>
       <NormalRelationship Name="Inventory.PurchaseOrder.User-Auth.User.PurchaseOrders" Start="Inventory:PurchaseOrder" End="Auth:User" StartNavigator="User" EndNavigator="PurchaseOrders" Type="4" EndIsOptional="true">
@@ -1043,6 +1094,11 @@
           <FieldFieldRelationship FkField="UserId" PkField="UserId" />
         </FieldRelationships>
       </NormalRelationship>
+      <NormalRelationship Name="Sales.Order.Shop-Catalog.Shop.Orders" Start="Sales:Order" End="Catalog:Shop" StartNavigator="Shop" EndNavigator="Orders" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="ShopId" PkField="ShopId" />
+        </FieldRelationships>
+      </NormalRelationship>
       <NormalRelationship Name="Sales.Order.User-Auth.User.Orders" Start="Sales:Order" End="Auth:User" StartNavigator="User" EndNavigator="Orders" Type="4" EndIsOptional="true">
         <FieldRelationships>
           <FieldFieldRelationship FkField="CreatedBy" PkField="UserId" />
@@ -1141,9 +1197,9 @@
         <Sequence Name="SystemIdentity" />
       </SystemSequences>
       <Catalogs>
-        <Catalog Name="postgres" SyncSource="2">
+        <Catalog Name="postgres">
           <Schemas>
-            <Schema Name="auth" SyncSource="2" LastSyncWithDatabase="2025-11-10T11:51:46.9203251Z">
+            <Schema Name="auth" SyncSource="2" LastSyncWithDatabase="2025-12-16T14:05:23.9125084Z">
               <Tables>
                 <Table Name="audit_logs">
                   <PkConstraintName Name="audit_logs_pkey" />
@@ -1265,7 +1321,7 @@
                 </Table>
               </Tables>
             </Schema>
-            <Schema Name="cart" SyncSource="2" LastSyncWithDatabase="2025-11-10T11:51:48.3246621Z">
+            <Schema Name="cart" SyncSource="2" LastSyncWithDatabase="2025-12-16T14:05:24.8887949Z">
               <Tables>
                 <Table Name="abandoned_carts">
                   <PkConstraintName Name="abandoned_carts_pkey" />
@@ -1324,7 +1380,7 @@
                 </Table>
               </Tables>
             </Schema>
-            <Schema Name="catalog" SyncSource="2" LastSyncWithDatabase="2025-11-10T11:51:49.4278026Z">
+            <Schema Name="catalog" SyncSource="2" LastSyncWithDatabase="2025-12-16T14:05:25.6120833Z">
               <Tables>
                 <Table Name="brands">
                   <PkConstraintName Name="brands_pkey" />
@@ -1491,6 +1547,7 @@
                     <Field Name="updated_at" Ordinal="22" IsOptional="true" DbType="23" />
                     <Field Name="created_by" Ordinal="23" DbType="28" />
                     <Field Name="updated_by" Ordinal="24" IsOptional="true" DbType="28" />
+                    <Field Name="shop_id" Ordinal="25" IsOptional="true" DbType="28" />
                   </Fields>
                   <UniqueConstraints>
                     <UniqueConstraint Name="products_sku_key">
@@ -1501,12 +1558,31 @@
                     </UniqueConstraint>
                   </UniqueConstraints>
                 </Table>
+                <Table Name="shops">
+                  <PkConstraintName Name="shops_pkey" />
+                  <Fields>
+                    <Field Name="shop_id" Ordinal="1" IsPrimaryKey="true" DbType="28" />
+                    <Field Name="name" Ordinal="2" DbType="24" Length="255" />
+                    <Field Name="slug" Ordinal="3" IsOptional="true" DbType="24" Length="255" />
+                    <Field Name="description" Ordinal="4" IsOptional="true" DbType="19" Length="1073741824" />
+                    <Field Name="logo_url" Ordinal="5" IsOptional="true" DbType="24" Length="500" />
+                    <Field Name="status" Ordinal="6" HasDefaultValue="true" DefaultValue="1" DbType="8" Precision="5" />
+                    <Field Name="owner_user_id" Ordinal="7" DbType="28" />
+                    <Field Name="created_at" Ordinal="8" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
+                    <Field Name="updated_at" Ordinal="9" IsOptional="true" DbType="23" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="shops_slug_key">
+                      <Field Name="slug" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
               </Tables>
               <StoredProcedures>
                 <StoredProcedure Name="validate_stock_quantity" />
               </StoredProcedures>
             </Schema>
-            <Schema Name="inventory" SyncSource="2" LastSyncWithDatabase="2025-11-10T11:51:51.5604966Z">
+            <Schema Name="inventory" SyncSource="2" LastSyncWithDatabase="2025-12-16T14:05:27.2067886Z">
               <Tables>
                 <Table Name="purchase_order_items">
                   <PkConstraintName Name="purchase_order_items_pkey" />
@@ -1541,7 +1617,7 @@
                 </Table>
               </Tables>
             </Schema>
-            <Schema Name="marketing" SyncSource="2" LastSyncWithDatabase="2025-11-10T11:51:52.0246626Z">
+            <Schema Name="marketing" SyncSource="2" LastSyncWithDatabase="2025-12-16T14:05:27.5658153Z">
               <Tables>
                 <Table Name="coupon_usages">
                   <PkConstraintName Name="coupon_usages_pkey" />
@@ -1613,7 +1689,7 @@
                 </Table>
               </Tables>
             </Schema>
-            <Schema Name="reviews" SyncSource="2" LastSyncWithDatabase="2025-11-10T11:51:52.8036357Z">
+            <Schema Name="reviews" SyncSource="2" LastSyncWithDatabase="2025-12-16T14:05:28.1600292Z">
               <Tables>
                 <Table Name="product_reviews">
                   <PkConstraintName Name="product_reviews_pkey" />
@@ -1665,7 +1741,7 @@
                 </Table>
               </Tables>
             </Schema>
-            <Schema Name="sales" SyncSource="2" LastSyncWithDatabase="2025-11-10T11:51:53.5332336Z">
+            <Schema Name="sales" SyncSource="2" LastSyncWithDatabase="2025-12-16T14:05:28.8302181Z">
               <Tables>
                 <Table Name="order_items">
                   <PkConstraintName Name="order_items_pkey" />
@@ -1782,6 +1858,7 @@
                     <Field Name="created_at" Ordinal="34" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
                     <Field Name="updated_at" Ordinal="35" IsOptional="true" DbType="23" />
                     <Field Name="created_by" Ordinal="36" IsOptional="true" DbType="28" />
+                    <Field Name="shop_id" Ordinal="37" IsOptional="true" DbType="28" />
                   </Fields>
                   <UniqueConstraints>
                     <UniqueConstraint Name="orders_order_number_key">
@@ -1816,7 +1893,7 @@
                 </Table>
               </Tables>
             </Schema>
-            <Schema Name="system" SyncSource="2" LastSyncWithDatabase="2025-11-10T11:51:54.8184315Z">
+            <Schema Name="system" SyncSource="2" LastSyncWithDatabase="2025-12-16T14:05:30.1240689Z">
               <Tables>
                 <Table Name="currencies">
                   <PkConstraintName Name="currencies_pkey" />
@@ -2034,9 +2111,19 @@
                 <FieldPair PkField="auth:users:user_id" FkField="catalog:products:created_by" />
               </FieldPairs>
             </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:products:products_shop_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="catalog:shops:shop_id" FkField="catalog:products:shop_id" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
             <ForeignKeyConstraint Name="catalog:products:products_updated_by_fkey">
               <FieldPairs>
                 <FieldPair PkField="auth:users:user_id" FkField="catalog:products:updated_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="catalog:shops:shops_owner_user_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="auth:users:user_id" FkField="catalog:shops:owner_user_id" />
               </FieldPairs>
             </ForeignKeyConstraint>
             <ForeignKeyConstraint Name="inventory:purchase_order_items:purchase_order_items_product_id_fkey">
@@ -2197,6 +2284,11 @@
             <ForeignKeyConstraint Name="sales:orders:orders_created_by_fkey">
               <FieldPairs>
                 <FieldPair PkField="auth:users:user_id" FkField="sales:orders:created_by" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="sales:orders:orders_shop_id_fkey">
+              <FieldPairs>
+                <FieldPair PkField="catalog:shops:shop_id" FkField="sales:orders:shop_id" />
               </FieldPairs>
             </ForeignKeyConstraint>
             <ForeignKeyConstraint Name="sales:orders:orders_user_id_fkey">
@@ -2416,6 +2508,7 @@
             <FieldMapping FieldName="Name" TargetFieldName="name" />
             <FieldMapping FieldName="Price" TargetFieldName="price" />
             <FieldMapping FieldName="ProductId" TargetFieldName="product_id" />
+            <FieldMapping FieldName="ShopId" TargetFieldName="shop_id" />
             <FieldMapping FieldName="ShortDescription" TargetFieldName="short_description" />
             <FieldMapping FieldName="Sku" TargetFieldName="sku" />
             <FieldMapping FieldName="Slug" TargetFieldName="slug" />
@@ -2497,6 +2590,19 @@
             <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
             <FieldMapping FieldName="VariantId" TargetFieldName="variant_id" />
             <FieldMapping FieldName="Weight" TargetFieldName="weight" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName="Catalog:Shop" TargetName="postgres:catalog:shops">
+          <FieldMappings>
+            <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
+            <FieldMapping FieldName="Description" TargetFieldName="description" />
+            <FieldMapping FieldName="LogoUrl" TargetFieldName="logo_url" />
+            <FieldMapping FieldName="Name" TargetFieldName="name" />
+            <FieldMapping FieldName="OwnerUserId" TargetFieldName="owner_user_id" />
+            <FieldMapping FieldName="ShopId" TargetFieldName="shop_id" />
+            <FieldMapping FieldName="Slug" TargetFieldName="slug" />
+            <FieldMapping FieldName="Status" TargetFieldName="status" />
+            <FieldMapping FieldName="UpdatedAt" TargetFieldName="updated_at" />
           </FieldMappings>
         </EntityMapping>
         <EntityMapping EntityName="Inventory:PurchaseOrder" TargetName="postgres:inventory:purchase_orders">
@@ -2653,6 +2759,7 @@
             <FieldMapping FieldName="ShippingPhone" TargetFieldName="shipping_phone" />
             <FieldMapping FieldName="ShippingState" TargetFieldName="shipping_state" />
             <FieldMapping FieldName="ShippingZipCode" TargetFieldName="shipping_zip_code" />
+            <FieldMapping FieldName="ShopId" TargetFieldName="shop_id" />
             <FieldMapping FieldName="Status" TargetFieldName="status" />
             <FieldMapping FieldName="SubTotal" TargetFieldName="sub_total" />
             <FieldMapping FieldName="TaxAmount" TargetFieldName="tax_amount" />

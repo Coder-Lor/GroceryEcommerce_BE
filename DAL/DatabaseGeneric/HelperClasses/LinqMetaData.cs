@@ -88,6 +88,8 @@ namespace GroceryEcommerce.Linq
 					return this.ProductTagAssignment;
 				case GroceryEcommerce.EntityType.ProductVariantEntity:
 					return this.ProductVariant;
+				case GroceryEcommerce.EntityType.ShopEntity:
+					return this.Shop;
 				case GroceryEcommerce.EntityType.PurchaseOrderEntity:
 					return this.PurchaseOrder;
 				case GroceryEcommerce.EntityType.PurchaseOrderItemEntity:
@@ -221,6 +223,9 @@ namespace GroceryEcommerce.Linq
 		
 		/// <summary>returns the datasource to use in a Linq query when targeting ProductVariantEntity instances in the database.</summary>
 		public DataSource2<ProductVariantEntity> ProductVariant {	get { return new DataSource2<ProductVariantEntity>(this.AdapterToUse, new ElementCreator(), this.CustomFunctionMappings, this.ContextToUse); } }
+		
+		/// <summary>returns the datasource to use in a Linq query when targeting ShopEntity instances in the database.</summary>
+		public DataSource2<ShopEntity> Shop {	get { return new DataSource2<ShopEntity>(this.AdapterToUse, new ElementCreator(), this.CustomFunctionMappings, this.ContextToUse); } }
 		
 		/// <summary>returns the datasource to use in a Linq query when targeting PurchaseOrderEntity instances in the database.</summary>
 		public DataSource2<PurchaseOrderEntity> PurchaseOrder {	get { return new DataSource2<PurchaseOrderEntity>(this.AdapterToUse, new ElementCreator(), this.CustomFunctionMappings, this.ContextToUse); } }

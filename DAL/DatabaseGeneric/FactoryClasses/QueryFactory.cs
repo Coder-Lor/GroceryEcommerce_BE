@@ -84,6 +84,9 @@ namespace GroceryEcommerce.FactoryClasses
 		/// <summary>Creates and returns a new EntityQuery for the ProductVariant entity</summary>
 		public EntityQuery<ProductVariantEntity> ProductVariant { get { return Create<ProductVariantEntity>(); } }
 
+		/// <summary>Creates and returns a new EntityQuery for the Shop entity</summary>
+		public EntityQuery<ShopEntity> Shop { get { return Create<ShopEntity>(); } }
+
 		/// <summary>Creates and returns a new EntityQuery for the PurchaseOrder entity</summary>
 		public EntityQuery<PurchaseOrderEntity> PurchaseOrder { get { return Create<PurchaseOrderEntity>(); } }
 

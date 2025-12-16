@@ -345,6 +345,8 @@ namespace GroceryEcommerce.HelperClasses
 		public static EntityField2 Price { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ProductFieldIndex.Price); }}
 		/// <summary>Creates a new ProductEntity.ProductId field instance</summary>
 		public static EntityField2 ProductId { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ProductFieldIndex.ProductId); }}
+		/// <summary>Creates a new ProductEntity.ShopId field instance</summary>
+		public static EntityField2 ShopId { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ProductFieldIndex.ShopId); }}
 		/// <summary>Creates a new ProductEntity.ShortDescription field instance</summary>
 		public static EntityField2 ShortDescription { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ProductFieldIndex.ShortDescription); }}
 		/// <summary>Creates a new ProductEntity.Sku field instance</summary>
@@ -486,6 +488,29 @@ namespace GroceryEcommerce.HelperClasses
 		public static EntityField2 VariantId { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ProductVariantFieldIndex.VariantId); }}
 		/// <summary>Creates a new ProductVariantEntity.Weight field instance</summary>
 		public static EntityField2 Weight { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ProductVariantFieldIndex.Weight); }}
+	}
+
+	/// <summary>Field Creation Class for entity ShopEntity</summary>
+	public partial class ShopFields
+	{
+		/// <summary>Creates a new ShopEntity.CreatedAt field instance</summary>
+		public static EntityField2 CreatedAt { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ShopFieldIndex.CreatedAt); }}
+		/// <summary>Creates a new ShopEntity.Description field instance</summary>
+		public static EntityField2 Description { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ShopFieldIndex.Description); }}
+		/// <summary>Creates a new ShopEntity.LogoUrl field instance</summary>
+		public static EntityField2 LogoUrl { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ShopFieldIndex.LogoUrl); }}
+		/// <summary>Creates a new ShopEntity.Name field instance</summary>
+		public static EntityField2 Name { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ShopFieldIndex.Name); }}
+		/// <summary>Creates a new ShopEntity.OwnerUserId field instance</summary>
+		public static EntityField2 OwnerUserId { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ShopFieldIndex.OwnerUserId); }}
+		/// <summary>Creates a new ShopEntity.ShopId field instance</summary>
+		public static EntityField2 ShopId { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ShopFieldIndex.ShopId); }}
+		/// <summary>Creates a new ShopEntity.Slug field instance</summary>
+		public static EntityField2 Slug { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ShopFieldIndex.Slug); }}
+		/// <summary>Creates a new ShopEntity.Status field instance</summary>
+		public static EntityField2 Status { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ShopFieldIndex.Status); }}
+		/// <summary>Creates a new ShopEntity.UpdatedAt field instance</summary>
+		public static EntityField2 UpdatedAt { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ShopFieldIndex.UpdatedAt); }}
 	}
 
 	/// <summary>Field Creation Class for entity PurchaseOrderEntity</summary>
@@ -765,6 +790,8 @@ namespace GroceryEcommerce.HelperClasses
 		public static EntityField2 ShippingState { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(OrderFieldIndex.ShippingState); }}
 		/// <summary>Creates a new OrderEntity.ShippingZipCode field instance</summary>
 		public static EntityField2 ShippingZipCode { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(OrderFieldIndex.ShippingZipCode); }}
+		/// <summary>Creates a new OrderEntity.ShopId field instance</summary>
+		public static EntityField2 ShopId { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(OrderFieldIndex.ShopId); }}
 		/// <summary>Creates a new OrderEntity.Status field instance</summary>
 		public static EntityField2 Status { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(OrderFieldIndex.Status); }}
 		/// <summary>Creates a new OrderEntity.SubTotal field instance</summary>

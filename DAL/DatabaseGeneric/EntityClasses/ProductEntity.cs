@@ -40,6 +40,7 @@ namespace GroceryEcommerce.EntityClasses
 		private UserEntity _user1;
 		private BrandEntity _brand;
 		private CategoryEntity _category;
+		private ShopEntity _shop;
 
 		// __LLBLGENPRO_USER_CODE_REGION_START PrivateMembers
 		// __LLBLGENPRO_USER_CODE_REGION_END
@@ -57,6 +58,8 @@ namespace GroceryEcommerce.EntityClasses
 			public static readonly string Brand = "Brand";
 			/// <summary>Member name Category</summary>
 			public static readonly string Category = "Category";
+			/// <summary>Member name Shop</summary>
+			public static readonly string Shop = "Shop";
 			/// <summary>Member name ShoppingCartItems</summary>
 			public static readonly string ShoppingCartItems = "ShoppingCartItems";
 			/// <summary>Member name WishlistItems</summary>
@@ -99,6 +102,7 @@ namespace GroceryEcommerce.EntityClasses
 				AddNavigatorMetaData<ProductEntity, UserEntity>("User1", "Products1", (a, b) => a._user1 = b, a => a._user1, (a, b) => a.User1 = b, GroceryEcommerce.RelationClasses.StaticProductRelations.UserEntityUsingUpdatedByStatic, ()=>new ProductRelations().UserEntityUsingUpdatedBy, null, new int[] { (int)ProductFieldIndex.UpdatedBy }, null, true, (int)GroceryEcommerce.EntityType.UserEntity);
 				AddNavigatorMetaData<ProductEntity, BrandEntity>("Brand", "Products", (a, b) => a._brand = b, a => a._brand, (a, b) => a.Brand = b, GroceryEcommerce.RelationClasses.StaticProductRelations.BrandEntityUsingBrandIdStatic, ()=>new ProductRelations().BrandEntityUsingBrandId, null, new int[] { (int)ProductFieldIndex.BrandId }, null, true, (int)GroceryEcommerce.EntityType.BrandEntity);
 				AddNavigatorMetaData<ProductEntity, CategoryEntity>("Category", "Products", (a, b) => a._category = b, a => a._category, (a, b) => a.Category = b, GroceryEcommerce.RelationClasses.StaticProductRelations.CategoryEntityUsingCategoryIdStatic, ()=>new ProductRelations().CategoryEntityUsingCategoryId, null, new int[] { (int)ProductFieldIndex.CategoryId }, null, true, (int)GroceryEcommerce.EntityType.CategoryEntity);
+				AddNavigatorMetaData<ProductEntity, ShopEntity>("Shop", "Products", (a, b) => a._shop = b, a => a._shop, (a, b) => a.Shop = b, GroceryEcommerce.RelationClasses.StaticProductRelations.ShopEntityUsingShopIdStatic, ()=>new ProductRelations().ShopEntityUsingShopId, null, new int[] { (int)ProductFieldIndex.ShopId }, null, true, (int)GroceryEcommerce.EntityType.ShopEntity);
 			}
 		}
 
@@ -224,6 +228,10 @@ namespace GroceryEcommerce.EntityClasses
 		/// <summary>Creates a new IRelationPredicateBucket object which contains the predicate expression and relation collection to fetch the related entity of type 'Category' to this entity.</summary>
 		/// <returns></returns>
 		public virtual IRelationPredicateBucket GetRelationInfoCategory() { return CreateRelationInfoForNavigator("Category"); }
+
+		/// <summary>Creates a new IRelationPredicateBucket object which contains the predicate expression and relation collection to fetch the related entity of type 'Shop' to this entity.</summary>
+		/// <returns></returns>
+		public virtual IRelationPredicateBucket GetRelationInfoShop() { return CreateRelationInfoForNavigator("Shop"); }
 		
 		/// <inheritdoc/>
 		protected override EntityStaticMetaDataBase GetEntityStaticMetaData() {	return _staticMetaData; }
@@ -310,6 +318,10 @@ namespace GroceryEcommerce.EntityClasses
 		/// <summary>Creates a new PrefetchPathElement2 object which contains all the information to prefetch the related entities of type 'Category' for this entity.</summary>
 		/// <returns>Ready to use IPrefetchPathElement2 implementation.</returns>
 		public static IPrefetchPathElement2 PrefetchPathCategory { get { return _staticMetaData.GetPrefetchPathElement("Category", CommonEntityBase.CreateEntityCollection<CategoryEntity>()); } }
+
+		/// <summary>Creates a new PrefetchPathElement2 object which contains all the information to prefetch the related entities of type 'Shop' for this entity.</summary>
+		/// <returns>Ready to use IPrefetchPathElement2 implementation.</returns>
+		public static IPrefetchPathElement2 PrefetchPathShop { get { return _staticMetaData.GetPrefetchPathElement("Shop", CommonEntityBase.CreateEntityCollection<ShopEntity>()); } }
 
 		/// <summary>The BrandId property of the Entity Product<br/><br/></summary>
 		/// <remarks>Mapped on  table field: "products"."brand_id".<br/>Table field type characteristics (type, precision, scale, length): Uuid, 0, 0, 0.<br/>Table field behavior characteristics (is nullable, is PK, is identity): true, false, false</remarks>
@@ -437,6 +449,14 @@ namespace GroceryEcommerce.EntityClasses
 		{
 			get { return (System.Guid)GetValue((int)ProductFieldIndex.ProductId, true); }
 			set { SetValue((int)ProductFieldIndex.ProductId, value); }
+		}
+
+		/// <summary>The ShopId property of the Entity Product<br/><br/></summary>
+		/// <remarks>Mapped on  table field: "products"."shop_id".<br/>Table field type characteristics (type, precision, scale, length): Uuid, 0, 0, 0.<br/>Table field behavior characteristics (is nullable, is PK, is identity): true, false, false</remarks>
+		public virtual Nullable<System.Guid> ShopId
+		{
+			get { return (Nullable<System.Guid>)GetValue((int)ProductFieldIndex.ShopId, false); }
+			set { SetValue((int)ProductFieldIndex.ShopId, value); }
 		}
 
 		/// <summary>The ShortDescription property of the Entity Product<br/><br/></summary>
@@ -575,6 +595,14 @@ namespace GroceryEcommerce.EntityClasses
 			set { SetSingleRelatedEntityNavigator(value, "Category"); }
 		}
 
+		/// <summary>Gets / sets related entity of type 'ShopEntity' which has to be set using a fetch action earlier. If no related entity is set for this property, null is returned..<br/><br/></summary>
+		[Browsable(false)]
+		public virtual ShopEntity Shop
+		{
+			get { return _shop; }
+			set { SetSingleRelatedEntityNavigator(value, "Shop"); }
+		}
+
 		// __LLBLGENPRO_USER_CODE_REGION_START CustomEntityCode
 		// __LLBLGENPRO_USER_CODE_REGION_END
 
@@ -617,6 +645,8 @@ namespace GroceryEcommerce
 		Price,
 		///<summary>ProductId. </summary>
 		ProductId,
+		///<summary>ShopId. </summary>
+		ShopId,
 		///<summary>ShortDescription. </summary>
 		ShortDescription,
 		///<summary>Sku. </summary>
@@ -727,6 +757,12 @@ namespace GroceryEcommerce.RelationClasses
 			get	{ return ModelInfoProviderSingleton.GetInstance().CreateRelation(RelationType.ManyToOne, "Category", false, new[] { CategoryFields.CategoryId, ProductFields.CategoryId }); }
 		}
 
+		/// <summary>Returns a new IEntityRelation object, between ProductEntity and ShopEntity over the m:1 relation they have, using the relation between the fields: Product.ShopId - Shop.ShopId</summary>
+		public virtual IEntityRelation ShopEntityUsingShopId
+		{
+			get	{ return ModelInfoProviderSingleton.GetInstance().CreateRelation(RelationType.ManyToOne, "Shop", false, new[] { ShopFields.ShopId, ProductFields.ShopId }); }
+		}
+
 	}
 	
 	/// <summary>Static class which is used for providing relationship instances which are re-used internally for syncing</summary>
@@ -746,6 +782,7 @@ namespace GroceryEcommerce.RelationClasses
 		internal static readonly IEntityRelation UserEntityUsingUpdatedByStatic = new ProductRelations().UserEntityUsingUpdatedBy;
 		internal static readonly IEntityRelation BrandEntityUsingBrandIdStatic = new ProductRelations().BrandEntityUsingBrandId;
 		internal static readonly IEntityRelation CategoryEntityUsingCategoryIdStatic = new ProductRelations().CategoryEntityUsingCategoryId;
+		internal static readonly IEntityRelation ShopEntityUsingShopIdStatic = new ProductRelations().ShopEntityUsingShopId;
 
 		/// <summary>CTor</summary>
 		static StaticProductRelations() { }

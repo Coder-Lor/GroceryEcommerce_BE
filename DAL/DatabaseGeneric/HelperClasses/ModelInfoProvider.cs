@@ -63,6 +63,7 @@ namespace GroceryEcommerce.HelperClasses
 			InitProductTagEntityInfo();
 			InitProductTagAssignmentEntityInfo();
 			InitProductVariantEntityInfo();
+			InitShopEntityInfo();
 			InitPurchaseOrderEntityInfo();
 			InitPurchaseOrderItemEntityInfo();
 			InitCouponEntityInfo();
@@ -306,6 +307,7 @@ namespace GroceryEcommerce.HelperClasses
 			this.AddElementFieldInfo("ProductEntity", "Name", typeof(System.String), false, false, false, false,  (int)ProductFieldIndex.Name, 255, 0, 0);
 			this.AddElementFieldInfo("ProductEntity", "Price", typeof(System.Decimal), false, false, false, false,  (int)ProductFieldIndex.Price, 0, 2, 18);
 			this.AddElementFieldInfo("ProductEntity", "ProductId", typeof(System.Guid), true, false, false, false,  (int)ProductFieldIndex.ProductId, 0, 0, 0);
+			this.AddElementFieldInfo("ProductEntity", "ShopId", typeof(Nullable<System.Guid>), false, true, false, true,  (int)ProductFieldIndex.ShopId, 0, 0, 0);
 			this.AddElementFieldInfo("ProductEntity", "ShortDescription", typeof(System.String), false, false, false, true,  (int)ProductFieldIndex.ShortDescription, 500, 0, 0);
 			this.AddElementFieldInfo("ProductEntity", "Sku", typeof(System.String), false, false, false, false,  (int)ProductFieldIndex.Sku, 100, 0, 0);
 			this.AddElementFieldInfo("ProductEntity", "Slug", typeof(System.String), false, false, false, true,  (int)ProductFieldIndex.Slug, 255, 0, 0);
@@ -401,6 +403,21 @@ namespace GroceryEcommerce.HelperClasses
 			this.AddElementFieldInfo("ProductVariantEntity", "UpdatedAt", typeof(Nullable<System.DateTime>), false, false, false, true,  (int)ProductVariantFieldIndex.UpdatedAt, 0, 0, 0);
 			this.AddElementFieldInfo("ProductVariantEntity", "VariantId", typeof(System.Guid), true, false, false, false,  (int)ProductVariantFieldIndex.VariantId, 0, 0, 0);
 			this.AddElementFieldInfo("ProductVariantEntity", "Weight", typeof(Nullable<System.Decimal>), false, false, false, true,  (int)ProductVariantFieldIndex.Weight, 0, 3, 10);
+		}
+
+		/// <summary>Inits ShopEntity's info objects</summary>
+		private void InitShopEntityInfo()
+		{
+			this.AddFieldIndexEnumForElementName(typeof(ShopFieldIndex), "ShopEntity");
+			this.AddElementFieldInfo("ShopEntity", "CreatedAt", typeof(System.DateTime), false, false, false, false,  (int)ShopFieldIndex.CreatedAt, 0, 0, 0);
+			this.AddElementFieldInfo("ShopEntity", "Description", typeof(System.String), false, false, false, true,  (int)ShopFieldIndex.Description, 1073741824, 0, 0);
+			this.AddElementFieldInfo("ShopEntity", "LogoUrl", typeof(System.String), false, false, false, true,  (int)ShopFieldIndex.LogoUrl, 500, 0, 0);
+			this.AddElementFieldInfo("ShopEntity", "Name", typeof(System.String), false, false, false, false,  (int)ShopFieldIndex.Name, 255, 0, 0);
+			this.AddElementFieldInfo("ShopEntity", "OwnerUserId", typeof(System.Guid), false, true, false, false,  (int)ShopFieldIndex.OwnerUserId, 0, 0, 0);
+			this.AddElementFieldInfo("ShopEntity", "ShopId", typeof(System.Guid), true, false, false, false,  (int)ShopFieldIndex.ShopId, 0, 0, 0);
+			this.AddElementFieldInfo("ShopEntity", "Slug", typeof(System.String), false, false, false, true,  (int)ShopFieldIndex.Slug, 255, 0, 0);
+			this.AddElementFieldInfo("ShopEntity", "Status", typeof(System.Int16), false, false, false, false,  (int)ShopFieldIndex.Status, 0, 0, 5);
+			this.AddElementFieldInfo("ShopEntity", "UpdatedAt", typeof(Nullable<System.DateTime>), false, false, false, true,  (int)ShopFieldIndex.UpdatedAt, 0, 0, 0);
 		}
 
 		/// <summary>Inits PurchaseOrderEntity's info objects</summary>
@@ -579,6 +596,7 @@ namespace GroceryEcommerce.HelperClasses
 			this.AddElementFieldInfo("OrderEntity", "ShippingPhone", typeof(System.String), false, false, false, true,  (int)OrderFieldIndex.ShippingPhone, 20, 0, 0);
 			this.AddElementFieldInfo("OrderEntity", "ShippingState", typeof(System.String), false, false, false, false,  (int)OrderFieldIndex.ShippingState, 100, 0, 0);
 			this.AddElementFieldInfo("OrderEntity", "ShippingZipCode", typeof(System.String), false, false, false, false,  (int)OrderFieldIndex.ShippingZipCode, 20, 0, 0);
+			this.AddElementFieldInfo("OrderEntity", "ShopId", typeof(Nullable<System.Guid>), false, true, false, true,  (int)OrderFieldIndex.ShopId, 0, 0, 0);
 			this.AddElementFieldInfo("OrderEntity", "Status", typeof(System.Int16), false, false, false, false,  (int)OrderFieldIndex.Status, 0, 0, 5);
 			this.AddElementFieldInfo("OrderEntity", "SubTotal", typeof(System.Decimal), false, false, false, false,  (int)OrderFieldIndex.SubTotal, 0, 2, 18);
 			this.AddElementFieldInfo("OrderEntity", "TaxAmount", typeof(System.Decimal), false, false, false, false,  (int)OrderFieldIndex.TaxAmount, 0, 2, 18);
