@@ -36,6 +36,39 @@ public class CatalogProfile : Profile
             .ForMember(dest => dest.ProductCount, opt => opt.MapFrom(src => src.Products.Count))
             .IncludeAllDerived();
 
+        // PagedResult mappings for Shop
+        CreateMap<PagedResult<Shop>, PagedResult<ShopDto>>()
+            .ConvertUsing((src, dest, context) => new PagedResult<ShopDto>(
+                context.Mapper.Map<List<ShopDto>>(src.Items),
+                src.TotalCount,
+                src.Page,
+                src.PageSize
+            ));
+
+        // Shop mappings
+        CreateMap<Shop, ShopDto>()
+            .ForMember(dest => dest.OwnerUserName, opt => opt.MapFrom(src => 
+                src.OwnerUser != null 
+                    ? $"{src.OwnerUser.FirstName} {src.OwnerUser.LastName}".Trim() 
+                    : null))
+            .ForMember(dest => dest.ProductCount, opt => opt.MapFrom(src => src.Products != null ? src.Products.Count : 0))
+            .ForMember(dest => dest.OrderCount, opt => opt.MapFrom(src => src.Orders != null ? src.Orders.Count : 0));
+
+        CreateMap<Shop, CreateShopResponse>()
+            .IncludeBase<Shop, ShopDto>();
+
+        CreateMap<Shop, UpdateShopResponse>()
+            .IncludeBase<Shop, ShopDto>();
+
+        CreateMap<Shop, GetShopByIdResponse>()
+            .IncludeBase<Shop, ShopDto>();
+
+        CreateMap<Shop, GetShopBySlugResponse>()
+            .IncludeBase<Shop, ShopDto>();
+
+        CreateMap<Shop, GetShopsByOwnerResponse>()
+            .IncludeBase<Shop, ShopDto>();
+
         // Product mappings
         CreateMap<Product, ProductDto>()
             .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : string.Empty))

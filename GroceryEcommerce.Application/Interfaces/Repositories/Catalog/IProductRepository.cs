@@ -18,6 +18,7 @@ public interface IProductRepository
     Task<Result<bool>> ExistsAsync(Guid productId, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<Product>>> GetByCategoryIdAsync( PagedRequest request, Guid categoryId, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<Product>>> GetByBrandIdAsync( PagedRequest request, Guid brandId, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<Product>>> GetByShopIdAsync( PagedRequest request, Guid shopId, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<Product>>> GetFeaturedProductsAsync( PagedRequest request, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<Product>>> GetActiveProductsAsync(PagedRequest request, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<Product>>> GetLowStockProductsAsync( PagedRequest request, int threshold = 10, CancellationToken cancellationToken = default);

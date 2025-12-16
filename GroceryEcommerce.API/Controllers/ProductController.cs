@@ -37,6 +37,17 @@ public class ProductController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("by-shop/{shopId:guid}")]
+    [Produces("application/json")]
+    public async Task<ActionResult<Result<PagedResult<ProductBaseResponse>>>> GetProductsByShop(
+        [FromRoute] Guid shopId,
+        [FromQuery] PagedRequest request)
+    {
+        var query = new GetProductsByShopPagingQuery(shopId, request);
+        var result = await mediator.Send(query);
+        return Ok(result);
+    }
+
     [AllowAnonymous]
     [HttpGet("{productId}")]
     public async Task<ActionResult<Result<GetProductByIdResponse>>> GetById([FromRoute] Guid productId)

@@ -102,6 +102,16 @@ public static class DependencyInjection
             return new BrandRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
         });
 
+        services.AddScoped<IShopRepository>(provider =>
+        {
+            var adapter = provider.GetRequiredService<DataAccessAdapter>();
+            var unitOfWorkService = provider.GetRequiredService<IUnitOfWorkService>();
+            var mapper = provider.GetRequiredService<IMapper>();
+            var logger = provider.GetRequiredService<ILogger<ShopRepository>>();
+            var cacheService = provider.GetRequiredService<ICacheService>();
+            return new ShopRepository(adapter, unitOfWorkService, mapper, cacheService, logger);
+        });
+
         services.AddScoped<IProductRepository>(provider =>
         {
             var adapter = provider.GetRequiredService<DataAccessAdapter>();

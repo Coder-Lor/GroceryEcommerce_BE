@@ -44,6 +44,8 @@ public class Product
     public Guid CategoryId { get; set; }
     
     public Guid? BrandId { get; set; }
+
+    public Guid? ShopId { get; set; }
     
     public short Status { get; set; } = 1;
     
@@ -66,6 +68,7 @@ public class Product
     // Navigation properties
     public Category Category { get; set; } = null!;
     public Brand? Brand { get; set; }
+    public Shop? Shop { get; set; }
     public User CreatedByUser { get; set; } = null!;
     public User? UpdatedByUser { get; set; }
     public ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
@@ -75,3 +78,4 @@ public class Product
     public ICollection<ProductQuestion> ProductQuestions { get; set; } = new List<ProductQuestion>();
     public ICollection<Reviews.ProductReview> Reviews { get; set; } = new List<Reviews.ProductReview>();
 }
+    

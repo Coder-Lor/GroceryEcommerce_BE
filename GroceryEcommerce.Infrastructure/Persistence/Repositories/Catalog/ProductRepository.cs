@@ -51,6 +51,7 @@ public class ProductRepository(
             new SearchableField("Sku", typeof(string)),
             new SearchableField("CategoryId", typeof(Guid)),
             new SearchableField("BrandId", typeof(Guid)),
+            new SearchableField("ShopId", typeof(Guid)),
             new SearchableField("IsFeatured", typeof(bool))
         };
     }
@@ -141,6 +142,7 @@ public class ProductRepository(
             ["stock"] = ProductFields.StockQuantity,
             ["categoryid"] = ProductFields.CategoryId,
             ["brandid"] = ProductFields.BrandId,
+            ["shopid"] = ProductFields.ShopId,
             ["isfeatured"] = ProductFields.IsFeatured
         };
     }
@@ -481,6 +483,12 @@ public class ProductRepository(
     {
         var prefetchPath = BuildProductPrefetchPath();
         return await GetPagedConfiguredAsync(request, r => r.WithFilter("BrandId", brandId), prefetchPath, cancellationToken: cancellationToken);
+    }
+
+    public async Task<Result<PagedResult<Product>>> GetByShopIdAsync(PagedRequest request, Guid shopId, CancellationToken cancellationToken = default)
+    {
+        var prefetchPath = BuildProductPrefetchPath();
+        return await GetPagedConfiguredAsync(request, r => r.WithFilter("ShopId", shopId), prefetchPath, cancellationToken: cancellationToken);
     }
 
     public async Task<Result<PagedResult<Product>>> GetFeaturedProductsAsync(PagedRequest request, CancellationToken cancellationToken = default)

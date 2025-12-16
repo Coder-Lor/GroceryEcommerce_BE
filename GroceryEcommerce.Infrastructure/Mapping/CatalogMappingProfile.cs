@@ -67,6 +67,17 @@ public class CatalogMappingProfile : Profile
             .ForMember(dest => dest.CreatedByUser, opt => opt.Ignore())
             .ForMember(dest => dest.UpdatedByUser, opt => opt.Ignore());
 
+        // Shop mapping - AutoMapper tự động map các thuộc tính có tên giống nhau
+        CreateMap<Shop, ShopEntity>()
+            .ForMember(dest => dest.Products, opt => opt.Ignore())
+            .ForMember(dest => dest.Orders, opt => opt.Ignore())
+            .ForMember(dest => dest.User, opt => opt.Ignore());
+
+        CreateMap<ShopEntity, Shop>()
+            .ForMember(dest => dest.Products, opt => opt.Ignore())
+            .ForMember(dest => dest.Orders, opt => opt.Ignore())
+            .ForMember(dest => dest.OwnerUser, opt => opt.Ignore());
+
         // ProductImage mapping - AutoMapper tự động map các thuộc tính có tên giống nhau
         CreateMap<ProductImage, ProductImageEntity>()
             .ForMember(dest => dest.Product, opt => opt.Ignore());

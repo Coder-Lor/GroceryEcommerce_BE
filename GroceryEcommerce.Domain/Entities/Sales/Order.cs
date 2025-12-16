@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using GroceryEcommerce.Domain.Entities.Auth;
+using GroceryEcommerce.Domain.Entities.Catalog;
 
 namespace GroceryEcommerce.Domain.Entities.Sales;
 
@@ -13,6 +14,8 @@ public class Order
     public required string OrderNumber { get; set; }
     
     public Guid UserId { get; set; }
+
+    public Guid? ShopId { get; set; }
     
     public DateTime OrderDate { get; set; } = DateTime.UtcNow;
     
@@ -118,6 +121,7 @@ public class Order
     // Navigation properties
     public User User { get; set; } = null!;
     public User? CreatedByUser { get; set; }
+    public Shop? Shop { get; set; }
     public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     public ICollection<OrderStatusHistory> OrderStatusHistories { get; set; } = new List<OrderStatusHistory>();
     public ICollection<OrderPayment> OrderPayments { get; set; } = new List<OrderPayment>();
