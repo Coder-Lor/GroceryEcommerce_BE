@@ -26,6 +26,36 @@ public class GetShopsByOwnerHandler(
         }
 
         var response = mapper.Map<PagedResult<ShopDto>>(shopResult.Data);
+        
+        // Query ProductCount và OrderCount từ database cho mỗi shop
+        foreach (var shopDto in response.Items)
+        {
+            if (shopDto.ShopId != Guid.Empty)
+            {
+                try
+                {
+                    // Query ProductCount
+                    var productCountResult = await repository.GetProductCountByShopAsync(shopDto.ShopId, cancellationToken);
+                    if (productCountResult.IsSuccess)
+                    {
+                        shopDto.ProductCount = productCountResult.Data;
+                    }
+                    
+                    // Query OrderCount
+                    var orderCountResult = await repository.GetOrderCountByShopAsync(shopDto.ShopId, cancellationToken);
+                    if (orderCountResult.IsSuccess)
+                    {
+                        shopDto.OrderCount = orderCountResult.Data;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "Error querying counts for shop: {ShopId}", shopDto.ShopId);
+                    // Giữ giá trị mặc định từ mapping (0)
+                }
+            }
+        }
+        
         return Result<PagedResult<ShopDto>>.Success(response);
     }
 }

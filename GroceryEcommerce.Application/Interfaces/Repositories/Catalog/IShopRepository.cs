@@ -18,6 +18,10 @@ public interface IShopRepository
     Task<Result<PagedResult<Shop>>> GetActiveShopsAsync(PagedRequest request, CancellationToken cancellationToken = default);
     Task<Result<bool>> ExistsAsync(Guid shopId, CancellationToken cancellationToken = default);
     Task<Result<bool>> ExistsBySlugAsync(string slug, CancellationToken cancellationToken = default);
+    
+    // Count queries
+    Task<Result<int>> GetProductCountByShopAsync(Guid shopId, CancellationToken cancellationToken = default);
+    Task<Result<int>> GetOrderCountByShopAsync(Guid shopId, CancellationToken cancellationToken = default);
 }
 
 

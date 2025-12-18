@@ -5,6 +5,7 @@ using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.DatabaseSpecific;
 using GroceryEcommerce.Domain.Entities.Catalog;
 using GroceryEcommerce.EntityClasses;
+using GroceryEcommerce.FactoryClasses;
 using GroceryEcommerce.HelperClasses;
 using GroceryEcommerce.Infrastructure.Persistence.Repositories.Common;
 using Microsoft.Extensions.Logging;
@@ -183,7 +184,13 @@ public class ShopRepository(
     }
 
     public Task<Result<PagedResult<Shop>>> GetPagedAsync(PagedRequest request, CancellationToken cancellationToken = default)
-        => GetPagedConfiguredAsync(request, _ => { }, cancellationToken: cancellationToken);
+    {
+        // Tạo PrefetchPath để include OwnerUser
+        var prefetchPath = new PrefetchPath2(EntityType.ShopEntity);
+        prefetchPath.Add(ShopEntity.PrefetchPathUser);
+        
+        return GetPagedConfiguredAsync(request, _ => { }, prefetchPath, cancellationToken: cancellationToken);
+    }
 
     public async Task<Result<bool>> CreateAsync(Shop shop, CancellationToken cancellationToken = default)
     {
@@ -281,14 +288,25 @@ public class ShopRepository(
             return Task.FromResult(Result<PagedResult<Shop>>.Failure("Invalid owner user ID."));
         }
 
+        // Tạo PrefetchPath để include OwnerUser
+        var prefetchPath = new PrefetchPath2(EntityType.ShopEntity);
+        prefetchPath.Add(ShopEntity.PrefetchPathUser);
+
         return GetPagedConfiguredAsync(
             request,
             r => r.WithFilter("OwnerUserId", ownerUserId),
+            prefetchPath,
             cancellationToken: cancellationToken);
     }
 
     public Task<Result<PagedResult<Shop>>> GetActiveShopsAsync(PagedRequest request, CancellationToken cancellationToken = default)
-        => GetPagedConfiguredAsync(request, r => r.WithFilter("Status", (short)1), cancellationToken: cancellationToken);
+    {
+        // Tạo PrefetchPath để include OwnerUser
+        var prefetchPath = new PrefetchPath2(EntityType.ShopEntity);
+        prefetchPath.Add(ShopEntity.PrefetchPathUser);
+        
+        return GetPagedConfiguredAsync(request, r => r.WithFilter("Status", (short)1), prefetchPath, cancellationToken: cancellationToken);
+    }
 
     public Task<Result<bool>> ExistsAsync(Guid shopId, CancellationToken cancellationToken = default)
     {
@@ -310,6 +328,60 @@ public class ShopRepository(
         }
 
         return ExistsByCountAsync(ShopFields.Slug, slug.Trim(), cancellationToken);
+    }
+
+    public async Task<Result<int>> GetProductCountByShopAsync(Guid shopId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (shopId == Guid.Empty)
+            {
+                logger.LogWarning("Shop id is required");
+                return Result<int>.Failure("Invalid shop ID.");
+            }
+
+            var adapter = GetAdapter();
+            var qf = new QueryFactory();
+            var query = qf.Product
+                .Where(ProductFields.ShopId == shopId)
+                .Select(() => Functions.CountRow());
+            
+            var count = await adapter.FetchScalarAsync<int>(query, cancellationToken);
+            logger.LogInformation("Product count fetched for shop: {ShopId}, Count: {Count}", shopId, count);
+            return Result<int>.Success(count);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting product count by shop: {ShopId}", shopId);
+            return Result<int>.Failure("An error occurred while retrieving product count.");
+        }
+    }
+
+    public async Task<Result<int>> GetOrderCountByShopAsync(Guid shopId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (shopId == Guid.Empty)
+            {
+                logger.LogWarning("Shop id is required");
+                return Result<int>.Failure("Invalid shop ID.");
+            }
+
+            var adapter = GetAdapter();
+            var qf = new QueryFactory();
+            var query = qf.Order
+                .Where(OrderFields.ShopId == shopId)
+                .Select(() => Functions.CountRow());
+            
+            var count = await adapter.FetchScalarAsync<int>(query, cancellationToken);
+            logger.LogInformation("Order count fetched for shop: {ShopId}, Count: {Count}", shopId, count);
+            return Result<int>.Success(count);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting order count by shop: {ShopId}", shopId);
+            return Result<int>.Failure("An error occurred while retrieving order count.");
+        }
     }
 }
 

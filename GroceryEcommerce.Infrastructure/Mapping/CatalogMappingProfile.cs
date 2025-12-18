@@ -76,7 +76,7 @@ public class CatalogMappingProfile : Profile
         CreateMap<ShopEntity, Shop>()
             .ForMember(dest => dest.Products, opt => opt.Ignore())
             .ForMember(dest => dest.Orders, opt => opt.Ignore())
-            .ForMember(dest => dest.OwnerUser, opt => opt.Ignore());
+            .ForMember(dest => dest.OwnerUser, opt => opt.MapFrom(src => src.User));
 
         // ProductImage mapping - AutoMapper tự động map các thuộc tính có tên giống nhau
         CreateMap<ProductImage, ProductImageEntity>()
