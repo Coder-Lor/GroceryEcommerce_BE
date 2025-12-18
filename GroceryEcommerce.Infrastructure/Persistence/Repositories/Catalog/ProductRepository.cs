@@ -492,8 +492,82 @@ public class ProductRepository(
 
     public async Task<Result<PagedResult<Product>>> GetByShopIdAsync(PagedRequest request, Guid shopId, CancellationToken cancellationToken = default)
     {
-        var prefetchPath = BuildProductPrefetchPath();
-        return await GetPagedConfiguredAsync(request, r => r.WithFilter("ShopId", shopId), prefetchPath, cancellationToken: cancellationToken);
+        if (shopId == Guid.Empty)
+        {
+            logger.LogWarning("Shop id is required");
+            return Result<PagedResult<Product>>.Failure("Invalid shop ID.");
+        }
+
+        try
+        {
+            request.AvailableFields = GetSearchableFields();
+            var validation = request.Validate();
+            if (validation != System.ComponentModel.DataAnnotations.ValidationResult.Success)
+            {
+                logger.LogWarning("Invalid paged request: {Errors}", validation?.ErrorMessage);
+                return Result<PagedResult<Product>>.Failure(validation?.ErrorMessage ?? "Invalid paged request");
+            }
+
+            var prefetchPath = BuildProductPrefetchPath();
+            var adapter = GetAdapter();
+            var qf = new QueryFactory();
+            
+            // Filter trực tiếp bằng EntityField thay vì qua FilterCriteria để tránh lỗi parse Guid
+            var query = qf.Create<ProductEntity>()
+                .Where(ProductFields.ShopId == shopId);
+            var countQuery = qf.Create<ProductEntity>()
+                .Where(ProductFields.ShopId == shopId);
+
+            // Apply search
+            if (request.HasSearch)
+            {
+                query = ApplySearch(query, request.Search ?? string.Empty);
+                countQuery = ApplySearch(countQuery, request.Search ?? string.Empty);
+            }
+
+            // Apply other filters (excluding ShopId since we already filtered it)
+            if (request.HasFilters)
+            {
+                foreach (var filter in request.Filters.Where(f => !f.FieldName.Equals("ShopId", StringComparison.OrdinalIgnoreCase)))
+                {
+                    query = ApplyFilter(query, filter);
+                    countQuery = ApplyFilter(countQuery, filter);
+                }
+            }
+
+            // Get total count
+            var countEntities = await FetchEntitiesAsync(countQuery, adapter, null, cancellationToken);
+            var totalCount = countEntities.Count;
+
+            // Apply sorting
+            if (request.HasSorting)
+            {
+                query = ApplySorting(query, request.SortBy, request.SortDirection);
+            }
+            else
+            {
+                query = ApplyDefaultSorting(query);
+            }
+
+            // Apply paging
+            query = query.Page(request.Page, request.PageSize);
+
+            // Fetch data với PrefetchPath
+            var entities = await FetchEntitiesAsync(query, adapter, prefetchPath, cancellationToken);
+            var domainEntities = Mapper.Map<List<Product>>(entities);
+
+            var result = new PagedResult<Product>(domainEntities, totalCount, request.Page, request.PageSize);
+
+            logger.LogInformation("Paged Products by ShopId fetched: ShopId {ShopId}, Page {Page}, PageSize {PageSize}, Total {Total}", 
+                shopId, request.Page, request.PageSize, totalCount);
+
+            return Result<PagedResult<Product>>.Success(result);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error fetching products by shop: {ShopId}", shopId);
+            return Result<PagedResult<Product>>.Failure($"An error occurred while fetching products by shop.");
+        }
     }
 
     public async Task<Result<PagedResult<Product>>> GetFeaturedProductsAsync(PagedRequest request, CancellationToken cancellationToken = default)
