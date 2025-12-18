@@ -1,12 +1,14 @@
 using System.Security.Claims;
 using GroceryEcommerce.Application.Interfaces.Services;
+using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
 using Microsoft.AspNetCore.Http;
 
 namespace GroceryEcommerce.Infrastructure.Services;
 
-public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICurrentUserService
+public class CurrentUserService(IHttpContextAccessor httpContextAccessor, IShopRepository shopRepository) : ICurrentUserService
 {
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+    private readonly IShopRepository _shopRepository = shopRepository ?? throw new ArgumentNullException(nameof(shopRepository));
 
     public Guid? GetCurrentUserId()
     {
@@ -24,6 +26,31 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
     {
         var username = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.Name)?.Value;
         return username;
+    }
+
+    public Guid? GetCurrentUserShopId()
+    {
+        var userId = GetCurrentUserId();
+        if (userId is null || userId == Guid.Empty)
+        {
+            return null;
+        }
+
+        // Vì CurrentUserService không async, tạm thời lấy shop đầu tiên theo OwnerUserId
+        // Nên chỉ dùng cho các user có 1 shop.
+        var shopsTask = _shopRepository.GetByOwnerAsync(userId.Value, new Application.Common.PagedRequest
+        {
+            Page = 1,
+            PageSize = 1
+        });
+
+        var shopsResult = shopsTask.GetAwaiter().GetResult();
+        if (!shopsResult.IsSuccess || shopsResult.Data is null || shopsResult.Data.Items.Count == 0)
+        {
+            return null;
+        }
+
+        return shopsResult.Data.Items.First().ShopId;
     }
 
     public List<string> GetCurrentUserRoles()

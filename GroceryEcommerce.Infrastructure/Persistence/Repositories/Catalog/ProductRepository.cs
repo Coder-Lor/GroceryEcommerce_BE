@@ -124,6 +124,11 @@ public class ProductRepository(
             {
                 FieldName = "BrandId", FieldType = typeof(Guid), IsSearchable = true, IsSortable = true,
                 IsFilterable = true
+            },
+            new FieldMapping
+            {
+                FieldName = "ShopId", FieldType = typeof(Guid), IsSearchable = true, IsSortable = true,
+                IsFilterable = true
             }
         };
     }

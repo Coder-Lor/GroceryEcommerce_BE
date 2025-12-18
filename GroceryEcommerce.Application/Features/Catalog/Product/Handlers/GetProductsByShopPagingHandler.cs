@@ -2,6 +2,7 @@ using AutoMapper;
 using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Features.Catalog.Product.Queries;
 using GroceryEcommerce.Application.Interfaces.Repositories.Catalog;
+using GroceryEcommerce.Application.Interfaces.Services;
 using GroceryEcommerce.Application.Models.Catalog;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -11,14 +12,29 @@ namespace GroceryEcommerce.Application.Features.Catalog.Product.Handlers;
 public class GetProductsByShopPagingHandler(
     IMapper mapper,
     IProductRepository repository,
+    ICurrentUserService currentUserService,
     ILogger<GetProductsByShopPagingHandler> logger
 ) : IRequestHandler<GetProductsByShopPagingQuery, Result<PagedResult<ProductBaseResponse>>>
 {
     public async Task<Result<PagedResult<ProductBaseResponse>>> Handle(GetProductsByShopPagingQuery request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Handling GetProductsByShopPagingQuery - ShopId: {ShopId}, Page: {Page}, PageSize: {PageSize}", request.ShopId, request.Request.Page, request.Request.PageSize);
+        // Nếu không truyền ShopId (Guid.Empty), tự lấy theo user hiện tại
+        var shopId = request.ShopId;
+        if (shopId == Guid.Empty)
+        {
+            var currentShopId = currentUserService.GetCurrentUserShopId();
+            if (currentShopId is null || currentShopId == Guid.Empty)
+            {
+                logger.LogWarning("GetProductsByShopPagingQuery - No ShopId provided and current user has no shop. UserId: {UserId}", currentUserService.GetCurrentUserId());
+                return Result<PagedResult<ProductBaseResponse>>.Failure("Shop not found for current user.");
+            }
 
-        var result = await repository.GetByShopIdAsync(request.Request, request.ShopId, cancellationToken);
+            shopId = currentShopId.Value;
+        }
+
+        logger.LogInformation("Handling GetProductsByShopPagingQuery - ShopId: {ShopId}, Page: {Page}, PageSize: {PageSize}", shopId, request.Request.Page, request.Request.PageSize);
+
+        var result = await repository.GetByShopIdAsync(request.Request, shopId, cancellationToken);
         if (!result.IsSuccess || result.Data is null)
         {
             return Result<PagedResult<ProductBaseResponse>>.Failure(result.ErrorMessage ?? "Failed to get products by shop.");

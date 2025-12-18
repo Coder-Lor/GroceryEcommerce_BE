@@ -74,6 +74,7 @@ public class CreateProductWithFilesCommandHandler : IRequestHandler<CreateProduc
             try
             {
                 var userId = _currentUserService.GetCurrentUserId();
+                var shopId = _currentUserService.GetCurrentUserShopId();
                 // Create new product entity
                 var product = new Domain.Entities.Catalog.Product
                 {
@@ -92,6 +93,7 @@ public class CreateProductWithFilesCommandHandler : IRequestHandler<CreateProduc
                     Dimensions = request.Dimensions,
                     CategoryId = request.CategoryId,
                     BrandId = request.BrandId,
+                    ShopId = shopId,
                     Status = request.Status,
                     IsFeatured = request.IsFeatured,
                     IsDigital = request.IsDigital,
@@ -167,28 +169,58 @@ public class CreateProductWithFilesCommandHandler : IRequestHandler<CreateProduc
                 // Create product variants
                 if (request.Variants != null && request.Variants.Any())
                 {
-                    foreach (var variantRequest in request.Variants)
+                    for (int i = 0; i < request.Variants.Count; i++)
                     {
-                        var variant = new Domain.Entities.Catalog.ProductVariant
-                        {
-                            VariantId = Guid.NewGuid(),
-                            ProductId = product.ProductId,
-                            // Guard against nulls in incoming variant DTOs to prevent possible null reference issues
-                            Name = variantRequest.Name ?? string.Empty,
-                            Sku = variantRequest.Sku,
-                            Price = variantRequest.Price,
-                            DiscountPrice = variantRequest.DiscountPrice,
-                            StockQuantity = variantRequest.StockQuantity,
-                            Weight = variantRequest.Weight,
-                            ImageUrl = variantRequest.ImageUrl,
-                            Status = variantRequest.Status,
-                            CreatedAt = DateTime.UtcNow
-                        };
+                        var variantRequest = request.Variants[i];
 
-                        var variantResult = await _productVariantRepository.CreateAsync(variant, cancellationToken);
-                        if (!variantResult.IsSuccess)
+                        try
                         {
-                            _logger.LogWarning("Failed to create product variant: {Name}", variantRequest.Name);
+                            // Bảo đảm SKU của variant không bị trống và không trùng
+                            var baseSku = string.IsNullOrWhiteSpace(variantRequest.Sku)
+                                ? $"{product.Sku}-VAR-{i + 1}"
+                                : variantRequest.Sku.Trim();
+
+                            var variantSku = baseSku;
+                            var attempt = 0;
+                            while (true)
+                            {
+                                var existingVariant = await _productVariantRepository.GetBySkuAsync(variantSku, cancellationToken);
+                                if (!existingVariant.IsSuccess || existingVariant.Data is null)
+                                {
+                                    // Không trùng, dùng SKU này
+                                    break;
+                                }
+
+                                attempt++;
+                                variantSku = $"{baseSku}-{attempt}";
+                            }
+
+                            var variant = new Domain.Entities.Catalog.ProductVariant
+                            {
+                                VariantId = Guid.NewGuid(),
+                                ProductId = product.ProductId,
+                                // Guard against nulls in incoming variant DTOs to prevent possible null reference issues
+                                Name = variantRequest.Name ?? string.Empty,
+                                Sku = variantSku,
+                                Price = variantRequest.Price,
+                                DiscountPrice = variantRequest.DiscountPrice,
+                                StockQuantity = variantRequest.StockQuantity,
+                                MinStockLevel = variantRequest.MinStockLevel,
+                                Weight = variantRequest.Weight,
+                                ImageUrl = variantRequest.ImageUrl,
+                                Status = variantRequest.Status,
+                                CreatedAt = DateTime.UtcNow
+                            };
+
+                            var variantResult = await _productVariantRepository.CreateAsync(variant, cancellationToken);
+                            if (!variantResult.IsSuccess)
+                            {
+                                _logger.LogWarning("Failed to create product variant: {Name} - {Error}", variantRequest.Name, variantResult.ErrorMessage);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Error creating variant {Index} for product {ProductId}", i, product.ProductId);
                         }
                     }
                 }
