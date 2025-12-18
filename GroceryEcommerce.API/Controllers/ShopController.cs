@@ -2,14 +2,17 @@ using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Features.Catalog.Shop.Commands;
 using GroceryEcommerce.Application.Features.Catalog.Shop.Queries;
 using GroceryEcommerce.Application.Models.Catalog;
+using GroceryEcommerce.Application.Interfaces.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace GroceryEcommerce.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ShopController(IMediator mediator) : ControllerBase
+public class ShopController(IMediator mediator, IAzureBlobStorageService blobStorageService) : ControllerBase
 {
     [HttpGet("paging")]
     public async Task<ActionResult<Result<PagedResult<ShopDto>>>> GetShopsPaging([FromQuery] PagedRequest request)
@@ -55,6 +58,85 @@ public class ShopController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("register")]
+    public async Task<ActionResult<Result<CreateShopResponse>>> Register([FromBody] CreateShopCommand command)
+    {
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpPost("register-with-file")]
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<Result<CreateShopResponse>>> RegisterWithFile([FromForm] CreateShopWithFileRequest request)
+    {
+        string? logoUrl = null;
+
+        if (request.LogoFile is not null && request.LogoFile.Length > 0)
+        {
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var ext = Path.GetExtension(request.LogoFile.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(ext))
+            {
+                return BadRequest(Result<CreateShopResponse>.Failure("Định dạng file không hợp lệ. Chỉ cho phép JPG, JPEG, PNG, WEBP"));
+            }
+
+            if (request.LogoFile.Length > 10 * 1024 * 1024)
+            {
+                return BadRequest(Result<CreateShopResponse>.Failure("Kích thước file vượt quá 10MB"));
+            }
+
+            try
+            {
+                using var inputStream = request.LogoFile.OpenReadStream();
+                using var image = Image.FromStream(inputStream);
+
+                const int maxSize = 1200;
+                var newWidth = image.Width;
+                var newHeight = image.Height;
+                if (image.Width > maxSize || image.Height > maxSize)
+                {
+                    var ratio = Math.Min((double)maxSize / image.Width, (double)maxSize / image.Height);
+                    newWidth = (int)(image.Width * ratio);
+                    newHeight = (int)(image.Height * ratio);
+                }
+
+                using var resized = new Bitmap(image, new Size(newWidth, newHeight));
+                using var ms = new MemoryStream();
+
+                var encoder = GetJpegEncoder();
+                if (encoder is null)
+                {
+                    resized.Save(ms, ImageFormat.Jpeg);
+                }
+                else
+                {
+                    var encoderParams = new EncoderParameters(1);
+                    encoderParams.Param[0] = new EncoderParameter(Encoder.Quality, 80L);
+                    resized.Save(ms, encoder, encoderParams);
+                }
+
+                ms.Position = 0;
+                logoUrl = await blobStorageService.UploadImageAsync(ms, $"{Path.GetFileNameWithoutExtension(request.LogoFile.FileName)}.jpg", "image/jpeg");
+            }
+            catch
+            {
+                using var stream = request.LogoFile.OpenReadStream();
+                logoUrl = await blobStorageService.UploadImageAsync(stream, request.LogoFile.FileName, request.LogoFile.ContentType);
+            }
+        }
+
+        var command = new CreateShopCommand(
+            request.Name,
+            request.Slug,
+            request.Description,
+            logoUrl,
+            request.Status,
+            request.OwnerUserId);
+
+        var result = await mediator.Send(command);
+        return Ok(result);
+    }
+
     [HttpPut("{shopId:guid}")]
     public async Task<ActionResult<Result<UpdateShopResponse>>> Update(
         [FromRoute] Guid shopId,
@@ -90,6 +172,21 @@ public class ShopController(IMediator mediator) : ControllerBase
         var result = await mediator.Send(new DeleteShopCommand(shopId));
         return Ok(result);
     }
+
+    private static ImageCodecInfo? GetJpegEncoder()
+    {
+        return ImageCodecInfo.GetImageEncoders().FirstOrDefault(c => c.FormatID == ImageFormat.Jpeg.Guid);
+    }
 }
 
+
+public class CreateShopWithFileRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string? Slug { get; set; }
+    public string? Description { get; set; }
+    public short Status { get; set; } = 1;
+    public Guid OwnerUserId { get; set; }
+    public IFormFile? LogoFile { get; set; }
+}
 

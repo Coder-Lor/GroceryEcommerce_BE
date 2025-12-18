@@ -183,7 +183,7 @@ public class ShopRepository(
     }
 
     public Task<Result<PagedResult<Shop>>> GetPagedAsync(PagedRequest request, CancellationToken cancellationToken = default)
-        => GetPagedConfiguredAsync(request, cancellationToken: cancellationToken);
+        => GetPagedConfiguredAsync(request, _ => { }, cancellationToken: cancellationToken);
 
     public async Task<Result<Shop>> CreateAsync(Shop shop, CancellationToken cancellationToken = default)
     {
