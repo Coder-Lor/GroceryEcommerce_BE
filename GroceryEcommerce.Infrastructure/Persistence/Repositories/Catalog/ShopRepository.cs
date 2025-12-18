@@ -185,7 +185,7 @@ public class ShopRepository(
     public Task<Result<PagedResult<Shop>>> GetPagedAsync(PagedRequest request, CancellationToken cancellationToken = default)
         => GetPagedConfiguredAsync(request, _ => { }, cancellationToken: cancellationToken);
 
-    public async Task<Result<Shop>> CreateAsync(Shop shop, CancellationToken cancellationToken = default)
+    public async Task<Result<bool>> CreateAsync(Shop shop, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -197,18 +197,21 @@ public class ShopRepository(
             if (!saved)
             {
                 logger.LogWarning("Failed to create shop: {Name}", shop.Name);
-                return Result<Shop>.Failure("Failed to create shop.");
+                return Result<bool>.Failure("Failed to create shop.");
             }
+
+            // Cập nhật ShopId vào shop object sau khi save
+            shop.ShopId = entity.ShopId;
 
             var cacheKey = $"Shop_{entity.ShopId}";
             await CacheService.RemoveAsync(cacheKey, cancellationToken);
-            logger.LogInformation("Shop created: {Name}", shop.Name);
-            return Result<Shop>.Success(Mapper.Map<Shop>(entity));
+            logger.LogInformation("Shop created: {Name} with ShopId: {ShopId}", shop.Name, shop.ShopId);
+            return Result<bool>.Success(true);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error creating shop: {Name}", shop.Name);
-            return Result<Shop>.Failure("An error occurred while creating the shop.");
+            return Result<bool>.Failure("An error occurred while creating the shop.");
         }
     }
 

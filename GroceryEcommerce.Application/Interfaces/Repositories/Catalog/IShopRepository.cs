@@ -9,7 +9,7 @@ public interface IShopRepository
     Task<Result<Shop?>> GetByIdAsync(Guid shopId, CancellationToken cancellationToken = default);
     Task<Result<Shop?>> GetBySlugAsync(string slug, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<Shop>>> GetPagedAsync(PagedRequest request, CancellationToken cancellationToken = default);
-    Task<Result<Shop>> CreateAsync(Shop shop, CancellationToken cancellationToken = default);
+    Task<Result<bool>> CreateAsync(Shop shop, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateAsync(Shop shop, CancellationToken cancellationToken = default);
     Task<Result<bool>> DeleteAsync(Guid shopId, CancellationToken cancellationToken = default);
 
