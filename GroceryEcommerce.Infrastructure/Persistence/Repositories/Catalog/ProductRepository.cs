@@ -197,6 +197,15 @@ public class ProductRepository(
         var productTagAssignmentsPath = ProductEntity.PrefetchPathProductTagAssignments;
         productTagAssignmentsPath.SubPath.Add(ProductTagAssignmentEntity.PrefetchPathProductTag);
         prefetchPath.Add(productTagAssignmentsPath);
+
+        // Thêm prefetch cho Shop
+        prefetchPath.Add(ProductEntity.PrefetchPathShop);
+
+        // Thêm prefetch cho Category
+        prefetchPath.Add(ProductEntity.PrefetchPathCategory);
+
+        // Thêm prefetch cho Brand
+        prefetchPath.Add(ProductEntity.PrefetchPathBrand);
         
         return prefetchPath;
     }
@@ -215,6 +224,15 @@ public class ProductRepository(
         var productTagAssignmentsPath = ProductEntity.PrefetchPathProductTagAssignments;
         productTagAssignmentsPath.SubPath.Add(ProductTagAssignmentEntity.PrefetchPathProductTag);
         prefetchPaths.Add(productTagAssignmentsPath);
+
+        // Thêm prefetch cho Shop
+        prefetchPaths.Add(ProductEntity.PrefetchPathShop);
+
+        // Thêm prefetch cho Category
+        prefetchPaths.Add(ProductEntity.PrefetchPathCategory);
+
+        // Thêm prefetch cho Brand
+        prefetchPaths.Add(ProductEntity.PrefetchPathBrand);
 
         return prefetchPaths;
     }

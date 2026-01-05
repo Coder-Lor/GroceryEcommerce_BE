@@ -20,6 +20,7 @@ public record UpdateProductCommand(
     string? Dimensions,
     Guid CategoryId,
     Guid? BrandId,
+    Guid? ShopId,
     short Status,
     bool IsFeatured,
     bool IsDigital,

@@ -19,6 +19,7 @@ public record CreateProductCommand(
     string? Dimensions,
     Guid CategoryId,
     Guid? BrandId,
+    Guid? ShopId = null,
     short Status = 1,
     bool IsFeatured = false,
     bool IsDigital = false,

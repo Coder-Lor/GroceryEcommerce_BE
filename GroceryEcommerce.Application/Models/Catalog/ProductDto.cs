@@ -21,6 +21,10 @@ public record ProductBaseResponse
     public string CategoryName { get; set; } = string.Empty;
     public Guid? BrandId { get; set; }
     public string? BrandName { get; set; }
+    public Guid? ShopId { get; set; }
+    public string? ShopName { get; set; }
+    public string? ShopDescription { get; set; }
+    public string? ShopLogoUrl { get; set; }
     public short Status { get; set; }
     public bool IsFeatured { get; set; }
     public bool IsDigital { get; set; }

@@ -112,6 +112,7 @@ public class UpdateProductWithFilesCommandHandler : IRequestHandler<UpdateProduc
                 existingProduct.Dimensions = request.Dimensions;
                 existingProduct.CategoryId = request.CategoryId;
                 existingProduct.BrandId = request.BrandId;
+                existingProduct.ShopId = request.ShopId;
                 existingProduct.Status = request.Status;
                 existingProduct.IsFeatured = request.IsFeatured;
                 existingProduct.IsDigital = request.IsDigital;

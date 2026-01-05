@@ -74,6 +74,9 @@ public class CatalogProfile : Profile
         CreateMap<Product, ProductDto>()
             .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : string.Empty))
             .ForMember(dest => dest.BrandName, opt => opt.MapFrom(src => src.Brand != null ? src.Brand.Name : null))
+            .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop != null ? src.Shop.Name : null))
+            .ForMember(dest => dest.ShopDescription, opt => opt.MapFrom(src => src.Shop != null ? src.Shop.Description : null))
+            .ForMember(dest => dest.ShopLogoUrl, opt => opt.MapFrom(src => src.Shop != null ? src.Shop.LogoUrl : null))
             .ForMember(dest => dest.PrimaryImageUrl, opt => opt.MapFrom(src => 
                 src.ProductImages != null && src.ProductImages.Any(i => i.IsPrimary) 
                     ? src.ProductImages.FirstOrDefault(i => i.IsPrimary)!.ImageUrl 
@@ -106,6 +109,9 @@ public class CatalogProfile : Profile
         CreateMap<Product, ProductBaseResponse>()
             .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : string.Empty))
             .ForMember(dest => dest.BrandName, opt => opt.MapFrom(src => src.Brand != null ? src.Brand.Name : null))
+            .ForMember(dest => dest.ShopName, opt => opt.MapFrom(src => src.Shop != null ? src.Shop.Name : null))
+            .ForMember(dest => dest.ShopDescription, opt => opt.MapFrom(src => src.Shop != null ? src.Shop.Description : null))
+            .ForMember(dest => dest.ShopLogoUrl, opt => opt.MapFrom(src => src.Shop != null ? src.Shop.LogoUrl : null))
             .ForMember(dest => dest.PrimaryImageUrl, opt => opt.MapFrom(src =>
                 src.ProductImages != null && src.ProductImages.Any(i => i.IsPrimary)
                     ? src.ProductImages.FirstOrDefault(i => i.IsPrimary)!.ImageUrl

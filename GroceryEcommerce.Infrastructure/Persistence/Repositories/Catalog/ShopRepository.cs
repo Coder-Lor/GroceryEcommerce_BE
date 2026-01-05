@@ -341,12 +341,9 @@ public class ShopRepository(
             }
 
             var adapter = GetAdapter();
-            var qf = new QueryFactory();
-            var query = qf.Product
-                .Where(ProductFields.ShopId == shopId)
-                .Select(() => Functions.CountRow());
+            var bucket = new RelationPredicateBucket(ProductFields.ShopId == shopId);
+            var count = adapter.GetDbCount(new EntityCollection<ProductEntity>(), bucket);
             
-            var count = await adapter.FetchScalarAsync<int>(query, cancellationToken);
             logger.LogInformation("Product count fetched for shop: {ShopId}, Count: {Count}", shopId, count);
             return Result<int>.Success(count);
         }
@@ -368,12 +365,9 @@ public class ShopRepository(
             }
 
             var adapter = GetAdapter();
-            var qf = new QueryFactory();
-            var query = qf.Order
-                .Where(OrderFields.ShopId == shopId)
-                .Select(() => Functions.CountRow());
+            var bucket = new RelationPredicateBucket(OrderFields.ShopId == shopId);
+            var count = adapter.GetDbCount(new EntityCollection<OrderEntity>(), bucket);
             
-            var count = await adapter.FetchScalarAsync<int>(query, cancellationToken);
             logger.LogInformation("Order count fetched for shop: {ShopId}, Count: {Count}", shopId, count);
             return Result<int>.Success(count);
         }

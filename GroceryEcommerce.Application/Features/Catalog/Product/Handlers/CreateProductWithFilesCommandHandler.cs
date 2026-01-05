@@ -74,7 +74,7 @@ public class CreateProductWithFilesCommandHandler : IRequestHandler<CreateProduc
             try
             {
                 var userId = _currentUserService.GetCurrentUserId();
-                var shopId = _currentUserService.GetCurrentUserShopId();
+                var shopId = request.ShopId ?? _currentUserService.GetCurrentUserShopId();
                 // Create new product entity
                 var product = new Domain.Entities.Catalog.Product
                 {

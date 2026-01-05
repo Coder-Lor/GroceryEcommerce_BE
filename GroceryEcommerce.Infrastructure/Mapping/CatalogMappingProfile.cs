@@ -27,8 +27,9 @@ public class CatalogMappingProfile : Profile
             .ForMember(dest => dest.OrderItems, opt => opt.Ignore());
 
         CreateMap<ProductEntity, Product>()
-            .ForMember(dest => dest.Category, opt => opt.Ignore())
-            .ForMember(dest => dest.Brand, opt => opt.Ignore())
+            .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
+            .ForMember(dest => dest.Brand, opt => opt.MapFrom(src => src.Brand))
+            .ForMember(dest => dest.Shop, opt => opt.MapFrom(src => src.Shop))
             .ForMember(dest => dest.CreatedByUser, opt => opt.Ignore())
             .ForMember(dest => dest.UpdatedByUser, opt => opt.Ignore())
             .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(src => src.ProductImages.ToList() ?? new List<ProductImageEntity>()))

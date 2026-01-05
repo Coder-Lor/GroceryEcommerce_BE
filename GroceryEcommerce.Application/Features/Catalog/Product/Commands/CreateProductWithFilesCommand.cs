@@ -21,6 +21,7 @@ public record CreateProductWithFilesCommand: IRequest<Result<CreateProductRespon
     public string? Dimensions { get; set;}
     public Guid CategoryId { get; set;}
     public Guid? BrandId { get; set;}
+    public Guid? ShopId { get; set; }
     public short Status { get; set; } = 1;
     public bool IsFeatured { get; set; } = false;
     public bool IsDigital { get; set; } = false;
