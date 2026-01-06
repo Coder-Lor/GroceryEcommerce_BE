@@ -197,9 +197,7 @@ internal class Program
         if (!string.IsNullOrEmpty(urls))
         {
             builder.WebHost.UseUrls(urls);
-        }
-
-        var geminiApiKey = builder.Configuration["GeminiApiKey"];
+        
 
         var app = builder.Build();
 
@@ -219,6 +217,13 @@ internal class Program
 
         app.MapGet("/gemini-apikey", [AllowAnonymous] () =>
         {
+            var geminiApiKey = app.Configuration["GeminiApiKey"];
+
+            if (string.IsNullOrEmpty(geminiApiKey))
+            {
+                return Results.Problem("GeminiApiKey not configured", statusCode: 500);
+            }
+
             return Results.Ok(geminiApiKey);
         });
 
