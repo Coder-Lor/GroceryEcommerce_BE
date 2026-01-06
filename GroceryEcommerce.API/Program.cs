@@ -29,7 +29,7 @@ internal class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        
+
         builder.Services.AddControllers(options =>
         {
             var policy = new AuthorizationPolicyBuilder()
@@ -70,7 +70,7 @@ internal class Program
         {
             options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50MB
         });
-        
+
         builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
         {
             options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50MB
@@ -127,7 +127,7 @@ internal class Program
                 cfg.RegisterServicesFromAssembly(assembly);
             }
         });
-    
+
         // JWT Configuration
         var jwtSettings = builder.Configuration.GetSection("JWT");
         var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not configured");
@@ -156,7 +156,7 @@ internal class Program
                         // Support JWT token from query string for SignalR
                         var accessToken = context.Request.Query["access_token"];
                         var path = context.HttpContext.Request.Path;
-                        
+
                         if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/notificationHub"))
                         {
                             context.Token = accessToken;
@@ -171,13 +171,13 @@ internal class Program
             });
 
         builder.Services.AddAuthorization();
-        
+
         // SignalR
         builder.Services.AddSignalR();
-        
+
         // Register NotificationService
         builder.Services.AddScoped<GroceryEcommerce.Application.Interfaces.Services.INotificationService, GroceryEcommerce.API.Services.NotificationService>();
-        
+
         // CORS
 
         builder.Services.AddCors(options =>
@@ -191,45 +191,46 @@ internal class Program
                     .AllowCredentials();
             });
         });
-        
+
         // PORT 
         var urls = builder.Configuration["Urls"];
         if (!string.IsNullOrEmpty(urls))
         {
             builder.WebHost.UseUrls(urls);
-        
 
-        var app = builder.Build();
 
-        if (app.Environment.IsDevelopment())
-        {
-            app.MapOpenApi();
-            app.UseOpenApi();
-            app.MapScalarApiReference();
-            app.UseSwaggerUI();
-        }
+            var app = builder.Build();
 
-        app.UseHttpsRedirection();
-        app.UseCors("AllowSpecificOrigins");
-        app.UseAuthentication();
-        app.UseAuthorization();
-        app.MapControllers();
-
-        app.MapGet("/gemini-apikey", [AllowAnonymous] () =>
-        {
-            var geminiApiKey = app.Configuration["GeminiApiKey"];
-
-            if (string.IsNullOrEmpty(geminiApiKey))
+            if (app.Environment.IsDevelopment())
             {
-                return Results.Problem("GeminiApiKey not configured", statusCode: 500);
+                app.MapOpenApi();
+                app.UseOpenApi();
+                app.MapScalarApiReference();
+                app.UseSwaggerUI();
             }
 
-            return Results.Ok(geminiApiKey);
-        });
+            app.UseHttpsRedirection();
+            app.UseCors("AllowSpecificOrigins");
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.MapControllers();
 
-        // Map SignalR Hub
-        app.MapHub<GroceryEcommerce.API.Hubs.NotificationHub>("/notificationHub");
+            app.MapGet("/gemini-apikey", [AllowAnonymous] () =>
+            {
+                var geminiApiKey = app.Configuration["GeminiApiKey"];
 
-        app.Run();
+                if (string.IsNullOrEmpty(geminiApiKey))
+                {
+                    return Results.Problem("GeminiApiKey not configured", statusCode: 500);
+                }
+
+                return Results.Ok(geminiApiKey);
+            });
+
+            // Map SignalR Hub
+            app.MapHub<GroceryEcommerce.API.Hubs.NotificationHub>("/notificationHub");
+
+            app.Run();
+        }
     }
 }
