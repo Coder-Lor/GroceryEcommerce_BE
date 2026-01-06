@@ -1,23 +1,28 @@
-using System.Data.Common;
-using System.Diagnostics;
-using System.Text;
-using GroceryEcommerce.Infrastructure;
+using GroceryEcommerce.Application.Common;
 using GroceryEcommerce.Application.Mapping;
+using GroceryEcommerce.Infrastructure;
 using GroceryEcommerce.Infrastructure.Mapping;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
+using NSwag.AspNetCore;
 using Scalar.AspNetCore;
 using SD.LLBLGen.Pro.DQE.PostgreSql;
 using SD.LLBLGen.Pro.ORMSupportClasses;
 using SD.Tools.OrmProfiler.Interceptor;
-using Microsoft.AspNetCore.Http.Json;
+using System.Data.Common;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using NSwag.AspNetCore;
-using Microsoft.AspNetCore.OpenApi;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
 
 internal class Program
 {
@@ -32,7 +37,7 @@ internal class Program
                 .Build();
             options.Filters.Add(new AuthorizeFilter(policy));
         });
-        // builder.Services.AddOpenApi();
+
         builder.Services.AddOpenApiDocument(config =>
         {
             config.AddSecurity("JWT", Enumerable.Empty<string>(), new NSwag.OpenApiSecurityScheme
@@ -72,7 +77,6 @@ internal class Program
         });
 
         //    Bọc DbProviderFactory gốc bằng Interceptor
-        //    Đặt tên app tuỳ bạn
         var wrappedFactoryType = InterceptorCore.Initialize("GroceryEcommerce.API", typeof(NpgsqlFactory));
 
         // Đăng ký DbProviderFactory với .NET
@@ -195,6 +199,8 @@ internal class Program
             builder.WebHost.UseUrls(urls);
         }
 
+        var geminiApiKey = builder.Configuration["GeminiApiKey"];
+
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment())
@@ -210,7 +216,12 @@ internal class Program
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
-        
+
+        app.MapGet("/gemini-apikey", [AllowAnonymous] () =>
+        {
+            return Results.Ok(geminiApiKey);
+        });
+
         // Map SignalR Hub
         app.MapHub<GroceryEcommerce.API.Hubs.NotificationHub>("/notificationHub");
 
