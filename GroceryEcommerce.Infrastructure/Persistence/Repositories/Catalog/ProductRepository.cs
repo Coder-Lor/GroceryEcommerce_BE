@@ -29,6 +29,7 @@ public class ProductRepository(
         {
             "name" => ProductFields.Name,
             "price" => ProductFields.Price,
+            "discountprice" => ProductFields.DiscountPrice,
             "createdat" => ProductFields.CreatedAt,
             "updatedat" => ProductFields.UpdatedAt,
             _ => null
@@ -47,6 +48,7 @@ public class ProductRepository(
             new SearchableField("CreatedAt", typeof(DateTime)),
             new SearchableField("DisplayOrder", typeof(int)),
             new SearchableField("Price", typeof(decimal)),
+            new SearchableField("DiscountPrice", typeof(decimal)),
             new SearchableField("Stock", typeof(int)),
             new SearchableField("Sku", typeof(string)),
             new SearchableField("CategoryId", typeof(Guid)),
@@ -107,6 +109,11 @@ public class ProductRepository(
             },
             new FieldMapping
             {
+                FieldName = "DiscountPrice", FieldType = typeof(decimal), IsSearchable = true, IsSortable = true,
+                IsFilterable = true
+            },
+            new FieldMapping
+            {
                 FieldName = "Stock", FieldType = typeof(int), IsSearchable = true, IsSortable = true,
                 IsFilterable = true
             },
@@ -144,6 +151,7 @@ public class ProductRepository(
             ["updatedat"] = ProductFields.UpdatedAt,
             ["sku"] = ProductFields.Sku,
             ["price"] = ProductFields.Price,
+            ["discountprice"] = ProductFields.DiscountPrice,
             ["stock"] = ProductFields.StockQuantity,
             ["categoryid"] = ProductFields.CategoryId,
             ["brandid"] = ProductFields.BrandId,
