@@ -437,6 +437,9 @@ public class ProductRepository(
             var adapter = GetAdapter(); // Sử dụng adapter phù hợp
             var entity = Mapper.Map<ProductEntity>(product);
             entity.IsNew = false;
+            if (entity.Shop != null) entity.Shop.IsNew = false;
+            if (entity.Category != null) entity.Category.IsNew = false;
+            if (entity.Brand != null) entity.Brand.IsNew = false;
             
             var updated = await adapter.SaveEntityAsync(entity, cancellationToken);
             if (updated)
