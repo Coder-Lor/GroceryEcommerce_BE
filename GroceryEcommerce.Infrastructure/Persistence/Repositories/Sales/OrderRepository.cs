@@ -38,6 +38,7 @@ public class OrderRepository(
             new SearchableField("PaymentStatus", typeof(short)),
             new SearchableField("TotalAmount", typeof(decimal)),
             new SearchableField("UserId", typeof(Guid)),
+            new SearchableField("ShopId", typeof(Guid)),
             new SearchableField("ShippingFirstName", typeof(string)),
             new SearchableField("ShippingLastName", typeof(string)),
             new SearchableField("ShippingEmail", typeof(string)),
@@ -62,6 +63,7 @@ public class OrderRepository(
             new FieldMapping { FieldName = "PaymentMethod", FieldType = typeof(short), IsSearchable = false, IsSortable = true, IsFilterable = true },
             new FieldMapping { FieldName = "TotalAmount", FieldType = typeof(decimal), IsSearchable = false, IsSortable = true, IsFilterable = true },
             new FieldMapping { FieldName = "UserId", FieldType = typeof(Guid), IsSearchable = false, IsSortable = true, IsFilterable = true },
+            new FieldMapping { FieldName = "ShopId", FieldType = typeof(Guid), IsSearchable = false, IsSortable = true, IsFilterable = true },
             new FieldMapping { FieldName = "CreatedAt", FieldType = typeof(DateTime), IsSearchable = false, IsSortable = true, IsFilterable = true }
         };
     }
@@ -77,6 +79,7 @@ public class OrderRepository(
             { "paymentmethod", OrderFields.PaymentMethod },
             { "totalamount", OrderFields.TotalAmount },
             { "userid", OrderFields.UserId },
+            { "shopid", OrderFields.ShopId },
             { "createdat", OrderFields.CreatedAt }
         };
     }
