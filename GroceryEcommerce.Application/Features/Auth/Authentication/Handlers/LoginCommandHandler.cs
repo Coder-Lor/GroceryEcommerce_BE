@@ -49,7 +49,13 @@ public sealed class
         await authenticationRepository.ResetFailedLoginAttemptsAsync(request.EmailOrUsername, cancellationToken);
         
         var userRoles = await authenticationRepository.GetUserRolesAsync(user.UserId, cancellationToken);
-        var accessToken = await tokenService.GenerateAccessTokenAsync(user.UserId, user.Email, new List<string> {"User"});
+        
+        // Use actual roles from database, default to "User" if no roles assigned
+        var roles = userRoles.IsSuccess && userRoles.Data?.Any() == true 
+            ? userRoles.Data.ToList() 
+            : new List<string> { "User" };
+        
+        var accessToken = await tokenService.GenerateAccessTokenAsync(user.UserId, user.Email, roles);
         var refreshToken = await tokenService.GenerateRefreshTokenAsync(user.UserId);
         await authenticationRepository.UpdateLastLoginAsync(user.UserId, DateTime.UtcNow, cancellationToken);
 
@@ -64,7 +70,7 @@ public sealed class
         {
             UserId = user.UserId.ToString(),
             Username = user.Username,
-            Role = userRoles.Data.FirstOrDefault() ?? "Admin",
+            Role = roles.FirstOrDefault() ?? "User",
             Email = user.Email,
             Token = accessToken,
             RefreshToken = refreshToken,

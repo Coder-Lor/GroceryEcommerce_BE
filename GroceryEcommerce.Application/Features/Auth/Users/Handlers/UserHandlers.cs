@@ -50,7 +50,7 @@ public sealed class CreateUserCommandHandler(IUserRepository repository)
     }
 }
 
-public sealed class UpdateUserCommandHandler(IUserRepository repository)
+public sealed class UpdateUserCommandHandler(IUserRepository repository, IPasswordHashService passwordHashService)
     : IRequestHandler<UpdateUserCommand, Result<bool>>
 {
     public async Task<Result<bool>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
@@ -62,7 +62,13 @@ public sealed class UpdateUserCommandHandler(IUserRepository repository)
         var user = existing.Data;
         user.Email = request.Email ?? user.Email;
         user.Username = request.Username ?? user.Username;
-        user.PasswordHash = request.PasswordHash ?? user.PasswordHash;
+        
+        // Hash password if provided (not null or empty)
+        if (!string.IsNullOrWhiteSpace(request.PasswordHash))
+        {
+            user.PasswordHash = passwordHashService.HashPassword(request.PasswordHash);
+        }
+        
         if (request.FirstName is not null) user.FirstName = request.FirstName;
         if (request.LastName is not null) user.LastName = request.LastName;
         if (request.PhoneNumber is not null) user.PhoneNumber = request.PhoneNumber;
