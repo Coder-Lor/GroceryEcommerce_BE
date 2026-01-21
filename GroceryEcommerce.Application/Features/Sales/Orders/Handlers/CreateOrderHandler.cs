@@ -98,6 +98,7 @@ public class CreateOrderHandler(
             }
 
             // Create order items - Load ProductName from Product and ProductSku from ProductVariant
+            Guid? shopId = null;
             if (request.Request.Items.Any())
             {
                 var orderItems = new List<OrderItem>();
@@ -126,6 +127,12 @@ public class CreateOrderHandler(
                     var product = productResult.Data;
                     var variant = variantResult.Data;
 
+                    // Get ShopId from the first product
+                    if (shopId == null && product.ShopId.HasValue)
+                    {
+                        shopId = product.ShopId;
+                    }
+
                     // Validate variant belongs to the product
                     if (variant.ProductId != item.ProductId)
                     {
@@ -146,6 +153,13 @@ public class CreateOrderHandler(
                     });
                 }
                 order.OrderItems = orderItems;
+            }
+
+            // Assign ShopId to order
+            if (shopId.HasValue)
+            {
+                order.ShopId = shopId;
+                logger.LogInformation("ShopId assigned to order: {ShopId}", shopId);
             }
 
             // Create order

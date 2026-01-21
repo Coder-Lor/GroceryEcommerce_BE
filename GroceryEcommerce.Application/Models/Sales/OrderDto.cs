@@ -5,6 +5,7 @@ public class OrderDto
     public Guid OrderId { get; set; }
     public string OrderNumber { get; set; } = string.Empty;
     public Guid UserId { get; set; }
+    public Guid? ShopId { get; set; }
     public string UserName { get; set; } = string.Empty;
     public string UserEmail { get; set; } = string.Empty;
     public DateTime OrderDate { get; set; }
