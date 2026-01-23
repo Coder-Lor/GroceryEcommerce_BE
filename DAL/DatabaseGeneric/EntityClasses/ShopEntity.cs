@@ -20,20 +20,18 @@ namespace GroceryEcommerce.EntityClasses
 {
 	// __LLBLGENPRO_USER_CODE_REGION_START AdditionalNamespaces
 	// __LLBLGENPRO_USER_CODE_REGION_END
-
 	/// <summary>Entity class which represents the entity 'Shop'.<br/><br/></summary>
 	[Serializable]
 	public partial class ShopEntity : CommonEntityBase
 		// __LLBLGENPRO_USER_CODE_REGION_START AdditionalInterfaces
-		// __LLBLGENPRO_USER_CODE_REGION_END
-	
+		// __LLBLGENPRO_USER_CODE_REGION_END	
 	{
 		private EntityCollection<ProductEntity> _products;
 		private EntityCollection<OrderEntity> _orders;
 		private UserEntity _user;
+
 		// __LLBLGENPRO_USER_CODE_REGION_START PrivateMembers
 		// __LLBLGENPRO_USER_CODE_REGION_END
-
 		private static ShopEntityStaticMetaData _staticMetaData = new ShopEntityStaticMetaData();
 		private static ShopRelations _relationsFactory = new ShopRelations();
 
@@ -139,7 +137,6 @@ namespace GroceryEcommerce.EntityClasses
 			PerformDependencyInjection();
 			// __LLBLGENPRO_USER_CODE_REGION_START InitClassMembers
 			// __LLBLGENPRO_USER_CODE_REGION_END
-
 			OnInitClassMembersComplete();
 		}
 
@@ -154,7 +151,6 @@ namespace GroceryEcommerce.EntityClasses
 			InitClassMembers();
 			// __LLBLGENPRO_USER_CODE_REGION_START InitClassEmpty
 			// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 			OnInitialized();
 		}
@@ -188,6 +184,14 @@ namespace GroceryEcommerce.EntityClasses
 		{
 			get { return (System.String)GetValue((int)ShopFieldIndex.Description, true); }
 			set { SetValue((int)ShopFieldIndex.Description, value); }
+		}
+
+		/// <summary>The IsAccepted property of the Entity Shop<br/><br/></summary>
+		/// <remarks>Mapped on  table field: "shops"."isAccepted".<br/>Table field type characteristics (type, precision, scale, length): Boolean, 0, 0, 0.<br/>Table field behavior characteristics (is nullable, is PK, is identity): false, false, false</remarks>
+		public virtual System.Boolean IsAccepted
+		{
+			get { return (System.Boolean)GetValue((int)ShopFieldIndex.IsAccepted, true); }
+			set { SetValue((int)ShopFieldIndex.IsAccepted, value); }
 		}
 
 		/// <summary>The LogoUrl property of the Entity Shop<br/><br/></summary>
@@ -261,9 +265,9 @@ namespace GroceryEcommerce.EntityClasses
 			get { return _user; }
 			set { SetSingleRelatedEntityNavigator(value, "User"); }
 		}
+
 		// __LLBLGENPRO_USER_CODE_REGION_START CustomEntityCode
 		// __LLBLGENPRO_USER_CODE_REGION_END
-
 
 	}
 }
@@ -276,6 +280,8 @@ namespace GroceryEcommerce
 		CreatedAt,
 		///<summary>Description. </summary>
 		Description,
+		///<summary>IsAccepted. </summary>
+		IsAccepted,
 		///<summary>LogoUrl. </summary>
 		LogoUrl,
 		///<summary>Name. </summary>

@@ -402,16 +402,17 @@ namespace GroceryEcommerce.DatabaseSpecific
 		/// <summary>Inits ShopEntity's mappings</summary>
 		private void InitShopEntityMappings()
 		{
-			this.AddElementMapping("ShopEntity", @"postgres", @"catalog", "shops", 9, 0);
+			this.AddElementMapping("ShopEntity", @"postgres", @"catalog", "shops", 10, 0);
 			this.AddElementFieldMapping("ShopEntity", "CreatedAt", "created_at", false, "TimestampTz", 0, 0, 0, false, "", null, typeof(System.DateTime), 0);
 			this.AddElementFieldMapping("ShopEntity", "Description", "description", true, "Text", 1073741824, 0, 0, false, "", null, typeof(System.String), 1);
-			this.AddElementFieldMapping("ShopEntity", "LogoUrl", "logo_url", true, "Varchar", 500, 0, 0, false, "", null, typeof(System.String), 2);
-			this.AddElementFieldMapping("ShopEntity", "Name", "name", false, "Varchar", 255, 0, 0, false, "", null, typeof(System.String), 3);
-			this.AddElementFieldMapping("ShopEntity", "OwnerUserId", "owner_user_id", false, "Uuid", 0, 0, 0, false, "", null, typeof(System.Guid), 4);
-			this.AddElementFieldMapping("ShopEntity", "ShopId", "shop_id", false, "Uuid", 0, 0, 0, false, "", null, typeof(System.Guid), 5);
-			this.AddElementFieldMapping("ShopEntity", "Slug", "slug", true, "Varchar", 255, 0, 0, false, "", null, typeof(System.String), 6);
-			this.AddElementFieldMapping("ShopEntity", "Status", "status", false, "Smallint", 0, 5, 0, false, "", null, typeof(System.Int16), 7);
-			this.AddElementFieldMapping("ShopEntity", "UpdatedAt", "updated_at", true, "TimestampTz", 0, 0, 0, false, "", null, typeof(System.DateTime), 8);
+			this.AddElementFieldMapping("ShopEntity", "IsAccepted", "isAccepted", false, "Boolean", 0, 0, 0, false, "", null, typeof(System.Boolean), 2);
+			this.AddElementFieldMapping("ShopEntity", "LogoUrl", "logo_url", true, "Varchar", 500, 0, 0, false, "", null, typeof(System.String), 3);
+			this.AddElementFieldMapping("ShopEntity", "Name", "name", false, "Varchar", 255, 0, 0, false, "", null, typeof(System.String), 4);
+			this.AddElementFieldMapping("ShopEntity", "OwnerUserId", "owner_user_id", false, "Uuid", 0, 0, 0, false, "", null, typeof(System.Guid), 5);
+			this.AddElementFieldMapping("ShopEntity", "ShopId", "shop_id", false, "Uuid", 0, 0, 0, false, "", null, typeof(System.Guid), 6);
+			this.AddElementFieldMapping("ShopEntity", "Slug", "slug", true, "Varchar", 255, 0, 0, false, "", null, typeof(System.String), 7);
+			this.AddElementFieldMapping("ShopEntity", "Status", "status", false, "Smallint", 0, 5, 0, false, "", null, typeof(System.Int16), 8);
+			this.AddElementFieldMapping("ShopEntity", "UpdatedAt", "updated_at", true, "TimestampTz", 0, 0, 0, false, "", null, typeof(System.DateTime), 9);
 		}
 
 		/// <summary>Inits PurchaseOrderEntity's mappings</summary>

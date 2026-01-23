@@ -497,6 +497,8 @@ namespace GroceryEcommerce.HelperClasses
 		public static EntityField2 CreatedAt { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ShopFieldIndex.CreatedAt); }}
 		/// <summary>Creates a new ShopEntity.Description field instance</summary>
 		public static EntityField2 Description { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ShopFieldIndex.Description); }}
+		/// <summary>Creates a new ShopEntity.IsAccepted field instance</summary>
+		public static EntityField2 IsAccepted { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ShopFieldIndex.IsAccepted); }}
 		/// <summary>Creates a new ShopEntity.LogoUrl field instance</summary>
 		public static EntityField2 LogoUrl { get { return ModelInfoProviderSingleton.GetInstance().CreateField2(ShopFieldIndex.LogoUrl); }}
 		/// <summary>Creates a new ShopEntity.Name field instance</summary>

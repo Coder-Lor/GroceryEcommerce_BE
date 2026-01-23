@@ -477,6 +477,7 @@
         <Fields>
           <Field Name="CreatedAt" Type="datetime" />
           <Field Name="Description" Type="string" IsOptional="true" MaxLength="1073741824" />
+          <Field Name="IsAccepted" Type="bool" />
           <Field Name="LogoUrl" Type="string" IsOptional="true" MaxLength="500" />
           <Field Name="Name" Type="string" MaxLength="255" />
           <Field Name="OwnerUserId" Type="guid" />
@@ -1199,7 +1200,7 @@
       <Catalogs>
         <Catalog Name="postgres">
           <Schemas>
-            <Schema Name="auth" SyncSource="2" LastSyncWithDatabase="2025-12-16T14:05:23.9125084Z">
+            <Schema Name="auth" SyncSource="2" LastSyncWithDatabase="2026-01-23T14:41:59.8720078Z">
               <Tables>
                 <Table Name="audit_logs">
                   <PkConstraintName Name="audit_logs_pkey" />
@@ -1321,7 +1322,7 @@
                 </Table>
               </Tables>
             </Schema>
-            <Schema Name="cart" SyncSource="2" LastSyncWithDatabase="2025-12-16T14:05:24.8887949Z">
+            <Schema Name="cart" SyncSource="2" LastSyncWithDatabase="2026-01-23T14:42:00.8374237Z">
               <Tables>
                 <Table Name="abandoned_carts">
                   <PkConstraintName Name="abandoned_carts_pkey" />
@@ -1380,7 +1381,7 @@
                 </Table>
               </Tables>
             </Schema>
-            <Schema Name="catalog" SyncSource="2" LastSyncWithDatabase="2025-12-16T14:05:25.6120833Z">
+            <Schema Name="catalog" SyncSource="2" LastSyncWithDatabase="2026-01-23T14:42:01.5133675Z">
               <Tables>
                 <Table Name="brands">
                   <PkConstraintName Name="brands_pkey" />
@@ -1570,6 +1571,7 @@
                     <Field Name="owner_user_id" Ordinal="7" DbType="28" />
                     <Field Name="created_at" Ordinal="8" HasDefaultValue="true" DefaultValue="now()" DbType="23" />
                     <Field Name="updated_at" Ordinal="9" IsOptional="true" DbType="23" />
+                    <Field Name="isAccepted" Ordinal="10" DbType="0" />
                   </Fields>
                   <UniqueConstraints>
                     <UniqueConstraint Name="shops_slug_key">
@@ -1582,7 +1584,7 @@
                 <StoredProcedure Name="validate_stock_quantity" />
               </StoredProcedures>
             </Schema>
-            <Schema Name="inventory" SyncSource="2" LastSyncWithDatabase="2025-12-16T14:05:27.2067886Z">
+            <Schema Name="inventory" SyncSource="2" LastSyncWithDatabase="2026-01-23T14:42:02.965529Z">
               <Tables>
                 <Table Name="purchase_order_items">
                   <PkConstraintName Name="purchase_order_items_pkey" />
@@ -1617,7 +1619,7 @@
                 </Table>
               </Tables>
             </Schema>
-            <Schema Name="marketing" SyncSource="2" LastSyncWithDatabase="2025-12-16T14:05:27.5658153Z">
+            <Schema Name="marketing" SyncSource="2" LastSyncWithDatabase="2026-01-23T14:42:03.3278769Z">
               <Tables>
                 <Table Name="coupon_usages">
                   <PkConstraintName Name="coupon_usages_pkey" />
@@ -1689,7 +1691,7 @@
                 </Table>
               </Tables>
             </Schema>
-            <Schema Name="reviews" SyncSource="2" LastSyncWithDatabase="2025-12-16T14:05:28.1600292Z">
+            <Schema Name="reviews" SyncSource="2" LastSyncWithDatabase="2026-01-23T14:42:03.9091429Z">
               <Tables>
                 <Table Name="product_reviews">
                   <PkConstraintName Name="product_reviews_pkey" />
@@ -1741,7 +1743,7 @@
                 </Table>
               </Tables>
             </Schema>
-            <Schema Name="sales" SyncSource="2" LastSyncWithDatabase="2025-12-16T14:05:28.8302181Z">
+            <Schema Name="sales" SyncSource="2" LastSyncWithDatabase="2026-01-23T14:42:04.4768911Z">
               <Tables>
                 <Table Name="order_items">
                   <PkConstraintName Name="order_items_pkey" />
@@ -1893,7 +1895,7 @@
                 </Table>
               </Tables>
             </Schema>
-            <Schema Name="system" SyncSource="2" LastSyncWithDatabase="2025-12-16T14:05:30.1240689Z">
+            <Schema Name="system" SyncSource="2" LastSyncWithDatabase="2026-01-23T14:42:05.4582159Z">
               <Tables>
                 <Table Name="currencies">
                   <PkConstraintName Name="currencies_pkey" />
@@ -2596,6 +2598,7 @@
           <FieldMappings>
             <FieldMapping FieldName="CreatedAt" TargetFieldName="created_at" />
             <FieldMapping FieldName="Description" TargetFieldName="description" />
+            <FieldMapping FieldName="IsAccepted" TargetFieldName="isAccepted" />
             <FieldMapping FieldName="LogoUrl" TargetFieldName="logo_url" />
             <FieldMapping FieldName="Name" TargetFieldName="name" />
             <FieldMapping FieldName="OwnerUserId" TargetFieldName="owner_user_id" />

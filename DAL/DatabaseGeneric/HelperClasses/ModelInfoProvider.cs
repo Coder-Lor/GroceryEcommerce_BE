@@ -411,6 +411,7 @@ namespace GroceryEcommerce.HelperClasses
 			this.AddFieldIndexEnumForElementName(typeof(ShopFieldIndex), "ShopEntity");
 			this.AddElementFieldInfo("ShopEntity", "CreatedAt", typeof(System.DateTime), false, false, false, false,  (int)ShopFieldIndex.CreatedAt, 0, 0, 0);
 			this.AddElementFieldInfo("ShopEntity", "Description", typeof(System.String), false, false, false, true,  (int)ShopFieldIndex.Description, 1073741824, 0, 0);
+			this.AddElementFieldInfo("ShopEntity", "IsAccepted", typeof(System.Boolean), false, false, false, false,  (int)ShopFieldIndex.IsAccepted, 0, 0, 0);
 			this.AddElementFieldInfo("ShopEntity", "LogoUrl", typeof(System.String), false, false, false, true,  (int)ShopFieldIndex.LogoUrl, 500, 0, 0);
 			this.AddElementFieldInfo("ShopEntity", "Name", typeof(System.String), false, false, false, false,  (int)ShopFieldIndex.Name, 255, 0, 0);
 			this.AddElementFieldInfo("ShopEntity", "OwnerUserId", typeof(System.Guid), false, true, false, false,  (int)ShopFieldIndex.OwnerUserId, 0, 0, 0);
