@@ -12,7 +12,7 @@ public sealed class GetUserByIdQueryHandler(IUserRepository repository, ICurrent
     : IRequestHandler<GetUserByIdQuery, Result<User?>>
 {
     public Task<Result<User?>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
-        => repository.GetByIdAsync(currentUserService.GetCurrentUserId() ?? request.UserId ?? Guid.Empty, cancellationToken);
+        => repository.GetByIdAsync(request.UserId ?? currentUserService.GetCurrentUserId() ?? Guid.Empty, cancellationToken);
 }
 
 public sealed class GetUserByEmailQueryHandler(IUserRepository repository)
