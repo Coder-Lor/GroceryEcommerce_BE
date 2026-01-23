@@ -16,6 +16,7 @@ public interface IShopRepository
     // Business queries
     Task<Result<PagedResult<Shop>>> GetByOwnerAsync(Guid ownerUserId, PagedRequest request, CancellationToken cancellationToken = default);
     Task<Result<PagedResult<Shop>>> GetActiveShopsAsync(PagedRequest request, CancellationToken cancellationToken = default);
+    Task<Result<PagedResult<Shop>>> GetPendingShopsAsync(PagedRequest request, CancellationToken cancellationToken = default);
     Task<Result<bool>> ExistsAsync(Guid shopId, CancellationToken cancellationToken = default);
     Task<Result<bool>> ExistsBySlugAsync(string slug, CancellationToken cancellationToken = default);
     

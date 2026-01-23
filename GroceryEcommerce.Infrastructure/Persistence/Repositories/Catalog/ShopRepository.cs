@@ -31,6 +31,7 @@ public class ShopRepository(
             "slug" => ShopFields.Slug,
             "createdat" => ShopFields.CreatedAt,
             "status" => ShopFields.Status,
+            "isaccepted" => ShopFields.IsAccepted,
             _ => null
         };
     }
@@ -45,6 +46,7 @@ public class ShopRepository(
             new("Description", typeof(string)),
             new("LogoUrl", typeof(string)),
             new("Status", typeof(short)),
+            new("IsAccepted", typeof(bool)),
             new("OwnerUserId", typeof(Guid)),
             new("CreatedAt", typeof(DateTime)),
             new("UpdatedAt", typeof(DateTime))
@@ -89,6 +91,11 @@ public class ShopRepository(
             },
             new()
             {
+                FieldName = "IsAccepted", FieldType = typeof(bool), IsSearchable = true, IsSortable = true,
+                IsFilterable = true
+            },
+            new()
+            {
                 FieldName = "OwnerUserId", FieldType = typeof(Guid), IsSearchable = true, IsSortable = true,
                 IsFilterable = true
             },
@@ -115,6 +122,7 @@ public class ShopRepository(
             { "description", ShopFields.Description },
             { "logourl", ShopFields.LogoUrl },
             { "status", ShopFields.Status },
+            { "isaccepted", ShopFields.IsAccepted },
             { "owneruserid", ShopFields.OwnerUserId },
             { "createdat", ShopFields.CreatedAt },
             { "updatedat", ShopFields.UpdatedAt }
@@ -306,6 +314,15 @@ public class ShopRepository(
         prefetchPath.Add(ShopEntity.PrefetchPathUser);
         
         return GetPagedConfiguredAsync(request, r => r.WithFilter("Status", (short)1), prefetchPath, cancellationToken: cancellationToken);
+    }
+
+    public Task<Result<PagedResult<Shop>>> GetPendingShopsAsync(PagedRequest request, CancellationToken cancellationToken = default)
+    {
+        // Tạo PrefetchPath để include OwnerUser
+        var prefetchPath = new PrefetchPath2(EntityType.ShopEntity);
+        prefetchPath.Add(ShopEntity.PrefetchPathUser);
+        
+        return GetPagedConfiguredAsync(request, r => r.WithFilter("IsAccepted", false), prefetchPath, cancellationToken: cancellationToken);
     }
 
     public Task<Result<bool>> ExistsAsync(Guid shopId, CancellationToken cancellationToken = default)

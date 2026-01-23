@@ -28,6 +28,13 @@ public class ShopController(IMediator mediator, IAzureBlobStorageService blobSto
         return Ok(result);
     }
 
+    [HttpGet("pending")]
+    public async Task<ActionResult<Result<PagedResult<ShopDto>>>> GetPendingShopsPaging([FromQuery] PagedRequest request)
+    {
+        var result = await mediator.Send(new GetPendingShopsPagingQuery(request));
+        return Ok(result);
+    }
+
     [HttpGet("{shopId:guid}")]
     public async Task<ActionResult<Result<GetShopByIdResponse>>> GetById([FromRoute] Guid shopId)
     {
@@ -170,6 +177,20 @@ public class ShopController(IMediator mediator, IAzureBlobStorageService blobSto
     public async Task<ActionResult<Result<bool>>> Delete([FromRoute] Guid shopId)
     {
         var result = await mediator.Send(new DeleteShopCommand(shopId));
+        return Ok(result);
+    }
+
+    [HttpPost("accept/{shopId:guid}")]
+    public async Task<ActionResult<Result<bool>>> AcceptShop([FromRoute] Guid shopId)
+    {
+        var result = await mediator.Send(new AcceptShopCommand(shopId));
+        return Ok(result);
+    }
+
+    [HttpPost("reject/{shopId:guid}")]
+    public async Task<ActionResult<Result<bool>>> RejectShop([FromRoute] Guid shopId)
+    {
+        var result = await mediator.Send(new RejectShopCommand(shopId));
         return Ok(result);
     }
 

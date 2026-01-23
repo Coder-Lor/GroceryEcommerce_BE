@@ -23,6 +23,8 @@ public class Shop
 
     public short Status { get; set; } = 1;
 
+    public bool IsAccepted { get; set; } = false;
+
     public Guid OwnerUserId { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

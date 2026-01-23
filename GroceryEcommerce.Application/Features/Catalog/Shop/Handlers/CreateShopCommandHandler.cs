@@ -48,6 +48,7 @@ public class CreateShopCommandHandler(
             Description = request.Description,
             LogoUrl = request.LogoUrl,
             Status = request.Status,
+            IsAccepted = false, // Shop mới đăng ký chưa được chấp nhận
             OwnerUserId = ownerUserId,
             CreatedAt = DateTime.UtcNow
         };
