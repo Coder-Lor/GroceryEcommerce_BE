@@ -169,7 +169,93 @@ public class OrderRepository(
 
     public async Task<Result<Order?>> GetOrderByIdAsync(Guid orderId, CancellationToken cancellationToken = default)
     {
-        return await GetSingleAsync(OrderFields.OrderId, orderId, "Order", TimeSpan.FromMinutes(15), cancellationToken);
+        try
+        {
+            var cacheKey = $"Order_{orderId}";
+            var cached = await CacheService.GetAsync<Order>(cacheKey, cancellationToken);
+            if (cached != null)
+            {
+                Logger.LogInformation("Order fetched from cache by OrderId: {OrderId}", orderId);
+                return Result<Order?>.Success(cached);
+            }
+
+            var adapter = GetAdapter();
+            var qf = new QueryFactory();
+            
+            // Bước 1: Query OrderItems riêng theo OrderId với join Product và ProductVariant
+            var orderItemsPrefetchPath = new PrefetchPath2(EntityType.OrderItemEntity);
+            var productPath = OrderItemEntity.PrefetchPathProduct;
+            productPath.SubPath.Add(ProductEntity.PrefetchPathProductImages); // Load ProductImages cho Product
+            orderItemsPrefetchPath.Add(productPath);
+            orderItemsPrefetchPath.Add(OrderItemEntity.PrefetchPathProductVariant); // Load ProductVariant
+            
+            var orderItemsCollection = new EntityCollection<OrderItemEntity>();
+            var orderItemsQueryParams = new QueryParameters
+            {
+                CollectionToFetch = orderItemsCollection,
+                FilterToUse = new PredicateExpression(OrderItemFields.OrderId == orderId),
+                PrefetchPathToUse = orderItemsPrefetchPath
+            };
+            await adapter.FetchEntityCollectionAsync(orderItemsQueryParams, cancellationToken);
+            
+            // Bước 2: Query Order với các related entities khác (không bao gồm OrderItems)
+            var prefetchPath = new PrefetchPath2(EntityType.OrderEntity);
+            
+            // Load User (customer) và CreatedByUser
+            prefetchPath.Add(OrderEntity.PrefetchPathUser); // Load User (customer)
+            prefetchPath.Add(OrderEntity.PrefetchPathUser1); // Load CreatedByUser
+            
+            // Load OrderStatusHistories với CreatedByUser
+            var statusHistoryPath = OrderEntity.PrefetchPathOrderStatusHistories;
+            statusHistoryPath.SubPath.Add(OrderStatusHistoryEntity.PrefetchPathUser); // Load CreatedByUser cho mỗi StatusHistory
+            prefetchPath.Add(statusHistoryPath);
+            
+            // Load OrderPayments
+            prefetchPath.Add(OrderEntity.PrefetchPathOrderPayments);
+            
+            // Load OrderShipments
+            prefetchPath.Add(OrderEntity.PrefetchPathOrderShipments);
+            
+            // Load OrderRefunds với ProcessedByUser
+            var refundsPath = OrderEntity.PrefetchPathOrderRefunds;
+            refundsPath.SubPath.Add(OrderRefundEntity.PrefetchPathUser); // Load ProcessedByUser
+            prefetchPath.Add(refundsPath);
+            
+            // Fetch order với PrefetchPath (không bao gồm OrderItems)
+            var orderCollection = new EntityCollection<OrderEntity>();
+            var prefetchQuery = new QueryParameters
+            {
+                CollectionToFetch = orderCollection,
+                FilterToUse = new PredicateExpression(OrderFields.OrderId == orderId),
+                PrefetchPathToUse = prefetchPath
+            };
+            await adapter.FetchEntityCollectionAsync(prefetchQuery, cancellationToken);
+            
+            var entity = orderCollection.FirstOrDefault();
+            if (entity == null)
+            {
+                Logger.LogWarning("Order not found by OrderId: {OrderId}", orderId);
+                return Result<Order?>.Failure("Order not found.");
+            }
+
+            // Bước 3: Map Order entity sang domain entity
+            var domainEntity = Mapper.Map<Order>(entity);
+            
+            // Bước 4: Map OrderItems đã query riêng vào domain entity
+            if (orderItemsCollection.Count > 0)
+            {
+                var orderItems = Mapper.Map<List<OrderItem>>(orderItemsCollection);
+                domainEntity.OrderItems = orderItems;
+            }
+            await CacheService.SetAsync(cacheKey, domainEntity, TimeSpan.FromMinutes(15), cancellationToken);
+            Logger.LogInformation("Order fetched from database and cached by OrderId: {OrderId}", orderId);
+            return Result<Order?>.Success(domainEntity);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error getting Order by OrderId: {OrderId}", orderId);
+            return Result<Order?>.Failure("An error occurred while fetching Order.");
+        }
     }
 
     public async Task<Result<Order?>> GetOrderByNumberAsync(string orderNumber, CancellationToken cancellationToken = default)

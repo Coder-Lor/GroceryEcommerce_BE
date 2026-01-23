@@ -1,6 +1,8 @@
 using AutoMapper;
 using GroceryEcommerce.Application.Models.Sales;
 using GroceryEcommerce.Domain.Entities.Sales;
+using GroceryEcommerce.Domain.Entities.Catalog;
+using GroceryEcommerce.EntityClasses;
 
 namespace GroceryEcommerce.Application.Mapping;
 
@@ -55,11 +57,39 @@ public class SalesProfile : Profile
         CreateMap<UpdateOrderRequest, Order>()
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.UtcNow));
 
+        // Entity to Domain mappings for OrderItem
+        CreateMap<ProductEntity, Product>()
+            .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(src => src.ProductImages))
+            .ForMember(dest => dest.ProductVariants, opt => opt.Ignore())
+            .ForMember(dest => dest.Category, opt => opt.Ignore())
+            .ForMember(dest => dest.Brand, opt => opt.Ignore())
+            .ForMember(dest => dest.Shop, opt => opt.Ignore())
+            .ForMember(dest => dest.Reviews, opt => opt.Ignore())
+            .ForMember(dest => dest.ProductTagAssignments, opt => opt.Ignore())
+            .ForMember(dest => dest.ProductAttributeValues, opt => opt.Ignore())
+            .ForMember(dest => dest.ProductQuestions, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedByUser, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedByUser, opt => opt.Ignore());
+
+        CreateMap<ProductVariantEntity, ProductVariant>()
+            .ForMember(dest => dest.Product, opt => opt.Ignore())
+            .ForMember(dest => dest.VariantAttributeValues, opt => opt.Ignore());
+
+        CreateMap<ProductImageEntity, ProductImage>()
+            .ForMember(dest => dest.ImageId, opt => opt.MapFrom(src => src.ImageId))
+            .ForMember(dest => dest.Product, opt => opt.Ignore());
+
+        CreateMap<OrderItemEntity, OrderItem>()
+            .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.Product))
+            .ForMember(dest => dest.ProductVariant, opt => opt.MapFrom(src => src.ProductVariant))
+            .ForMember(dest => dest.Order, opt => opt.Ignore())
+            .ForMember(dest => dest.ShipmentItems, opt => opt.Ignore());
+
         // Order Item mappings
         CreateMap<OrderItem, OrderItemDto>()
-            .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
-            .ForMember(dest => dest.ProductSku, opt => opt.MapFrom(src => src.Product.Sku))
-            .ForMember(dest => dest.ProductImageUrl, opt => opt.MapFrom(src => src.Product.ProductImages.FirstOrDefault(i => i.IsPrimary) != null ? src.Product.ProductImages.FirstOrDefault(i => i.IsPrimary)!.ImageUrl : null))
+            .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product != null ? src.Product.Name : string.Empty))
+            .ForMember(dest => dest.ProductSku, opt => opt.MapFrom(src => src.Product != null ? src.Product.Sku : string.Empty))
+            .ForMember(dest => dest.ProductImageUrl, opt => opt.MapFrom(src => GetPrimaryProductImageUrl(src.Product)))
             .ForMember(dest => dest.VariantName, opt => opt.MapFrom(src => src.ProductVariant != null ? src.ProductVariant.Name : null))
             .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.UnitPrice * src.Quantity));
 
@@ -197,5 +227,14 @@ public class SalesProfile : Profile
             5 => "Rejected",
             _ => "Unknown"
         };
+    }
+
+    private static string? GetPrimaryProductImageUrl(Product? product)
+    {
+        if (product == null || product.ProductImages == null || !product.ProductImages.Any())
+            return null;
+        
+        var primaryImage = product.ProductImages.FirstOrDefault(i => i.IsPrimary);
+        return primaryImage != null ? primaryImage.ImageUrl : null;
     }
 }
