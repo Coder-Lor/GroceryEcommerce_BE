@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace GroceryEcommerce.Application.Models.Cart;
 
 public class ShoppingCartDto
@@ -56,5 +58,7 @@ public class CartSummaryDto
 
 public class UpdateQuantityRequest
 {
+    [Required(ErrorMessage = "Quantity is required")]
+    [Range(1, int.MaxValue, ErrorMessage = "Quantity must be at least 1")]
     public int Quantity { get; set; }
 }
