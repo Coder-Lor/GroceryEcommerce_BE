@@ -428,7 +428,17 @@ public class CartRepository(
         try
         {
             var adapter = GetAdapter();
-            var entity = new ShoppingCartItemEntity(itemId) { Quantity = quantity };
+            var qf = new QueryFactory();
+            var query = qf.Create<ShoppingCartItemEntity>().Where(ShoppingCartItemFields.CartItemId == itemId);
+            var entity = await adapter.FetchFirstAsync(query, cancellationToken);
+            
+            if (entity == null)
+            {
+                return Result<bool>.Failure("Cart item not found");
+            }
+            
+            entity.Quantity = quantity;
+            entity.IsNew = false;
             var updated = await adapter.SaveEntityAsync(entity, cancellationToken);
             return updated ? Result<bool>.Success(true) : Result<bool>.Failure("Update quantity failed");
         }
